@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "category")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Category {
+public class Category extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)

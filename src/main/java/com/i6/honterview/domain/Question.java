@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "question")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Question {
+public class Question extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)

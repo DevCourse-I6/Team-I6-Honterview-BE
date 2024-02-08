@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "interview")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Interview {
+public class Interview extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
