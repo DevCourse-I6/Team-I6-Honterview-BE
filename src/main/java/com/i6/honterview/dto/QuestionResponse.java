@@ -4,7 +4,7 @@ import com.i6.honterview.domain.Question;
 
 public record QuestionResponse(Long id, String content) {
 
-	public QuestionResponse(Question question) {
-		this(question.getId(), question.getContent());
+	public static QuestionResponse from(Question question) {
+		return new QuestionResponse(question.getId(), question.getContent());
 	}
 }

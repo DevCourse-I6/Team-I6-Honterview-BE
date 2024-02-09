@@ -30,7 +30,7 @@ public class QuestionService {
 		// TODO : 좋아요 순 정렬, 카테고리 목록별 검색 추가
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Question> questions = questionQueryDslRepository.findQuestionsByKeywordWithPage(pageable, query);
-		return PageResponse.of(questions, QuestionResponse::new);
+		return PageResponse.of(questions, QuestionResponse::from);
 	}
 
 	@Transactional(readOnly = true)
