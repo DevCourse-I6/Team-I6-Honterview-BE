@@ -1,5 +1,6 @@
 package com.i6.honterview.security.auth;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.i6.honterview.domain.Member;
@@ -14,7 +15,7 @@ import lombok.Getter;
 public class OAuthAttributes {
 
 	private Map<String, Object> attributes;
-	private String nameAttributeKey; // 사용자 속성의 키 값
+	private String attributeKey; // 사용자 속성의 키 값
 	private String email;
 	private Provider provider;
 	private String name;
@@ -47,11 +48,20 @@ public class OAuthAttributes {
 			.email((String)attributes.get("email"))
 			.attributes(attributes)
 			.provider(provider)
-			.nameAttributeKey(userNameAttributeName)
+			.attributeKey(userNameAttributeName)
 			.build();
 	}
 
-	public Member toEntity() {
+	public Map<String, Object> convertToMap() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", attributeKey);
+		map.put("key", attributeKey);
+		map.put("email", email);
+		map.put("provider", provider);
+		return map;
+	}
+
+	public Member toMemberEntity() {
 		return Member.builder()
 			.provider(provider)
 			.nickname(name)

@@ -1,6 +1,8 @@
 package com.i6.honterview.security.service;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -38,23 +40,33 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 			.getUserInfoEndpoint()
 			.getUserNameAttributeName();
 
-		OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName,
+		OAuthAttributes oAuth2Attribute = OAuthAttributes.of(registrationId, userNameAttributeName,
 			oauth2User.getAttributes());
 
-		Member member = saveOrUpdate(attributes);
+		Map<String, Object> memberAttribute = oAuth2Attribute.convertToMap();
+
+		Optional<Member> findMember = memberRepository.findByEmail(oAuth2Attribute.getEmail());
+		if (findMember.isEmpty()) {
+			memberAttribute.put("exist", false);
+
+			// TODO : 만약 최초로그인인 경우 회원가입 페이지로 이동 -> 그 후 save 하도록 수정하기
+			Member member = memberRepository.save(oAuth2Attribute.toMemberEntity());
+
+			return new OAuth2UserImpl(
+				Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+				memberAttribute,
+				oAuth2Attribute.getAttributeKey(),
+				member
+			);
+		}
+
+		Member member = findMember.get();
+		memberAttribute.put("exist", true);
 
 		return new OAuth2UserImpl(
 			Collections.singleton(new SimpleGrantedAuthority(member.getRole().name())),
-			oauth2User.getAttributes(),
-			attributes.getNameAttributeKey(),
+			memberAttribute,
+			oAuth2Attribute.getAttributeKey(),
 			member);
-	}
-
-	private Member saveOrUpdate(OAuthAttributes attributes) {
-		return memberRepository.findByEmail(attributes.getEmail())
-			.orElseGet(() -> {
-				Member newMember = attributes.toEntity();
-				return memberRepository.save(newMember);
-			});
 	}
 }
