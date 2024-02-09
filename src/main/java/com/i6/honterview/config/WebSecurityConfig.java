@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.i6.honterview.security.service.OAuth2AuthenticationSuccessHandler;
 import com.i6.honterview.security.service.Oauth2UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig {
 
 	private final Oauth2UserService oauth2UserService;
+	private final OAuth2AuthenticationSuccessHandler oauthSuccessHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -83,7 +85,7 @@ public class WebSecurityConfig {
 					oauth.userInfoEndpoint(
 							(endpoint) -> endpoint.userService(oauth2UserService)
 						)
-			//			.successHandler(oauthSuccessHandler)
+						.successHandler(oauthSuccessHandler)
 			);
 		return http.build();
 	}
