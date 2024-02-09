@@ -36,8 +36,8 @@ spring:
               - profile_nickname
 jwt:
   secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPuQ
-  access-expiry-seconds: 120000 # 5min
-  refresh-expiry-seconds: 86400000 #1 day
+  access-expiry-milliseconds: 120000 # 5min
+  refresh-expiry-milliseconds: 86400000 #1 day
 
 logging:
   level:

@@ -55,7 +55,7 @@ public class OAuthAttributes {
 	public Map<String, Object> convertToMap() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", attributeKey);
-		map.put("key", attributeKey);
+		map.put("nickname", name);
 		map.put("email", email);
 		map.put("provider", provider);
 		return map;

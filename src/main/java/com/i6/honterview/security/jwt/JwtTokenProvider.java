@@ -20,11 +20,11 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret-key}")
 	private String secretKey;
 
-	@Value("${jwt.access-expiry-seconds}")
-	private int accessExpirySeconds;
+	@Value("${jwt.access-expiry-milliseconds}")
+	private int accessExpiryMilliseconds;
 
-	@Value("${jwt.refresh-expiry-seconds}")
-	private int refreshExpirySeconds;
+	@Value("${jwt.refresh-expiry-milliseconds}")
+	private int refreshExpiryMilliseconds;
 
 	public String generateAccessToken(String email, String role) {
 		Date now = new Date();
@@ -32,7 +32,7 @@ public class JwtTokenProvider {
 
 		return Jwts.builder()
 			.issuedAt(now)
-			.expiration(new Date(System.currentTimeMillis() + accessExpirySeconds))
+			.expiration(new Date(System.currentTimeMillis() + accessExpiryMilliseconds))
 			.claims(claim)
 			.subject(email)
 			.signWith(getSignInKey())
@@ -44,7 +44,7 @@ public class JwtTokenProvider {
 		Map<String, String> claim = generateClaim(email, role);
 		return Jwts.builder()
 			.issuedAt(now)
-			.expiration(new Date(System.currentTimeMillis() + refreshExpirySeconds))
+			.expiration(new Date(System.currentTimeMillis() + refreshExpiryMilliseconds))
 			.claims(claim)
 			.subject(email)
 			.signWith(getSignInKey())
