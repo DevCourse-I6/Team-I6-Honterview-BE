@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,8 +32,8 @@ public class Member extends BaseEntity {
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "nickname")
+	private String nickname;
 
 	@Column(name = "birth_date")
 	private String birthDate;
@@ -54,4 +55,11 @@ public class Member extends BaseEntity {
 
 	// TODO : status
 
+	@Builder
+	public Member(String email, String nickname, Provider provider, Role role) {
+		this.email = email;
+		this.nickname = nickname;
+		this.provider = provider;
+		this.role = role;
+	}
 }
