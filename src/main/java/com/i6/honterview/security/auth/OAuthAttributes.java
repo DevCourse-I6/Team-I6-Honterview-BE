@@ -14,7 +14,7 @@ import lombok.Getter;
 public class OAuthAttributes {
 
 	private Map<String, Object> attributes;
-	private String nameAttributeKey;
+	private String nameAttributeKey; // 사용자 속성의 키 값
 	private String email;
 	private Provider provider;
 	private String name;
@@ -25,22 +25,25 @@ public class OAuthAttributes {
 		return ofProviderType(provider, userNameAttributeName, attributes);
 	}
 
-	private static OAuthAttributes ofProviderType(Provider provider, String userNameAttributeName,
+	private static OAuthAttributes ofProviderType(Provider provider, String nameAttributeName,
 		Map<String, Object> attributes) {
 		return switch (provider) {
-			case KAKAO -> ofKakao(userNameAttributeName, attributes);
+			case KAKAO -> ofKakao(nameAttributeName, attributes);
 			default -> throw new IllegalArgumentException("지원되지 않는 프로바이더 타입: " + provider);
 		};
 	}
 
 	private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
 		Map<String, Object> response = (Map<String, Object>)attributes.get("kakao_account");
-		return buildCommonAttributes(Provider.KAKAO, userNameAttributeName, response);
+		Map<String, Object> profile = (Map<String, Object>) response.get("profile");
+		String nickname = (String) profile.get("nickname");
+		return buildCommonAttributes(Provider.KAKAO, userNameAttributeName, response, nickname);
 	}
 
 	private static OAuthAttributes buildCommonAttributes(Provider provider, String userNameAttributeName,
-		Map<String, Object> attributes) {
+		Map<String, Object> attributes, String nickname) {
 		return OAuthAttributes.builder()
+			.name(nickname)
 			.email((String)attributes.get("email"))
 			.attributes(attributes)
 			.provider(provider)
@@ -51,6 +54,7 @@ public class OAuthAttributes {
 	public Member toEntity() {
 		return Member.builder()
 			.provider(provider)
+			.nickname(name)
 			.email(email)
 			.role(Role.ROLE_USER)
 			.build();

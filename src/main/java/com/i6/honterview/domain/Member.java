@@ -56,8 +56,9 @@ public class Member {
 	// TODO : status
 
 	@Builder
-	public Member(String email, Provider provider, Role role) {
+	public Member(String email, String nickname, Provider provider, Role role) {
 		this.email = email;
+		this.nickname = nickname;
 		this.provider = provider;
 		this.role = role;
 	}
