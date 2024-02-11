@@ -1,15 +1,19 @@
 package com.i6.honterview.security.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.security.auth.OAuth2UserImpl;
+import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.util.HttpResponseUtil;
 
@@ -31,8 +35,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 		OAuth2UserImpl oAuth2User = (OAuth2UserImpl)authentication.getPrincipal();
 		Member member = oAuth2User.getMember();
 
-		String accessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
-		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail(), member.getRole().name());
+		UserDetailsImpl userDetails = UserDetailsImpl.builder()
+			.id(member.getId())
+			.email(member.getEmail())
+			.authorities(getAuthorities(member))
+			.build();
+
+		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
+		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
 		// TODO : refresh token redis에 저장
 
@@ -42,5 +52,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 		);
 
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
+	}
+
+	private List<GrantedAuthority> getAuthorities(Member member) {
+		return member.getRole() != null ?
+			List.of(new SimpleGrantedAuthority(member.getRole().name()))
+			: null;
 	}
 }

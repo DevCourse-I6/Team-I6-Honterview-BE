@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,8 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.i6.honterview.security.jwt.JwtAccessDeniedHandler;
+import com.i6.honterview.security.jwt.JwtAuthenticationEntryPoint;
+import com.i6.honterview.security.jwt.JwtAuthenticationFilter;
 import com.i6.honterview.security.service.OAuth2AuthenticationSuccessHandler;
 import com.i6.honterview.security.service.Oauth2UserService;
 
@@ -25,12 +31,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final Oauth2UserService oauth2UserService;
 	private final OAuth2AuthenticationSuccessHandler oauthSuccessHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+		return authConfig.getAuthenticationManager();
 	}
 
 	/**
@@ -60,12 +74,12 @@ public class WebSecurityConfig {
 
 			// H2-CONSOLE
 			antMatcher("/h2-console/**")
-		);
+			);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 
 	/**
-	 * OAuth 관련 엔드포인트에 적용되는 SecurityFilterChain 입니다.
+	 * OAuth 관련 엔드포인트에 적용되는 SecurityFilterChain
 	 */
 	@Bean
 	public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
@@ -90,6 +104,23 @@ public class WebSecurityConfig {
 		return http.build();
 	}
 
+	/**
+	 * 위에서 정의된 엔드포인트 이외에는 authenticated 로 설정
+	 */
+	@Bean
+	public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
+		http.authorizeHttpRequests(authorize -> authorize
+				.anyRequest()
+				.authenticated()
+			)
+			.addFilterAfter(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			});
+		return http.build();
+	}
 
 	private void configureCommonSecuritySettings(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
