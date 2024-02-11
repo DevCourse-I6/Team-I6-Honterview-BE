@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.enums.Provider;
 import com.i6.honterview.domain.enums.Role;
+import com.i6.honterview.domain.redis.RefreshToken;
 import com.i6.honterview.repository.MemberRepository;
+import com.i6.honterview.repository.RefreshTokenRepository;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.util.HttpResponseUtil;
@@ -33,6 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private static final String CHECKING_EXIST_KEY = "exist";
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -67,12 +70,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-
-		// TODO : refresh token redis에 저장
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
 
 		body.put("accessToken", accessToken);
 		body.put("refreshToken", refreshToken);
-
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 
