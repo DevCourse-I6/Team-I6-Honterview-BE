@@ -21,6 +21,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import com.i6.honterview.security.jwt.JwtAccessDeniedHandler;
 import com.i6.honterview.security.jwt.JwtAuthenticationEntryPoint;
 import com.i6.honterview.security.jwt.JwtAuthenticationFilter;
+import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.security.service.OAuth2AuthenticationSuccessHandler;
 import com.i6.honterview.security.service.Oauth2UserService;
 
@@ -31,7 +32,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	// private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final Oauth2UserService oauth2UserService;
@@ -116,7 +118,7 @@ public class WebSecurityConfig {
 				.anyRequest()
 				.authenticated()
 			)
-			.addFilterAfter(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
