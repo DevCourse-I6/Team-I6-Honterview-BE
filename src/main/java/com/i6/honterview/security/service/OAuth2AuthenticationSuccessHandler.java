@@ -2,13 +2,10 @@ package com.i6.honterview.security.service;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -62,24 +59,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 				return memberRepository.save(newMember);
 			});
 
-		UserDetailsImpl userDetails = UserDetailsImpl.builder()
-			.id(member.getId())
-			.email(member.getEmail())
-			.authorities(getAuthorities(member))
-			.build();
+		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
 
-		body.put("accessToken", accessToken);
-		body.put("refreshToken", refreshToken);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
-	}
-
-	private List<GrantedAuthority> getAuthorities(Member member) {
-		return member.getRole() != null ?
-			List.of(new SimpleGrantedAuthority(member.getRole().name()))
-			: null;
 	}
 }

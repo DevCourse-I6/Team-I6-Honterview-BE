@@ -62,6 +62,8 @@ public class WebSecurityConfig {
 
 	private RequestMatcher[] requestPermitAll() {
 		List<RequestMatcher> requestMatchers = List.of(
+			// Member
+			antMatcher("/api/*/auth/**"),
 
 			// DOCS
 			antMatcher("/swagger-ui/**"),
