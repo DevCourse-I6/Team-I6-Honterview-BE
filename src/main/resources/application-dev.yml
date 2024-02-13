@@ -13,6 +13,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+    defer-datasource-initialization: true # data.sql 실행을 DDL 실행 후로 지연시킴
 
   security:
     oauth2:
