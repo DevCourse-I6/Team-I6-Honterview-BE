@@ -23,11 +23,12 @@ public class HttpResponseUtil {
 		response.getWriter().write(responseBody);
 	}
 
-	public static void setErrorResponse(HttpServletResponse response, HttpStatus httpStatus, Object body)
-		throws IOException {
+	public static void writeErrorResponse(HttpServletResponse response, HttpStatus httpStatus, Object data) throws
+		IOException {
+		String json = objectMapper.writeValueAsString(data);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setStatus(httpStatus.value());
 		response.setCharacterEncoding("UTF-8");
-		objectMapper.writeValue(response.getOutputStream(), body);
+		response.getWriter().write(json);
 	}
 }

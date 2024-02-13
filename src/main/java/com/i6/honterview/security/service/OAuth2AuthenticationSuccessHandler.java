@@ -1,15 +1,22 @@
 package com.i6.honterview.security.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.i6.honterview.domain.Member;
-import com.i6.honterview.security.auth.OAuth2UserImpl;
+import com.i6.honterview.domain.enums.Provider;
+import com.i6.honterview.domain.enums.Role;
+import com.i6.honterview.domain.redis.RefreshToken;
+import com.i6.honterview.repository.MemberRepository;
+import com.i6.honterview.repository.RefreshTokenRepository;
+import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.util.HttpResponseUtil;
 
@@ -20,27 +27,53 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+	private static final String CHECKING_EXIST_KEY = "exist";
 	private final JwtTokenProvider jwtTokenProvider;
+	private final MemberRepository memberRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
 
-		OAuth2UserImpl oAuth2User = (OAuth2UserImpl)authentication.getPrincipal();
-		Member member = oAuth2User.getMember();
+		DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User)authentication.getPrincipal();
+		Map<String, Object> attributes = defaultOAuth2User.getAttributes();
+		String email = (String)attributes.get("email");
+		Provider provider = (Provider)attributes.get("provider");
+		String nickname = (String)attributes.get("nickname");
 
-		String accessToken = jwtTokenProvider.generateAccessToken(member.getEmail(), member.getRole().name());
-		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail(), member.getRole().name());
+		Map<String, Object> body = new HashMap<>();
+		body.put(CHECKING_EXIST_KEY, true);
 
-		// TODO : refresh token redis에 저장
+		Member member = memberRepository.findByEmail(email)
+			.orElseGet(() -> {
+				body.put(CHECKING_EXIST_KEY, false);
+				Member newMember = Member.builder()
+					.provider(provider)
+					.nickname(nickname)
+					.email(email)
+					.role(Role.ROLE_USER)
+					.build();
+				return memberRepository.save(newMember);
+			});
 
-		Map<String, Object> body = Map.of(
-			"accessToken", accessToken,
-			"refreshToken", refreshToken
-		);
+		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 
+		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
+		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
+
+		// TODO: cookie로 토큰 전달
+		// Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+		// refreshTokenCookie.setSecure(true);
+		// refreshTokenCookie.setHttpOnly(true);
+		// refreshTokenCookie.setPath("/");
+		// response.addCookie(refreshTokenCookie);
+
+		body.put("accessToken", accessToken);
+		body.put("refreshToken", refreshToken);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }
