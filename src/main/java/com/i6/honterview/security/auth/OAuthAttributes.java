@@ -12,12 +12,11 @@ import lombok.Getter;
 @Builder
 public class OAuthAttributes {
 
-	private Map<String, Object> attributes;
 	private String attributeKey; // 사용자 속성의 키 값
 	private String email;
 	private Provider provider;
 	private String providerId;
-	private String name;
+	private String nickname;
 
 	public static OAuthAttributes of(String registrationId, String userNameAttributeName,
 		Map<String, Object> attributes) {
@@ -31,6 +30,7 @@ public class OAuthAttributes {
 			case KAKAO -> ofKakao(nameAttributeName, attributes);
 			case GOOGLE -> ofGoogle(nameAttributeName, attributes);
 			case NAVER -> ofNaver(nameAttributeName, attributes);
+			case GITHUB -> ofGithub(nameAttributeName, attributes);
 			default -> throw new IllegalArgumentException("지원되지 않는 프로바이더 타입: " + provider);
 		};
 	}
@@ -40,9 +40,8 @@ public class OAuthAttributes {
 		Map<String, Object> profile = (Map<String, Object>) response.get("profile");
 		String nickname = (String) profile.get("nickname");
 		return OAuthAttributes.builder()
-			.name(nickname)
+			.nickname(nickname)
 			.email((String)response.get("email"))
-			.attributes(attributes)
 			.provider(Provider.KAKAO)
 			.providerId(String.valueOf(attributes.get("id")))
 			.attributeKey(userNameAttributeName)
@@ -50,11 +49,9 @@ public class OAuthAttributes {
 	}
 
 	private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-		String nickname = (String) attributes.get("name");
 		return OAuthAttributes.builder()
-			.name(nickname)
+			.nickname((String) attributes.get("name"))
 			.email((String)attributes.get("email"))
-			.attributes(attributes)
 			.provider(Provider.GOOGLE)
 			.providerId((String)attributes.get("sub"))
 			.attributeKey(userNameAttributeName)
@@ -63,13 +60,22 @@ public class OAuthAttributes {
 
 	private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
 		Map<String, Object> response = (Map<String, Object>)attributes.get("response");
-		String nickname = (String) response.get("name"); // 'name' 대신 'nickname' 사용
 		return OAuthAttributes.builder()
-			.name(nickname)
+			.nickname((String) response.get("name"))
 			.email((String) response.get("email"))
-			.attributes(attributes)
 			.provider(Provider.NAVER)
 			.providerId(String.valueOf(response.get("id")))
+			.attributeKey(userNameAttributeName)
+			.build();
+	}
+
+	private static OAuthAttributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
+		System.out.println(attributes.toString());
+		return OAuthAttributes.builder()
+			.nickname((String)attributes.get("login"))
+			.email((String)attributes.get("email"))
+			.provider(Provider.GITHUB)
+			.providerId(String.valueOf(attributes.get("id")))
 			.attributeKey(userNameAttributeName)
 			.build();
 	}
@@ -77,7 +83,7 @@ public class OAuthAttributes {
 	public Map<String, Object> convertToMap() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", attributeKey);
-		map.put("nickname", name);
+		map.put("nickname", nickname);
 		map.put("email", email);
 		map.put("provider", provider);
 		map.put(attributeKey, providerId);
