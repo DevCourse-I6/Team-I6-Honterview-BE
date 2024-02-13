@@ -36,10 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		} catch (ExpiredJwtException e) {
-			logger.warn("ExpiredJwtException Occurred : ", e);
-			throw new CredentialsExpiredException("토큰의 유효기간이 만료되었습니다.", e);
+			logger.warn("ExpiredJwtException Occurred");
+			throw new CredentialsExpiredException("토큰의 유효기간이 만료되었습니다.");
 		} catch (Exception e) {
-			logger.warn("JwtAuthentication Failed. : ", e);
+			logger.warn("JwtAuthentication Failed.");
 			throw new BadCredentialsException("토큰 인증에 실패하였습니다.");
 		}
 		filterChain.doFilter(request, response);

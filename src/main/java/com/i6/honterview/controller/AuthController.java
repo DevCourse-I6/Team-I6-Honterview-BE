@@ -11,6 +11,7 @@ import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.service.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,7 +22,7 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/reissue")
-	public ResponseEntity<ApiResponse> reissue(@RequestBody ReissueTokenRequest request) {
+	public ResponseEntity<ApiResponse> reissue(@Valid @RequestBody ReissueTokenRequest request) {
 		TokenResponse reissuedToken = authService.reissue(request);
 		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
 		return ResponseEntity.ok(response);

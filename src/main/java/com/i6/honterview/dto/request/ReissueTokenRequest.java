@@ -1,4 +1,8 @@
 package com.i6.honterview.dto.request;
 
-public record ReissueTokenRequest(String refreshToken) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ReissueTokenRequest(
+	@NotBlank(message = "리프레시 토큰은 필수 항목입니다.") String refreshToken
+) {
 }
