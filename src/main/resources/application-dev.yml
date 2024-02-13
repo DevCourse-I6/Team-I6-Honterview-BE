@@ -34,6 +34,12 @@ spring:
             scope:
               - account_email
               - profile_nickname
+          google:
+            client-id: google_client_id
+            client-secret: google_client_secret
+            scope:
+              - email
+              - profile
 jwt:
   secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPuQ
   access-expiry-milliseconds: 120000 # 5min

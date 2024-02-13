@@ -92,7 +92,9 @@ public class WebSecurityConfig {
 				.requestMatchers(
 					antMatcher("/login"),
 					antMatcher("/login/oauth2/code/kakao"),
-					antMatcher("/oauth2/authorization/kakao")
+					antMatcher("/oauth2/authorization/kakao"),
+					antMatcher("/oauth2/authorization/google"),
+					antMatcher("/login/oauth2/code/google")
 				))
 			.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
