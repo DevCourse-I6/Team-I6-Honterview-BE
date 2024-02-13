@@ -1,5 +1,7 @@
 package com.i6.honterview.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,10 +28,11 @@ public class QuestionService {
 	private final QuestionRepository questionRepository;
 
 	@Transactional(readOnly = true)
-	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query) {
-		// TODO : 좋아요 순 정렬, 카테고리 목록별 검색 추가
+	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query, List<String> categoryNames,
+		String orderType) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		Page<Question> questions = questionQueryDslRepository.findQuestionsByKeywordWithPage(pageable, query);
+		Page<Question> questions = questionQueryDslRepository.
+			findQuestionsByKeywordAndCategoryNamesWithPage(pageable, query, categoryNames, orderType);
 		return PageResponse.of(questions, QuestionResponse::from);
 	}
 
