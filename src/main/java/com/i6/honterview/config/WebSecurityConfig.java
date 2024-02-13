@@ -15,7 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.i6.honterview.security.jwt.JwtAccessDeniedHandler;
@@ -118,7 +118,7 @@ public class WebSecurityConfig {
 				.anyRequest()
 				.authenticated()
 			)
-			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
 				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
 				exception.accessDeniedHandler(jwtAccessDeniedHandler);
