@@ -28,7 +28,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 		// 공급자(Google, Naver, ...) ID
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-		// nameAttributeKey (식별자)
+		// nameAttributeKey 식별자(google-sub, kakao-id, ...)
 		String userNameAttributeName = userRequest.getClientRegistration()
 			.getProviderDetails()
 			.getUserInfoEndpoint()

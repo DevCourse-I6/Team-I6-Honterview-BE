@@ -30,6 +30,7 @@ public class OAuthAttributes {
 		return switch (provider) {
 			case KAKAO -> ofKakao(nameAttributeName, attributes);
 			case GOOGLE -> ofGoogle(nameAttributeName, attributes);
+			case NAVER -> ofNaver(nameAttributeName, attributes);
 			default -> throw new IllegalArgumentException("지원되지 않는 프로바이더 타입: " + provider);
 		};
 	}
@@ -60,13 +61,26 @@ public class OAuthAttributes {
 			.build();
 	}
 
+	private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
+		Map<String, Object> response = (Map<String, Object>)attributes.get("response");
+		String nickname = (String) response.get("name"); // 'name' 대신 'nickname' 사용
+		return OAuthAttributes.builder()
+			.name(nickname)
+			.email((String) response.get("email"))
+			.attributes(attributes)
+			.provider(Provider.NAVER)
+			.providerId(String.valueOf(response.get("id")))
+			.attributeKey(userNameAttributeName)
+			.build();
+	}
+
 	public Map<String, Object> convertToMap() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", attributeKey);
 		map.put("nickname", name);
 		map.put("email", email);
 		map.put("provider", provider);
-		map.put("sub", providerId);
+		map.put(attributeKey, providerId);
 		return map;
 	}
 }
