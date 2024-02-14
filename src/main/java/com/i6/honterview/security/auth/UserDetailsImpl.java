@@ -16,14 +16,12 @@ import lombok.Getter;
 @Getter
 public class UserDetailsImpl implements UserDetails {
 	private Long id;
-	private String email;
 	private Provider provider;
 	private Collection<? extends GrantedAuthority> authorities;
 
 	@Builder
-	public UserDetailsImpl(Long id, String email, Collection<? extends GrantedAuthority> authorities, Provider provider) {
+	public UserDetailsImpl(Long id, Collection<? extends GrantedAuthority> authorities, Provider provider) {
 		this.id = id;
-		this.email = email;
 		this.authorities = authorities;
 		this.provider = provider;
 	}
@@ -34,7 +32,6 @@ public class UserDetailsImpl implements UserDetails {
 			: null;
 		return new UserDetailsImpl(
 			member.getId(),
-			member.getEmail(),
 			authorities,
 			member.getProvider()
 		);
@@ -52,7 +49,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return email;
+		return id.toString();
 	}
 
 	@Override
