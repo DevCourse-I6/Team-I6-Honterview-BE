@@ -13,8 +13,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.i6.honterview.domain.QQuestion;
 import com.i6.honterview.domain.Question;
+import com.i6.honterview.exception.CustomException;
+import com.i6.honterview.exception.ErrorCode;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class QuestionQueryDslReposiotoryImpl implements QuestionQueryDslRepository {
+public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepository {
 
 	private final JPAQueryFactory queryFactory;
 
@@ -77,9 +78,10 @@ public class QuestionQueryDslReposiotoryImpl implements QuestionQueryDslReposito
 	private OrderSpecifier<?> getOrderSpecifier(String orderType) {
 		if ("hearts".equals(orderType)) {
 			return question.heartsCount.desc();
-		} else {
-			return QQuestion.question.id.desc();
+		} else if ("recent".equals(orderType)) {
+			return question.id.desc();
 		}
+		throw new CustomException(ErrorCode.ORDER_TYPE_NOT_FOUND);
 	}
 
 	private JPAQuery<Long> fetchQuestionCount(BooleanExpression condition) {
