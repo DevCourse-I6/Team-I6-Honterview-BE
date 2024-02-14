@@ -21,6 +21,7 @@ import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.util.HttpResponseUtil;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -65,15 +66,21 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken));
 
-		// TODO: cookie로 토큰 전달
-		// Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-		// refreshTokenCookie.setSecure(true);
-		// refreshTokenCookie.setHttpOnly(true);
-		// refreshTokenCookie.setPath("/");
-		// response.addCookie(refreshTokenCookie);
+		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+		accessTokenCookie.setSecure(true);
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setPath("/");
+		response.addCookie(accessTokenCookie);
 
-		body.put("accessToken", accessToken);
-		body.put("refreshToken", refreshToken);
+		// TODO: cookie로 토큰 전달
+		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+		refreshTokenCookie.setSecure(true);
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setPath("/");
+		response.addCookie(refreshTokenCookie);
+
+		// body.put("accessToken", accessToken);
+		// body.put("refreshToken", refreshToken);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }
