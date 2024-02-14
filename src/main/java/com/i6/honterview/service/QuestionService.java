@@ -1,5 +1,7 @@
 package com.i6.honterview.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -7,12 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.i6.honterview.domain.Question;
-import com.i6.honterview.dto.PageResponse;
-import com.i6.honterview.dto.QuestionDetailResponse;
-import com.i6.honterview.dto.QuestionResponse;
+import com.i6.honterview.dto.response.PageResponse;
+import com.i6.honterview.dto.response.QuestionDetailResponse;
+import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
-import com.i6.honterview.repository.QuestionQueryDslRepository;
 import com.i6.honterview.repository.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,14 +23,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionService {
 
-	private final QuestionQueryDslRepository questionQueryDslRepository;
 	private final QuestionRepository questionRepository;
 
 	@Transactional(readOnly = true)
-	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query) {
-		// TODO : 좋아요 순 정렬, 카테고리 목록별 검색 추가
+	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query, List<String> categoryNames,
+		String orderType) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		Page<Question> questions = questionQueryDslRepository.findQuestionsByKeywordWithPage(pageable, query);
+		Page<Question> questions = questionRepository.
+			findQuestionsByKeywordAndCategoryNamesWithPage(pageable, query, categoryNames, orderType);
 		return PageResponse.of(questions, QuestionResponse::from);
 	}
 

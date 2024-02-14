@@ -77,7 +77,7 @@ public class WebSecurityConfig {
 
 			// H2-CONSOLE
 			antMatcher("/h2-console/**")
-			);
+		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
 	}
 

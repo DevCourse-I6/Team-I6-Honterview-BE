@@ -1,4 +1,4 @@
-package com.i6.honterview.dto;
+package com.i6.honterview.dto.response;
 
 import java.util.List;
 import java.util.function.Function;
