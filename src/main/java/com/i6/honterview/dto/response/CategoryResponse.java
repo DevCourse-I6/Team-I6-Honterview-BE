@@ -1,4 +1,4 @@
-package com.i6.honterview.dto;
+package com.i6.honterview.dto.response;
 
 import com.i6.honterview.domain.Category;
 

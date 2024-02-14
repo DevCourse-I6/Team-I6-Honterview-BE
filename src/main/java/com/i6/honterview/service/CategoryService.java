@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.i6.honterview.domain.Category;
-import com.i6.honterview.dto.CategoryResponse;
+import com.i6.honterview.dto.response.CategoryResponse;
 import com.i6.honterview.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;

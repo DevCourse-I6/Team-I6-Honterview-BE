@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.i6.honterview.domain.Question;
-import com.i6.honterview.dto.PageResponse;
-import com.i6.honterview.dto.QuestionDetailResponse;
-import com.i6.honterview.dto.QuestionResponse;
+import com.i6.honterview.dto.response.PageResponse;
+import com.i6.honterview.dto.response.QuestionDetailResponse;
+import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.QuestionQueryDslRepository;

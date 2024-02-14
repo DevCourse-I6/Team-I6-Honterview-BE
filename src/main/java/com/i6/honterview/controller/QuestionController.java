@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.i6.honterview.dto.PageResponse;
-import com.i6.honterview.dto.QuestionDetailResponse;
-import com.i6.honterview.dto.QuestionResponse;
+import com.i6.honterview.dto.response.PageResponse;
+import com.i6.honterview.dto.response.QuestionDetailResponse;
+import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.service.QuestionService;
 
