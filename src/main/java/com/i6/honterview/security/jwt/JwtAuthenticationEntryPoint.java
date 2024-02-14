@@ -27,15 +27,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		AuthenticationException authException) throws IOException, ServletException {
 		if (authException instanceof CredentialsExpiredException) {
 			// 토큰이 만료된 경우
-			log.warn("Token has expired");
+			log.warn("Token has expired : " + authException.getMessage());
 			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "토큰의 유효기간이 만료되었습니다.");
 		} else if (authException instanceof BadCredentialsException) {
 			// 토큰이 없거나 인증에 실패한 경우
-			log.warn("Unauthorized");
+			log.warn("Unauthorized : " + authException.getMessage());
 			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
 		} else {
 			// 다른 인증 오류의 경우
-			log.warn("Unauthorized");
+			log.warn("Unauthorized : " + authException.getMessage());
 			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "인증 오류가 발생했습니다");
 		}
 	}

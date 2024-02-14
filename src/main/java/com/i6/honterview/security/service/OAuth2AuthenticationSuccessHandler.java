@@ -47,7 +47,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Map<String, Object> body = new HashMap<>();
 		body.put(CHECKING_EXIST_KEY, true);
 
-		Member member = memberRepository.findByEmail(email)
+		Member member = memberRepository.findByEmailAndProvider(email, provider)
 			.orElseGet(() -> {
 				body.put(CHECKING_EXIST_KEY, false);
 				Member newMember = Member.builder()
@@ -63,7 +63,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken));
 
 		// TODO: cookie로 토큰 전달
 		// Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
