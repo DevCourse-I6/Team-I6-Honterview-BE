@@ -3,7 +3,7 @@ package com.i6.honterview.domain.enums;
 import java.util.Arrays;
 
 public enum Provider {
-	KAKAO, NAVER, GITHUB;
+	KAKAO, NAVER, GITHUB, GOOGLE;
 
 	public static Provider getProviderFromString(String input) {
 		return Arrays.stream(Provider.values())

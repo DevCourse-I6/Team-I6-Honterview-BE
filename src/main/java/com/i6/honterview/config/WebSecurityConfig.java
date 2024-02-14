@@ -91,8 +91,8 @@ public class WebSecurityConfig {
 			.securityMatchers(matchers -> matchers
 				.requestMatchers(
 					antMatcher("/login"),
-					antMatcher("/login/oauth2/code/kakao"),
-					antMatcher("/oauth2/authorization/kakao")
+					antMatcher("/login/oauth2/code/**"),
+					antMatcher("/oauth2/authorization/**")
 				))
 			.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
