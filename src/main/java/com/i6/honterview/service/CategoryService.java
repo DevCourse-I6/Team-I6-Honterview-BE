@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 
+	@Transactional(readOnly = true)
 	public List<CategoryResponse> getCategories() {
 		List<Category> categories = categoryRepository.findAll();
 		return categories.stream().map(CategoryResponse::from).toList();
