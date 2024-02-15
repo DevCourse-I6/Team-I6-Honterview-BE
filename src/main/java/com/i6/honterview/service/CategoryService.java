@@ -28,7 +28,7 @@ public class CategoryService {
 	}
 
 	public Long createCategory(CategoryCreateRequest request) {
-		categoryRepository.findByName(request.categoryName())
+		categoryRepository.findByCategoryName(request.categoryName())
 			.ifPresent(c -> {
 				throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATED);
 			});
@@ -41,7 +41,7 @@ public class CategoryService {
 		Category category = categoryRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
-		categoryRepository.findByName(request.categoryName())
+		categoryRepository.findByCategoryName(request.categoryName())
 			.filter(c -> !c.getId().equals(id))
 			.ifPresent(c -> {
 				throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATED);
