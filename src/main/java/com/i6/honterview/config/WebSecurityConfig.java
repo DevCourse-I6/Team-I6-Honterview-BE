@@ -74,6 +74,7 @@ public class WebSecurityConfig {
 			antMatcher("/swagger-resources/**"),
 			antMatcher("/v3/api-docs/**"),
 			antMatcher("/webjars/**"),
+			antMatcher("/favicon.ico"),
 
 			// H2-CONSOLE
 			antMatcher("/h2-console/**")

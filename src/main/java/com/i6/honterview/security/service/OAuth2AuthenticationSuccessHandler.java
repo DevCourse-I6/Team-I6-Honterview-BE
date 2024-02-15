@@ -21,6 +21,7 @@ import com.i6.honterview.security.jwt.JwtTokenProvider;
 import com.i6.honterview.util.HttpResponseUtil;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Map<String, Object> body = new HashMap<>();
 		body.put(CHECKING_EXIST_KEY, true);
 
-		Member member = memberRepository.findByEmail(email)
+		Member member = memberRepository.findByEmailAndProvider(email, provider)
 			.orElseGet(() -> {
 				body.put(CHECKING_EXIST_KEY, false);
 				Member newMember = Member.builder()
@@ -63,17 +64,23 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken));
+
+		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+		accessTokenCookie.setSecure(true);
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setPath("/");
+		response.addCookie(accessTokenCookie);
 
 		// TODO: cookie로 토큰 전달
-		// Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-		// refreshTokenCookie.setSecure(true);
-		// refreshTokenCookie.setHttpOnly(true);
-		// refreshTokenCookie.setPath("/");
-		// response.addCookie(refreshTokenCookie);
+		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+		refreshTokenCookie.setSecure(true);
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setPath("/");
+		response.addCookie(refreshTokenCookie);
 
-		body.put("accessToken", accessToken);
-		body.put("refreshToken", refreshToken);
+		// body.put("accessToken", accessToken);
+		// body.put("refreshToken", refreshToken);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }

@@ -53,7 +53,6 @@ public class JwtTokenProvider {
 				.collect(Collectors.joining(","));
 		}
 		return Jwts.builder()
-			.claim("id", userDetails.getId())
 			.issuedAt(now)
 			.expiration(new Date(System.currentTimeMillis() + expiryMilliseconds))
 			.subject(userDetails.getUsername())
@@ -75,8 +74,7 @@ public class JwtTokenProvider {
 		}
 
 		UserDetailsImpl principal = UserDetailsImpl.builder()
-			.id(claims.get("id", Long.class))
-			.email(claims.getSubject())
+			.id(Long.parseLong(claims.getSubject()))
 			.authorities(authorities)
 			.build();
 		return new UsernamePasswordAuthenticationToken(principal, accessToken, authorities);
@@ -95,6 +93,11 @@ public class JwtTokenProvider {
 			.verifyWith(getSignInKey())
 			.build()
 			.parse(token);
+	}
+
+	public Long getMemberId(String token) {
+		return Long.parseLong(verifyAndExtractClaims(token)
+			.getSubject());
 	}
 
 	private SecretKey getSignInKey() {

@@ -29,7 +29,8 @@ public class AuthService {
 		RefreshToken oldRefreshToken = refreshTokenRepository.findById(request.refreshToken())
 			.orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_EXPIRED));
 
-		Member member = memberRepository.findByEmail(oldRefreshToken.getEmail())
+		Long id = jwtTokenProvider.getMemberId(request.refreshToken());
+		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
@@ -37,7 +38,7 @@ public class AuthService {
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
 		refreshTokenRepository.delete(oldRefreshToken);
-		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken, userDetails.getEmail()));
+		refreshTokenRepository.save(new RefreshToken(refreshToken, accessToken));
 		return new TokenResponse(accessToken, refreshToken);
 	}
 }
