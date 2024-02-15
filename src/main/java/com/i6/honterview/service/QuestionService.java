@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionService {
 
+	private static final int CATEGORY_MAX_COUNT = 3;
+
 	private final QuestionRepository questionRepository;
 	private final CategoryRepository categoryRepository;
 
@@ -48,6 +50,8 @@ public class QuestionService {
 	}
 
 	public Long createQuestion(QuestionCreateRequest request) {
+		validateCategoryIds(request.categoryIds());
+
 		List<Category> categories = findAndValidateCategories(request.categoryIds());
 		Question question = questionRepository.save(request.toEntity(categories));
 		return question.getId();
@@ -59,6 +63,12 @@ public class QuestionService {
 
 		List<Category> categories = findAndValidateCategories(request.categoryIds());
 		question.changeContentAndCategories(request.content(), categories);
+	}
+
+	private void validateCategoryIds(List<Long> categoryIds) {
+		int categoryIdsSize = categoryIds.size();
+		if (categoryIdsSize == 0 || categoryIdsSize > CATEGORY_MAX_COUNT)
+			throw new CustomException(ErrorCode.INVALID_CATEGORY_COUNT);
 	}
 
 	private List<Category> findAndValidateCategories(List<Long> categoryIds) {

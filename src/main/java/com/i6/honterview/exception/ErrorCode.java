@@ -13,6 +13,7 @@ public enum ErrorCode {
 
 	// category
 	CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY_NOT_FOUND", "존재하지 않는 카테고리입니다."),
+	INVALID_CATEGORY_COUNT(HttpStatus.BAD_REQUEST, "INVALID_CATEGORY_COUNT", "카테고리 갯수는 1개 이상 3개 이하여야 합니다."),
 
 	// question
 	QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION_NOT_FOUND", "존재하지 않는 질문입니다."),
