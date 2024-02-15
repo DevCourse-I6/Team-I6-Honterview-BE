@@ -44,18 +44,17 @@ public class Question extends BaseEntity {
 	public Question(String content, Long parentId, List<Category> categories) {
 		this.content = content;
 		this.parentId = parentId;
-		for (Category category : categories) {
-			this.questionCategories.add(new QuestionCategory(this, category));
-		}
+		this.questionCategories = categories.stream()
+			.map(category -> new QuestionCategory(this, category))
+			.toList();
 	}
 
 	public void changeContentAndCategories(String content, List<Category> categories) {
 		this.content = content;
 
 		this.questionCategories.clear();
-		for (Category category : categories) {
-			QuestionCategory questionCategory = new QuestionCategory(this, category);
-			this.questionCategories.add(questionCategory);
-		}
+		this.questionCategories.addAll(categories.stream()
+			.map(category -> new QuestionCategory(this, category))
+			.toList());
 	}
 }
