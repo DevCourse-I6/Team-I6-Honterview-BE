@@ -28,6 +28,11 @@ public class CategoryService {
 	}
 
 	public Long createCategory(CategoryCreateRequest request) {
+		categoryRepository.findByName(request.categoryName())
+			.ifPresent(c -> {
+				throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATED);
+			});
+
 		Category category = categoryRepository.save(request.toEntity());
 		return category.getId();
 	}
@@ -35,6 +40,12 @@ public class CategoryService {
 	public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request) {
 		Category category = categoryRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
+		categoryRepository.findByName(request.categoryName())
+			.filter(c -> !c.getId().equals(id))
+			.ifPresent(c -> {
+				throw new CustomException(ErrorCode.CATEGORY_NAME_DUPLICATED);
+			});
 
 		category.changeCategoryName(request.categoryName());
 		category = categoryRepository.save(category);
