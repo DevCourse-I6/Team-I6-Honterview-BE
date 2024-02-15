@@ -3,6 +3,7 @@ package com.i6.honterview.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,12 +33,29 @@ public class Question extends BaseEntity {
 	private Long parentId;
 
 	@Column(name = "hearts_count", nullable = false)
-	private Long heartsCount;
+	private Long heartsCount = 0L;
 
-	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<QuestionCategory> questionCategories = new ArrayList<>();
 
 	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY)
 	private List<QuestionHeart> questionHearts = new ArrayList<>();
 
+	public Question(String content, Long parentId, List<Category> categories) {
+		this.content = content;
+		this.parentId = parentId;
+		for (Category category : categories) {
+			this.questionCategories.add(new QuestionCategory(this, category));
+		}
+	}
+
+	public void changeContentAndCategories(String content, List<Category> categories) {
+		this.content = content;
+
+		this.questionCategories.clear();
+		for (Category category : categories) {
+			QuestionCategory questionCategory = new QuestionCategory(this, category);
+			this.questionCategories.add(questionCategory);
+		}
+	}
 }

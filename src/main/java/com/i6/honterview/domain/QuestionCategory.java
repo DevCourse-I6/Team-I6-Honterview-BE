@@ -32,4 +32,9 @@ public class QuestionCategory {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Category category;
+
+	public QuestionCategory(Question question, Category category) {
+		this.question = question;
+		this.category = category;
+	}
 }
