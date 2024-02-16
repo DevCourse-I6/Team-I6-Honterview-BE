@@ -65,7 +65,7 @@ public class QuestionController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/{id}/heart")
+	@PostMapping("/{id}/hearts")
 	public ResponseEntity<ApiResponse> clickQuestionHeart(@PathVariable Long id) {
 		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, 1L);
 		return ResponseEntity.ok(ApiResponse.ok(response));
