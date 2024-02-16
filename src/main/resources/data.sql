@@ -33,3 +33,7 @@ INSERT INTO question_heart (question_id, member_id)
 VALUES (2, 1);
 INSERT INTO question_heart (question_id, member_id)
 VALUES (2, 2);
+
+-- Member 더미 데이터
+INSERT INTO member (email, nickname, provider, role)
+VALUES('test@gmail.com', 'test', 'KAKAO', 'ROLE_USER');
