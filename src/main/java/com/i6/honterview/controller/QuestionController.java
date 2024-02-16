@@ -43,8 +43,12 @@ public class QuestionController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse> getQuestionById(@PathVariable Long id) {
-		QuestionDetailResponse response = questionService.getQuestionById(id);
+	public ResponseEntity<ApiResponse> getQuestionById(
+		@PathVariable Long id,
+		@RequestParam(value = "page", defaultValue = "1") int page,
+		@RequestParam(value = "size", defaultValue = "5") int size
+	) {
+		QuestionDetailResponse response = questionService.getQuestionById(id, page, size);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
