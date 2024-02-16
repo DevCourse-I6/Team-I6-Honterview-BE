@@ -10,6 +10,4 @@ import com.i6.honterview.domain.QuestionHeart;
 public interface QuestionHeartRepository extends JpaRepository<QuestionHeart, Long> {
 
 	Optional<QuestionHeart> findByQuestionAndMemberId(Question question, Long memberId);
-
-	//Optional<QuestionHeart> findByQuestionWithMemberId(Question question, Long memberId);
 }
