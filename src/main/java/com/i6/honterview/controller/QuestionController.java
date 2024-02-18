@@ -71,7 +71,7 @@ public class QuestionController {
 
 	@PostMapping("/{id}/hearts")
 	public ResponseEntity<ApiResponse> clickQuestionHeart(@PathVariable Long id) {
-		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, 1L);
+		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, 1L); //TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }
