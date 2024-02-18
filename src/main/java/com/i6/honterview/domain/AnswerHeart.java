@@ -1,5 +1,7 @@
 package com.i6.honterview.domain;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -32,4 +34,17 @@ public class AnswerHeart extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
+
+	public AnswerHeart(Answer answer, Member member) {
+		this.answer = answer;
+		this.member = member;
+	}
+
+	public boolean hasHeartedByMember(Long memberId) {
+		return Objects.equals(this.member.getId(), memberId);
+	}
+
+	public void setAnswer(Answer answer) {
+		this.answer = answer;
+	}
 }

@@ -1,5 +1,7 @@
 package com.i6.honterview.domain;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -39,7 +41,7 @@ public class QuestionHeart extends BaseEntity {
 	}
 
 	public boolean hasHeartedByMember(Long memberId) {
-		return this.member.getId().equals(memberId);
+		return Objects.equals(this.member.getId(), memberId);
 	}
 
 	public void setQuestion(Question question) {
