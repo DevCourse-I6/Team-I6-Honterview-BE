@@ -38,6 +38,10 @@ public class QuestionHeart extends BaseEntity {
 		this.member = member;
 	}
 
+	public boolean hasHeartedByMember(Long memberId) {
+		return this.member.getId().equals(memberId);
+	}
+
 	public void setQuestion(Question question) {
 		this.question = question;
 	}

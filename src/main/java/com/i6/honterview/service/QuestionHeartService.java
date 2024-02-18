@@ -29,7 +29,8 @@ public class QuestionHeartService {
 	public QuestionHeartClickResponse clickQuestionHeart(Long questionId, Long memberId) {
 		Question question = questionRepository.findByIdWithHearts(questionId)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
-		Optional<QuestionHeart> questionHeartOptional = questionHeartRepository.findByQuestionAndMemberId(question, memberId);
+
+		Optional<QuestionHeart> questionHeartOptional = question.findQuestionHeartByMemberId(memberId);
 		questionHeartOptional.ifPresentOrElse(
 			questionHeart -> {
 				question.removeHeart(questionHeart);

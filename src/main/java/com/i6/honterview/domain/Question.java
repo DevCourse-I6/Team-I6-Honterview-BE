@@ -3,6 +3,7 @@ package com.i6.honterview.domain;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -59,6 +60,11 @@ public class Question extends BaseEntity {
 			.toList());
 	}
 
+	public Optional<QuestionHeart> findQuestionHeartByMemberId(Long memberId) {
+		return questionHearts.stream()
+			.filter(heart -> heart.hasHeartedByMember(memberId))
+			.findFirst();
+	}
 	public void addHeart(QuestionHeart heart) {
 		questionHearts.add(heart);
 		heart.setQuestion(this);
@@ -69,5 +75,4 @@ public class Question extends BaseEntity {
 		questionHearts.remove(heart);
 		this.heartsCount--;
 	}
-
 }
