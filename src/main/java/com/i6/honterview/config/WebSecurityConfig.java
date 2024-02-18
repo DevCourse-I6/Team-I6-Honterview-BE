@@ -116,7 +116,7 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
-				.authenticated()
+				.permitAll()	// TODO : Authenticated()로 변경
 			)
 			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {

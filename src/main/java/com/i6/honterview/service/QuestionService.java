@@ -8,15 +8,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.domain.Answer;
 import com.i6.honterview.domain.Category;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.dto.request.QuestionCreateRequest;
 import com.i6.honterview.dto.request.QuestionUpdateRequest;
+import com.i6.honterview.dto.response.AnswerResponse;
 import com.i6.honterview.dto.response.PageResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
 import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
+import com.i6.honterview.repository.AnswerRepository;
 import com.i6.honterview.repository.CategoryRepository;
 import com.i6.honterview.repository.QuestionRepository;
 
@@ -31,6 +34,7 @@ public class QuestionService {
 
 	private final QuestionRepository questionRepository;
 	private final CategoryRepository categoryRepository;
+	private final AnswerRepository answerRepository;
 
 	@Transactional(readOnly = true)
 	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query, List<String> categoryNames,
@@ -42,11 +46,14 @@ public class QuestionService {
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionDetailResponse getQuestionById(Long id) {
-		// TODO : 답변 목록 추가
+	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
 		Question question = questionRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
-		return QuestionDetailResponse.from(question);
+
+		Pageable pageable = PageRequest.of(page - 1, size);
+		Page<Answer> answers = answerRepository.findByQuestionIdWithMember(id, pageable);
+		PageResponse<AnswerResponse> answerResponse = PageResponse.of(answers, AnswerResponse::from);
+		return QuestionDetailResponse.from(question, answerResponse);
 	}
 
 	public Long createQuestion(QuestionCreateRequest request) {
