@@ -2,7 +2,16 @@ package com.i6.honterview.dto.response;
 
 import com.i6.honterview.domain.Question;
 
-public record QuestionDetailResponse(Long id, String content, PageResponse<AnswerResponse> answers) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "질문 상세 응답")
+public record QuestionDetailResponse(
+	@Schema(description = "질문 id", example = "123")
+	Long id,
+	@Schema(description = "질문 내용", example = "JVM의 역할에 대해 설명해주세요.")
+	String content,
+	@Schema(description = "답변 목록")
+	PageResponse<AnswerResponse> answers) {
 	public static QuestionDetailResponse from(Question question, PageResponse<AnswerResponse> answers) {
 		return new QuestionDetailResponse(question.getId(), question.getContent(), answers);
 	}

@@ -21,6 +21,7 @@ import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,7 @@ public class CategoryController {
 	@Operation(summary = "카테고리 수정")
 	@PatchMapping("/{id}")
 	public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(
-		@PathVariable Long id,
+		@Parameter(description = "카테고리 id", example = "123") @PathVariable Long id,
 		@Valid @RequestBody CategoryUpdateRequest request) {
 		CategoryResponse response = categoryService.updateCategory(id, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
@@ -62,7 +63,8 @@ public class CategoryController {
 
 	@Operation(summary = "카테고리 삭제")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+	public ResponseEntity<Void> deleteCategory(
+		@Parameter(description = "카테고리 id", example = "123") @PathVariable Long id) {
 		categoryService.deleteCategory(id);
 		return ResponseEntity.noContent().build();
 	}
