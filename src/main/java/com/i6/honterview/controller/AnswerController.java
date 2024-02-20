@@ -13,6 +13,7 @@ import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.AnswerHeartService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -26,8 +27,9 @@ public class AnswerController {
 
 	@Operation(summary = "답변 좋아요/답변 좋아요 취소")
 	@PostMapping("/{id}/hearts")
-	public ResponseEntity<ApiResponse<AnswerHeartClickResponse>> clickQuestionHeart(@PathVariable Long id, @AuthenticationPrincipal
-		UserDetailsImpl userDetails) {
+	public ResponseEntity<ApiResponse<AnswerHeartClickResponse>> clickQuestionHeart(
+		@Parameter(description = "답변 id", example = "123")@PathVariable Long id,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		System.out.println(userDetails.getId());
 		AnswerHeartClickResponse response = answerHeartService.clickAnswerHeart(id, 1L);    //TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
