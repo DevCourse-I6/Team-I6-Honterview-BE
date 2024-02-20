@@ -27,7 +27,7 @@ public class AnswerController {
 
 	@Operation(summary = "답변 좋아요/답변 좋아요 취소")
 	@PostMapping("/{id}/hearts")
-	public ResponseEntity<ApiResponse<AnswerHeartClickResponse>> clickQuestionHeart(
+	public ResponseEntity<ApiResponse<AnswerHeartClickResponse>> clickAnswerHeart(
 		@Parameter(description = "답변 id", example = "123")@PathVariable Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		System.out.println(userDetails.getId());
