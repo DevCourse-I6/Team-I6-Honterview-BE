@@ -7,12 +7,12 @@ INSERT INTO category (category_name, created_at, updated_at)
 VALUES ('Backend', NOW(), NOW());
 
 -- Question 더미 데이터
-INSERT INTO question (content, hearts_count, created_at, updated_at)
-VALUES ('JVM의 역할에 대해 설명해주세요.', 1, NOW(), NOW());
-INSERT INTO question (content, hearts_count, created_at, updated_at)
-VALUES ('의존성 주입에 대해 설명해주세요.', 2, NOW(), NOW());
-INSERT INTO question (content, hearts_count, created_at, updated_at)
-VALUES ('테스트 코드에 대해서 어떻게 생각하고, 작성하나요?', 0, NOW(), NOW());
+INSERT INTO question (content, hearts_count, created_at, updated_at, created_by)
+VALUES ('JVM의 역할에 대해 설명해주세요.', 1, NOW(), NOW(), 'member_1');
+INSERT INTO question (content, hearts_count, created_at, updated_at, created_by)
+VALUES ('의존성 주입에 대해 설명해주세요.', 2, NOW(), NOW(), 'member_1');
+INSERT INTO question (content, hearts_count, created_at, updated_at, created_by)
+VALUES ('테스트 코드에 대해서 어떻게 생각하고, 작성하나요?', 0, NOW(), NOW(), 'member_1');
 
 -- QuestionCategory 더미 데이터
 INSERT INTO question_category (question_id, category_id)

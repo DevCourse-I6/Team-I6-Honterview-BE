@@ -44,6 +44,9 @@ public class Question extends BaseEntity {
 	@OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<QuestionHeart> questionHearts = new HashSet<>();
 
+	@Column(name = "created_by", nullable = false)
+	private String createdBy;
+
 	public Question(String content, Long parentId, List<Category> categories) {
 		this.content = content;
 		this.parentId = parentId;
