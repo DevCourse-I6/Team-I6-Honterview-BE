@@ -1,5 +1,6 @@
 package com.i6.honterview.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.i6.honterview.dto.request.QuestionCreateRequest;
 import com.i6.honterview.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.dto.response.PageResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
@@ -32,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/questions")
-public class QuestionController {
+public class QuestionController {// TODO: 회원 연동
 
 	private final QuestionService questionService;
 	private final QuestionHeartService questionHeartService;
@@ -69,6 +72,17 @@ public class QuestionController {
 	) {
 		QuestionDetailResponse response = questionService.getQuestionById(id, page, size);
 		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@Operation(summary = "질문 생성")
+	@PostMapping
+	public ResponseEntity<ApiResponse<Long>> createQuestion(@Valid @RequestBody QuestionCreateRequest request) {
+		Long id = questionService.createQuestion(request);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+			.path("/{id}")
+			.buildAndExpand(id)
+			.toUri();
+		return ResponseEntity.created(location).body(ApiResponse.created(id));
 	}
 
 	@Operation(summary = "질문 수정")

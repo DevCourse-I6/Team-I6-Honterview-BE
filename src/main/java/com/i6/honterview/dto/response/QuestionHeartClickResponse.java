@@ -2,6 +2,7 @@ package com.i6.honterview.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "질문 좋아요 응답")
 public record QuestionHeartClickResponse(
 
 	@Schema(description = "질문 좋아요 수", example = "123")
