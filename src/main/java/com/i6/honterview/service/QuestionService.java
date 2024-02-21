@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class QuestionService {
+public class QuestionService {// TODO: 멤버&관리자 연동
 
 	private static final int CATEGORY_MAX_COUNT = 3;
 
@@ -56,9 +56,8 @@ public class QuestionService {
 		return QuestionDetailResponse.from(question, answerResponse);
 	}
 
-	public Long createQuestion(QuestionCreateRequest request) {
+	public Long createQuestion(QuestionCreateRequest request) { // TODO: 질문 생성자 정보 저장
 		validateCategoryIds(request.categoryIds());
-
 		List<Category> categories = findAndValidateCategories(request.categoryIds());
 		Question question = questionRepository.save(request.toEntity(categories));
 		return question.getId();
