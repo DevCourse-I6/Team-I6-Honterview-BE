@@ -57,8 +57,10 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		return QuestionDetailResponse.from(question, answerResponse);
 	}
 
-	public List<Question> getRandomQuestionsByCategories(Question question) {
-		// 현재 질문에 속한 모든 카테고리 ID 조회
+	public List<QuestionResponse> getRandomQuestionsByCategories(Long questionId) {
+		Question question = questionRepository.findById(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+
 		List<Long> categoryIds = question.getQuestionCategories().stream()
 			.map(qc -> qc.getCategory().getId())
 			.toList();
@@ -67,7 +69,9 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		List<Question> randomQuestions = questionRepository.findRandomQuestionsByCategoryIds(categoryIds,
 			question.getId());
 
-		return randomQuestions;
+		return randomQuestions.stream()
+			.map(QuestionResponse::from)
+			.toList();
 	}
 
 	public Long createQuestion(QuestionCreateRequest request) {
