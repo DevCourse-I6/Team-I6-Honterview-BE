@@ -92,4 +92,11 @@ public class QuestionService {
 		questionRepository.delete(question);
 		// TODO : 연관된 답변 삭제
 	}
+
+	public List<QuestionResponse> getQuestionsByCategoryNames(List<String> categoryNames) {
+		List<Question> questions = questionRepository.findQuestionsByCategoryNames(categoryNames);
+		return questions.stream()
+			.map(QuestionResponse::from)
+			.toList();
+	}
 }

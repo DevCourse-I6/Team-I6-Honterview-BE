@@ -10,4 +10,6 @@ import com.i6.honterview.domain.Question;
 public interface QuestionQueryDslRepository {
 	Page<Question> findQuestionsByKeywordAndCategoryNamesWithPage(Pageable pageable, String query,
 		List<String> categoryNames, String orderType);
+
+	List<Question> findQuestionsByCategoryNames(List<String> categoryNames);
 }
