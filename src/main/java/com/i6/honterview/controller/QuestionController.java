@@ -54,7 +54,7 @@ public class QuestionController {// TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
-	@Operation(summary = "카테고리 이름에 따른 질문 전체 조회")
+	@Operation(summary = "카테고리 이름에 의한 질문 전체 조회")
 	@GetMapping("/by-category")
 	public ResponseEntity<ApiResponse<List<QuestionResponse>>> getQuestionsByCategoryNames(
 		@Parameter(description = "조회할 카테고리 이름 목록", example = "프론트엔드") @RequestParam(value = "categories") List<String> categoryNames
