@@ -1,7 +1,7 @@
 package com.i6.honterview.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,7 +30,7 @@ public class Category extends BaseEntity {
 	private String categoryName;
 
 	@OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<QuestionCategory> questionCategories = new ArrayList<>();
+	private Set<QuestionCategory> questionCategories = new HashSet<>();
 
 	public Category(String categoryName) {
 		this.categoryName = categoryName;

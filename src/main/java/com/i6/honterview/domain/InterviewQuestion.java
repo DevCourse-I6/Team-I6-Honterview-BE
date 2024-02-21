@@ -32,4 +32,9 @@ public class InterviewQuestion {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "question_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Question question;
+
+	public InterviewQuestion(Interview interview, Question question) {
+		this.interview = interview;
+		this.question = question;
+	}
 }
