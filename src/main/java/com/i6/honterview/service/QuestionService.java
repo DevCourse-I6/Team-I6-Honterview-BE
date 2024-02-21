@@ -56,10 +56,12 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		return QuestionDetailResponse.from(question, answerResponse);
 	}
 
-	public Long createQuestion(QuestionCreateRequest request) { // TODO: 질문 생성자 정보 저장
+	public Long createQuestion(QuestionCreateRequest request) {
 		validateCategoryIds(request.categoryIds());
 		List<Category> categories = findAndValidateCategories(request.categoryIds());
-		Question question = questionRepository.save(request.toEntity(categories));
+
+		String creator = "MEMBER_1"; // TODO: role에 따른 질문 생성자 정보 저장
+		Question question = questionRepository.save(request.toEntity(categories, creator));
 		return question.getId();
 	}
 

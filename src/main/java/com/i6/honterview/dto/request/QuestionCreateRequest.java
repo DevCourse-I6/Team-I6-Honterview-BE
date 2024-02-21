@@ -21,7 +21,7 @@ public record QuestionCreateRequest(
 	@NotNull
 	@Size(min = 1, max = 3, message = "카테고리 목록은 1개 이상 3개 이하까지 등록 가능합니다.")
 	List<Long> categoryIds) {
-	public Question toEntity(List<Category> categories) {
-		return new Question(content, parentId, categories);
+	public Question toEntity(List<Category> categories, String createdBy) {
+		return new Question(content, parentId, categories, createdBy);
 	}
 }
