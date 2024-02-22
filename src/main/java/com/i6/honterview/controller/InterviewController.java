@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.dto.request.InterviewCreateRequest;
-import com.i6.honterview.dto.request.InterviewUpdateRequest;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.InterviewService;
@@ -46,12 +45,11 @@ public class InterviewController {
 		return ResponseEntity.created(location).body(ApiResponse.created(id));
 	}
 
-	@Operation(summary = "면접 연습 상태 수정")
+	@Operation(summary = "면접 상태 수정(면접 완료)")
 	@PatchMapping("{id}")
 	public ResponseEntity<Void> updateInterviewStatus(
-		@Parameter(description = "질문 id", example = "123") @PathVariable Long id,
-		@Valid @RequestBody InterviewUpdateRequest request) {
-		interviewService.updateInterviewStatus(id, request);
+		@Parameter(description = "질문 id", example = "123") @PathVariable Long id) {
+		interviewService.updateInterviewStatus(id);
 		return ResponseEntity.noContent().build();
 	}
 

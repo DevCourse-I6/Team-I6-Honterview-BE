@@ -4,7 +4,6 @@ import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.domain.enums.AnswerType;
-import com.i6.honterview.domain.enums.InterviewStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -31,7 +30,6 @@ public record InterviewCreateRequest(
 		return new Interview(
 			answerType,
 			questionCount,
-			InterviewStatus.BEFORE,
 			member,
 			question);
 	}
