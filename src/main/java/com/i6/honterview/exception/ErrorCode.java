@@ -23,9 +23,6 @@ public enum ErrorCode {
 	// answer
 	ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_NOT_FOUND", "존재하지 않는 답변입니다."),
 
-	// interview
-	INTERVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_NOT_FOUND", "면접 연습이 존재하지 않습니다."),
-
 	// member
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "존재하지 않는 회원입니다."),
 	REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EXPIRED", "다시 로그인 해주세요."),
