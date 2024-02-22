@@ -1,8 +1,7 @@
 package com.i6.honterview.domain.enums;
 
 public enum InterviewStatus {
-	BEFORE,
-	DURING,
+	IN_PROGRESS,
 	RESULT_CHECK,
 	COMPLETED
 }

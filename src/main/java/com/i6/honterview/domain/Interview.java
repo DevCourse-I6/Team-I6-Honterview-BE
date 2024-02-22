@@ -45,7 +45,7 @@ public class Interview extends BaseEntity {
 
 	@Column(name = "interview_status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private InterviewStatus status;
+	private InterviewStatus status = InterviewStatus.IN_PROGRESS;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -54,12 +54,15 @@ public class Interview extends BaseEntity {
 	@OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<InterviewQuestion> interviewQuestions = new ArrayList<>();
 
-	public Interview(AnswerType answerType, Integer questionCount, InterviewStatus status, Member member, Question question) {
+	public Interview(AnswerType answerType, Integer questionCount, Member member, Question question) {
 		this.answerType = answerType;
 		this.questionCount = questionCount;
-		this.status = status;
 		this.member = member;
 		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	}
+
+	public void changeStatus(InterviewStatus status) {
+		this.status = status;
 	}
 
 	public boolean isSameInterviewee(Long id) {

@@ -5,6 +5,7 @@ import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +34,7 @@ public class InterviewController {
 
 	@Operation(summary = "면접 연습 생성(면접 시작 전)")
 	@PostMapping
-	public ResponseEntity<ApiResponse> createInterview(
+	public ResponseEntity<ApiResponse<Long>> createInterview(
 		@Valid @RequestBody InterviewCreateRequest request,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		Long id = interviewService.createInterview(request, userDetails.getId());
@@ -42,6 +43,14 @@ public class InterviewController {
 			.buildAndExpand(id)
 			.toUri();
 		return ResponseEntity.created(location).body(ApiResponse.created(id));
+	}
+
+	@Operation(summary = "면접 상태 수정(면접 완료)")
+	@PatchMapping("{id}")
+	public ResponseEntity<Void> updateInterviewStatus(
+		@Parameter(description = "질문 id", example = "123") @PathVariable Long id) {
+		interviewService.updateInterviewStatus(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "면접 삭제")

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
+import com.i6.honterview.domain.enums.InterviewStatus;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -33,6 +34,14 @@ public class InterviewService {
 
 		Interview interview = interviewRepository.save(request.toEntity(member, question));
 		return interview.getId();
+	}
+
+	public void updateInterviewStatus(Long id) {
+		Interview interview = interviewRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
+			interview.changeStatus(InterviewStatus.RESULT_CHECK);
+		}
 	}
 
 	public void deleteInterview(Long id, Long memberId) {
