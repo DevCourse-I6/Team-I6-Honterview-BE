@@ -34,4 +34,18 @@ public class InterviewService {
 		Interview interview = interviewRepository.save(request.toEntity(member, question));
 		return interview.getId();
 	}
+
+	public void deleteInterview(Long id, Long memberId) {
+		Interview interview = interviewRepository.findWithQuestionsById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+
+		if (!interview.isSameInterviewee(memberId)) {
+			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
+		}
+
+		if (!interview.isDeletable()) {
+			throw new CustomException(ErrorCode.INTERVIEW_DELETE_FORBIDDEN);
+		}
+		interviewRepository.delete(interview);
+	}
 }

@@ -4,6 +4,8 @@ import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.InterviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +42,14 @@ public class InterviewController {
 			.buildAndExpand(id)
 			.toUri();
 		return ResponseEntity.created(location).body(ApiResponse.created(id));
+	}
+
+	@Operation(summary = "면접 삭제")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteInterview(
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		interviewService.deleteInterview(id, userDetails.getId());
+		return ResponseEntity.noContent().build();
 	}
 }
