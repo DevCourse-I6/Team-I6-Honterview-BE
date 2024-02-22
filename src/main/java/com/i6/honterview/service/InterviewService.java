@@ -7,6 +7,7 @@ import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
+import com.i6.honterview.dto.request.InterviewUpdateRequest;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.InterviewRepository;
@@ -33,5 +34,11 @@ public class InterviewService {
 
 		Interview interview = interviewRepository.save(request.toEntity(member, question));
 		return interview.getId();
+	}
+
+	public void updateInterviewStatus(Long id, InterviewUpdateRequest request) {
+		Interview interview = interviewRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		interview.changeStatus(request.status());
 	}
 }
