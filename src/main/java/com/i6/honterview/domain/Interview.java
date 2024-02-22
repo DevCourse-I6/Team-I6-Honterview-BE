@@ -2,6 +2,7 @@ package com.i6.honterview.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.i6.honterview.domain.enums.AnswerType;
 import com.i6.honterview.domain.enums.InterviewStatus;
@@ -64,5 +65,13 @@ public class Interview extends BaseEntity {
 
 	public void changeStatus(InterviewStatus status) {
 		this.status = status;
+	}
+
+	public boolean isSameInterviewee(Long id) {
+		return Objects.equals(this.member.getId(), id);
+	}
+
+	public boolean isDeletable() {
+		return this.status != InterviewStatus.COMPLETED;
 	}
 }
