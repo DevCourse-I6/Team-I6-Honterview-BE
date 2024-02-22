@@ -65,6 +65,15 @@ public class QuestionController {// TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
+	@Operation(summary = "같은 카테고리의 다른 질문 랜덤 조회")
+	@GetMapping("/{id}/random")
+	public ResponseEntity<ApiResponse<List<QuestionResponse>>> getRandomQuestionsByCategories(
+		@Parameter(description = "질문 id", example = "123") @PathVariable Long id
+	) {
+		List<QuestionResponse> response = questionService.getRandomQuestionsByCategories(id);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
 	@Operation(summary = "질문 생성")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Long>> createQuestion(@Valid @RequestBody QuestionCreateRequest request) {

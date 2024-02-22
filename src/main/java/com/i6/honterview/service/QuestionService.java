@@ -53,7 +53,25 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Answer> answers = answerRepository.findByQuestionIdWithMember(id, pageable);
 		PageResponse<AnswerResponse> answerResponse = PageResponse.of(answers, AnswerResponse::from);
+
 		return QuestionDetailResponse.from(question, answerResponse);
+	}
+
+	public List<QuestionResponse> getRandomQuestionsByCategories(Long questionId) {
+		Question question = questionRepository.findById(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+
+		List<Long> categoryIds = question.getQuestionCategories().stream()
+			.map(qc -> qc.getCategory().getId())
+			.toList();
+
+		// 조회된 카테고리에 속하는 랜덤 질문 3개 조회 (현재 질문 제외)
+		List<Question> randomQuestions = questionRepository.findRandomQuestionsByCategoryIds(categoryIds,
+			question.getId());
+
+		return randomQuestions.stream()
+			.map(QuestionResponse::from)
+			.toList();
 	}
 
 	public Long createQuestion(QuestionCreateRequest request) {
