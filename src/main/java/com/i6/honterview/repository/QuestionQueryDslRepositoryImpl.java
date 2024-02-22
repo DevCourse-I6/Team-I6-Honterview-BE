@@ -4,6 +4,7 @@ import static com.i6.honterview.domain.QCategory.*;
 import static com.i6.honterview.domain.QQuestion.*;
 import static com.i6.honterview.domain.QQuestionCategory.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -47,6 +48,19 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 		return PageableExecutionUtils.getPage(questions, pageable, countQuery::fetchOne);
 	}
 
+	@Override
+	public List<Question> findQuestionsByCategoryNames(List<String> categoryNames) {
+		BooleanExpression categoryCondition = createCategoryCondition(categoryNames);
+		if (categoryCondition == null) {
+			return new ArrayList<>();
+		}
+
+		return queryFactory
+			.selectFrom(question)
+			.where(categoryCondition)
+			.fetch();
+	}
+
 	private BooleanExpression createCategoryCondition(List<String> categoryNames) {
 		if (CollectionUtils.isEmpty(categoryNames)) {
 			return null;
@@ -56,7 +70,7 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 			.from(category)
 			.where(category.categoryName.in(categoryNames))
 			.fetch();
-		return categoryIds.isEmpty() ? null : questionCategory.category.id.in(categoryIds);
+		return categoryIds.isEmpty() ? null : question.questionCategories.any().category.id.in(categoryIds);
 	}
 
 	private BooleanExpression createSearchCondition(String query) {
