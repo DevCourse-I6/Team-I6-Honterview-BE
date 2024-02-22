@@ -20,6 +20,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
 
+	@ExceptionHandler(SecurityCustomException.class)
+	protected ResponseEntity<ErrorResponse> handleSecurityCustomException(SecurityCustomException ex) {
+		log.warn(">>>>> SecurityCustomException : {}", ex.getMessage());
+		SecurityErrorCode errorCode = ex.getErrorCode();
+		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
+
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
 		log.error(">>>>> Internal Server Error : {}", ex.getMessage());

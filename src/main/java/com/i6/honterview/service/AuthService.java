@@ -9,6 +9,8 @@ import com.i6.honterview.dto.request.ReissueTokenRequest;
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
+import com.i6.honterview.exception.SecurityCustomException;
+import com.i6.honterview.exception.SecurityErrorCode;
 import com.i6.honterview.repository.MemberRepository;
 import com.i6.honterview.repository.RefreshTokenRepository;
 import com.i6.honterview.security.auth.UserDetailsImpl;
@@ -27,7 +29,7 @@ public class AuthService {
 
 	public TokenResponse reissue(ReissueTokenRequest request) {
 		RefreshToken oldRefreshToken = refreshTokenRepository.findById(request.refreshToken())
-			.orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_EXPIRED));
+			.orElseThrow(() -> new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED));
 
 		Long id = jwtTokenProvider.getMemberId(request.refreshToken());
 		Member member = memberRepository.findById(id)
