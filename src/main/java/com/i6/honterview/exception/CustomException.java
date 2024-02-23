@@ -1,7 +1,9 @@
 package com.i6.honterview.exception;
 
-public class CustomException extends RuntimeException {
+import lombok.Getter;
 
+@Getter
+public class CustomException extends RuntimeException {
 	private final ErrorCode errorCode;
 
 	public CustomException(ErrorCode errorCode) {

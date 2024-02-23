@@ -1,5 +1,7 @@
 package com.i6.honterview.security.jwt;
 
+import static com.i6.honterview.exception.SecurityErrorCode.*;
+
 import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 		AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		log.warn("Unauthorized: ", accessDeniedException);
-		HttpResponseUtil.writeErrorResponse(response, HttpStatus.FORBIDDEN, "권한이 없습니다.");
+		log.warn("Access Denied: ", accessDeniedException);
+		HttpResponseUtil.writeErrorResponse(response, HttpStatus.FORBIDDEN, FORBIDDEN.getErrorResponse());
 	}
 }

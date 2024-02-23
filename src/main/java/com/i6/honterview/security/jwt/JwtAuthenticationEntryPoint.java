@@ -9,6 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.i6.honterview.exception.SecurityErrorCode;
+import com.i6.honterview.response.ErrorResponse;
 import com.i6.honterview.util.HttpResponseUtil;
 
 import jakarta.servlet.ServletException;
@@ -25,18 +27,20 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException, ServletException {
+		ErrorResponse errorResponse;
 		if (authException instanceof CredentialsExpiredException) {
 			// 토큰이 만료된 경우
 			log.warn("Token has expired : " + authException.getMessage());
-			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "토큰의 유효기간이 만료되었습니다.");
+			errorResponse = SecurityErrorCode.ACCESS_TOKEN_EXPIRED.getErrorResponse();
 		} else if (authException instanceof BadCredentialsException) {
 			// 토큰이 없거나 인증에 실패한 경우
-			log.warn("Unauthorized : " + authException.getMessage());
-			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+			log.warn("Token Unauthorized : " + authException.getMessage());
+			errorResponse = SecurityErrorCode.TOKEN_AUTHENTICATION_FAILED.getErrorResponse();
 		} else {
 			// 다른 인증 오류의 경우
 			log.warn("Unauthorized : " + authException.getMessage());
-			HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, "인증 오류가 발생했습니다");
+			errorResponse = SecurityErrorCode.UNAUTHORIZED.getErrorResponse();
 		}
+		HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, errorResponse);
 	}
 }
