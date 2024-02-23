@@ -2,7 +2,6 @@ package com.i6.honterview.domain;
 
 import java.time.LocalDateTime;
 
-import com.i6.honterview.domain.enums.Gender;
 import com.i6.honterview.domain.enums.Provider;
 import com.i6.honterview.domain.enums.Role;
 
@@ -34,13 +33,6 @@ public class Member extends BaseEntity {
 
 	@Column(name = "nickname")
 	private String nickname;
-
-	@Column(name = "birth_date")
-	private String birthDate;
-
-	@Column(name = "gender")
-	@Enumerated(EnumType.STRING)
-	private Gender gender;
 
 	@Column(name = "provider")
 	@Enumerated(EnumType.STRING)
