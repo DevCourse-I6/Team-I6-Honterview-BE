@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.i6.honterview.domain.enums.AnswerType;
 import com.i6.honterview.domain.enums.InterviewStatus;
+import com.i6.honterview.exception.CustomException;
+import com.i6.honterview.exception.ErrorCode;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -71,5 +73,17 @@ public class Interview extends BaseEntity {
 
 	public boolean isDeletable() {
 		return this.status != InterviewStatus.COMPLETED;
+	}
+
+	public boolean isCompletable() {
+		return this.status.equals(InterviewStatus.RESULT_CHECK);
+	}
+
+	public void completeInterview() {
+		if (isCompletable()) {
+			this.status = InterviewStatus.COMPLETED;
+		} else {
+			throw new CustomException(ErrorCode.INVALID_INTERVIEW_STATUS_CHANGE);
+		}
 	}
 }

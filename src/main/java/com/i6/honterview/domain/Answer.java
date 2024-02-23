@@ -4,12 +4,14 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import com.i6.honterview.dto.response.AnswerHeartClickResponse;
+import com.i6.honterview.dto.request.InterviewCompleteRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -44,8 +46,24 @@ public class Answer extends BaseEntity {
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
 
+	@Enumerated(EnumType.STRING)
+	private InterviewCompleteRequest.Visibility visibility;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "interview_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Interview interview;
+
 	@OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<AnswerHeart> answerHearts = new HashSet<>();
+
+	public Answer(String content, Question question, Member member, InterviewCompleteRequest.Visibility visibility,
+		Interview interview) {
+		this.content = content;
+		this.question = question;
+		this.member = member;
+		this.visibility = visibility;
+		this.interview = interview;
+	}
 
 	public void addHeart(AnswerHeart heart) {
 		answerHearts.add(heart);

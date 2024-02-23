@@ -30,7 +30,9 @@ public enum ErrorCode {
 	// interview
 	INTERVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_NOT_FOUND", "존재하지 않는 면접입니다."),
 	INTERVIEWEE_NOT_SAME(HttpStatus.FORBIDDEN, "INTERVIEWEE_NOT_SAME", "동일한 면접자가 아닙니다."),
-	INTERVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "INTERVIEW_DELETE_FORBIDDEN", "삭제할 수 없는 인터뷰입니다.");
+	INTERVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "INTERVIEW_DELETE_FORBIDDEN", "삭제할 수 없는 인터뷰입니다."),
+	INVALID_INTERVIEW_STATUS_CHANGE(HttpStatus.BAD_REQUEST, "INVALID_INTERVIEW_STATUS_CHANGE",
+		"면접 상태가 RESULT_CHECK 상태가 아니므로 COMPLETED로 변경할 수 없습니다. 면접을 완료하기 전에 올바른 상태인지 확인해 주세요");
 
 	private final HttpStatus status;
 	private final String code;

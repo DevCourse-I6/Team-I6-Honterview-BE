@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.i6.honterview.dto.request.InterviewCompleteRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
+import com.i6.honterview.dto.response.InterviewCompleteResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.InterviewService;
@@ -46,7 +48,7 @@ public class InterviewController {
 	}
 
 	@Operation(summary = "면접 상태 수정(면접 완료)")
-	@PatchMapping("{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<Void> updateInterviewStatus(
 		@Parameter(description = "질문 id", example = "123") @PathVariable Long id) {
 		interviewService.updateInterviewStatus(id);
@@ -60,5 +62,17 @@ public class InterviewController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		interviewService.deleteInterview(id, userDetails.getId());
 		return ResponseEntity.noContent().build();
+	}
+
+	@Operation(summary = "면접 저장(결과 조회 후)")
+	@PostMapping("/{id}/complete")
+	public ResponseEntity<ApiResponse<InterviewCompleteResponse>> completeInterviewAndSave(
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
+		@RequestBody InterviewCompleteRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
+	) {
+		InterviewCompleteResponse response = interviewService.completeInterviewAndSaveAnswers(id, userDetails.getId(),
+			request);
+		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }
