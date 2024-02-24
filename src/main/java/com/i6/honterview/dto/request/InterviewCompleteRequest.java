@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 public record InterviewCompleteRequest(
 	@Schema(description = "카테고리 아이디", example = "[1,2,3]")
 	@NotNull
-	List<Long> catogoryIds,
+	List<Long> categoryIds,
 
 	@Schema(description = "질문/답변 저장 요청")
 	@NotNull
