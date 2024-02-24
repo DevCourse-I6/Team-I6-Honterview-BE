@@ -93,9 +93,7 @@ public class InterviewService {
 	private Question createQuestion(QuestionAnswerCreateRequest req, Long parentId, List<Long> categoryIds) {
 		QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest(
 			req.questionContent(), parentId, req.visibility(), categoryIds);
-		Long questionId = questionService.createQuestion(questionCreateRequest);
-		return questionRepository.findById(questionId)
-			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+		return questionService.createQuestion(questionCreateRequest);
 	}
 
 	private void createAnswer(QuestionAnswerCreateRequest req, Question question, Interview interview) {
