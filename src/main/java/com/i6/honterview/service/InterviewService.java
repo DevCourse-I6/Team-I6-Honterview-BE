@@ -77,8 +77,8 @@ public class InterviewService {
 
 		for (QuestionAnswerCreateRequest req : request.questionAnswerRequest()) {
 			Question question = null;
-			if (req.sequence() != 1) {
-				question = createQuestion(req, firstQuestion.getId(), request.catogoryIds());
+			if (req.sequence() != 1) { // 첫번째 질문이 아닐 경우 질문 저장
+				question = createQuestion(req, firstQuestion.getId(), request.categoryIds());
 			} else {
 				question = firstQuestion;
 			}
@@ -92,7 +92,7 @@ public class InterviewService {
 
 	private Question createQuestion(QuestionAnswerCreateRequest req, Long parentId, List<Long> categoryIds) {
 		QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest(
-			req.questionContent(), parentId, req.visibility(), categoryIds);
+			req.questionContent(), parentId, req.visibility(), categoryIds); // TODO: visibility가 NOT_SAVE일 경우 저장 X
 		return questionService.createQuestion(questionCreateRequest);
 	}
 

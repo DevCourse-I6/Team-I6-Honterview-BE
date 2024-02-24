@@ -19,7 +19,8 @@ public class AnswerService {
 	private final AnswerRepository answerRepository;
 
 	public Long createAnswer(AnswerCreateRequest answerCreateRequest, Question question, Interview interview) {
-		Answer answer = answerRepository.save(answerCreateRequest.toEntity(question, interview));
+		Answer answer = answerRepository.save(
+			answerCreateRequest.toEntity(question, interview)); // TODO: visibility가 NOT_SAVE일 경우 저장 X
 		return answer.getId();
 	}
 }
