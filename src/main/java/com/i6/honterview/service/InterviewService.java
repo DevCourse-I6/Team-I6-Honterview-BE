@@ -1,24 +1,23 @@
 package com.i6.honterview.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.i6.honterview.domain.Answer;
-import com.i6.honterview.domain.Category;
 import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
-import com.i6.honterview.domain.QuestionCategory;
 import com.i6.honterview.domain.enums.InterviewStatus;
+import com.i6.honterview.dto.request.AnswerCreateRequest;
 import com.i6.honterview.dto.request.InterviewCompleteRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
+import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
+import com.i6.honterview.dto.request.QuestionCreateRequest;
 import com.i6.honterview.dto.response.InterviewCompleteResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
-import com.i6.honterview.repository.AnswerRepository;
 import com.i6.honterview.repository.InterviewRepository;
 import com.i6.honterview.repository.MemberRepository;
 import com.i6.honterview.repository.QuestionRepository;
@@ -33,7 +32,8 @@ public class InterviewService {
 	private final InterviewRepository interviewRepository;
 	private final MemberRepository memberRepository;
 	private final QuestionRepository questionRepository;
-	private final AnswerRepository answerRepository;
+	private final QuestionService questionService;
+	private final AnswerService answerService;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberRepository.findById(memberId)
@@ -68,46 +68,46 @@ public class InterviewService {
 		interviewRepository.delete(interview);
 	}
 
-	public InterviewCompleteResponse completeInterviewAndSaveAnswers(Long id, Long memberId,
-		InterviewCompleteRequest request) {
-		Interview interview = interviewRepository.findById(id)
+	public InterviewCompleteResponse completeInterviewAndSaveAnswers(Long id, InterviewCompleteRequest request) {
+		Interview interview = interviewRepository.findByIdWithMember(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
-		// 면접 상태 변경 (RESULT_CHECK -> COMPLETED)
-		interview.completeInterview();
+		Question firstQuestion = findFirstQuestion(request.questionAnswerRequest())
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
-		// 질문 & 답변 목록 저장
-		List<InterviewCompleteRequest.QuestionAnswer> savedAnswers = new ArrayList<>();
-		List<Category> categories = new ArrayList<>();
-		Long parentQuestionId = 0L;
-
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-		for (InterviewCompleteRequest.QuestionAnswer qa : request.questionAnswers()) {
-			// 첫번째 질문은 답변만 저장
-			if (qa.questionId() != null && qa.questionId() != -1) {
-				Question question = questionRepository.findById(qa.questionId())
-					.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
-				// 첫번째 질문의 카테고리
-				categories.addAll(question.getQuestionCategories().stream()
-					.map(QuestionCategory::getCategory)
-					.toList());
-				parentQuestionId = question.getId();
-				Answer answer = new Answer(qa.answerContent(), question, member, qa.visibility(), interview);
-				answerRepository.save(answer);
-				savedAnswers.add(qa);
+		for (QuestionAnswerCreateRequest req : request.questionAnswerRequest()) {
+			Question question = null;
+			if (req.sequence() != 1) {
+				question = createQuestion(req, firstQuestion.getId(), request.catogoryIds());
 			} else {
-				// 새로운 질문과 답변 생성
-				Question newQuestion = new Question(qa.questionContent(), parentQuestionId, categories, "ChatGPT");
-				questionRepository.save(newQuestion);
-				Answer newAnswer = new Answer(qa.answerContent(), newQuestion, member, qa.visibility(), interview);
-				answerRepository.save(newAnswer);
-				savedAnswers.add(new InterviewCompleteRequest.QuestionAnswer(qa.visibility(), newQuestion.getId(),
-					qa.questionContent(), qa.answerContent()));
+				question = firstQuestion;
 			}
+			interview.addQuestion(question);
+			createAnswer(req, question, interview);
 		}
 
-		return InterviewCompleteResponse.of(interview, savedAnswers);
+		interview.completeInterview();
+		return InterviewCompleteResponse.from(interview);
+	}
+
+	private Question createQuestion(QuestionAnswerCreateRequest req, Long parentId, List<Long> categoryIds) {
+		QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest(
+			req.questionContent(), parentId, req.visibility(), categoryIds);
+		Long questionId = questionService.createQuestion(questionCreateRequest);
+		return questionRepository.findById(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+	}
+
+	private void createAnswer(QuestionAnswerCreateRequest req, Question question, Interview interview) {
+		AnswerCreateRequest answerCreateRequest = new AnswerCreateRequest(req.answerContent(), req.visibility());
+		answerService.createAnswer(answerCreateRequest, question, interview);
+	}
+
+	private Optional<Question> findFirstQuestion(List<QuestionAnswerCreateRequest> requests) {
+		return requests.stream()
+			.filter(req -> req.sequence() == 1)
+			.findFirst()
+			.map(req -> questionRepository.findById(req.questionId())
+				.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND)));
 	}
 }

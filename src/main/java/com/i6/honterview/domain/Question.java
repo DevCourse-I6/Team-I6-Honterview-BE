@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.i6.honterview.domain.enums.Visibility;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +38,9 @@ public class Question extends BaseEntity {
 	@Column(name = "parent_id")
 	private Long parentId;
 
+	@Enumerated(EnumType.STRING)
+	private Visibility visibility;
+
 	@Column(name = "hearts_count", nullable = false)
 	private Long heartsCount = 0L;
 
@@ -46,9 +53,10 @@ public class Question extends BaseEntity {
 	@Column(name = "created_by", nullable = false)
 	private String createdBy;
 
-	public Question(String content, Long parentId, List<Category> categories, String createdBy) {
+	public Question(String content, Long parentId, Visibility visibility, List<Category> categories, String createdBy) {
 		this.content = content;
 		this.parentId = parentId;
+		this.visibility = visibility;
 		this.createdBy = createdBy;
 		setQuestionCategories(categories);
 	}

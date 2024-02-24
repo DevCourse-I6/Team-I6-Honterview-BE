@@ -75,34 +75,33 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	}
 
 	public Long createQuestion(QuestionCreateRequest request) {
-		validateCategoryIds(request.categoryIds());
-		List<Category> categories = findAndValidateCategories(request.categoryIds());
+		List<Category> categories = validateAndFindCategories(request.categoryIds());
 
 		String creator = "MEMBER_1"; // TODO: role에 따른 질문 생성자 정보 저장
-		Question question = questionRepository.save(request.toEntity(categories, creator));
+		Question question = questionRepository.save(request.
+			toEntity(categories, creator));
 		return question.getId();
+	}
+
+	private List<Category> validateAndFindCategories(List<Long> categoryIds) {
+		if (categoryIds == null || categoryIds.isEmpty() || categoryIds.size() > CATEGORY_MAX_COUNT) {
+			throw new CustomException(ErrorCode.INVALID_CATEGORY_COUNT);
+		}
+
+		List<Category> categories = categoryRepository.findAllById(categoryIds);
+		if (categories.isEmpty()) {
+			throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
+		}
+
+		return categories;
 	}
 
 	public void updateQuestion(Long id, QuestionUpdateRequest request) {
 		Question question = questionRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
-		List<Category> categories = findAndValidateCategories(request.categoryIds());
+		List<Category> categories = validateAndFindCategories(request.categoryIds());
 		question.changeContentAndCategories(request.content(), categories);
-	}
-
-	private void validateCategoryIds(List<Long> categoryIds) {
-		int categoryIdsSize = categoryIds.size();
-		if (categoryIdsSize == 0 || categoryIdsSize > CATEGORY_MAX_COUNT)
-			throw new CustomException(ErrorCode.INVALID_CATEGORY_COUNT);
-	}
-
-	private List<Category> findAndValidateCategories(List<Long> categoryIds) {
-		List<Category> categories = categoryRepository.findAllById(categoryIds);
-		// Question은 적어도 하나 이상의 카테고리와 연결되어 있어야 함
-		if (categories.isEmpty())
-			throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
-		return categories;
 	}
 
 	public void deleteQuestion(Long id) {

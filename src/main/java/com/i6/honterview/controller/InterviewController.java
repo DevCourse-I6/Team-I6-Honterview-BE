@@ -68,11 +68,9 @@ public class InterviewController {
 	@PostMapping("/{id}/complete")
 	public ResponseEntity<ApiResponse<InterviewCompleteResponse>> completeInterviewAndSave(
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
-		@RequestBody InterviewCompleteRequest request,
-		@AuthenticationPrincipal UserDetailsImpl userDetails
+		@RequestBody InterviewCompleteRequest request
 	) {
-		InterviewCompleteResponse response = interviewService.completeInterviewAndSaveAnswers(id, userDetails.getId(),
-			request);
+		InterviewCompleteResponse response = interviewService.completeInterviewAndSaveAnswers(id, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }

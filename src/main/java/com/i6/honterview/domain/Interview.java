@@ -86,4 +86,8 @@ public class Interview extends BaseEntity {
 			throw new CustomException(ErrorCode.INVALID_INTERVIEW_STATUS_CHANGE);
 		}
 	}
+
+	public void addQuestion(Question question) {
+		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	}
 }
