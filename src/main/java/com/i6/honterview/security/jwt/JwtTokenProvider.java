@@ -1,5 +1,6 @@
 package com.i6.honterview.security.jwt;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -36,22 +37,24 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret-key}")
 	private String secretKey;
 
-	@Value("${jwt.access-expiry-milliseconds}")
-	private int accessExpiryMilliseconds;
+	@Value("${jwt.access-expiry-seconds}")
+	private int accessExpirySeconds;
 
-	@Value("${jwt.refresh-expiry-milliseconds}")
-	private int refreshExpiryMilliseconds;
+	@Value("${jwt.refresh-expiry-seconds}")
+	private int refreshExpirySeconds;
 
 	public String generateAccessToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, accessExpiryMilliseconds);
+		return getString(userDetails, accessExpirySeconds);
 	}
 
 	public String generateRefreshToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, refreshExpiryMilliseconds);
+		return getString(userDetails, refreshExpirySeconds);
 	}
 
 	private String getString(UserDetailsImpl userDetails, int expiryMilliseconds) {
-		Date now = new Date();
+		Instant now = Instant.now();
+		Instant expirationTime = now.plusSeconds(expiryMilliseconds);
+
 		String authorities = null;
 		if (userDetails.getAuthorities() != null) {
 			authorities = userDetails.getAuthorities().stream()
@@ -59,8 +62,8 @@ public class JwtTokenProvider {
 				.collect(Collectors.joining(","));
 		}
 		return Jwts.builder()
-			.issuedAt(now)
-			.expiration(new Date(System.currentTimeMillis() + expiryMilliseconds))
+			.issuedAt(Date.from(now))
+			.expiration(Date.from(expirationTime))
 			.subject(userDetails.getUsername())
 			.claim(AUTHENTICATION_CLAIM_NAME, authorities)
 			.signWith(getSignInKey())
@@ -99,7 +102,7 @@ public class JwtTokenProvider {
 			.verifyWith(getSignInKey())
 			.build()
 			.parse(token);
-		if (redisRepository.hasKey(token)) {
+		if (redisRepository.hasKeyBlackList(token)) {
 			throw new SecurityCustomException(SecurityErrorCode.ALREADY_LOGGED_OUT);
 		}
 	}
