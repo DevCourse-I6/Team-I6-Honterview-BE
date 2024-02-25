@@ -13,7 +13,8 @@ public enum SecurityErrorCode {
 	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ACCESS_TOKEN_EXPIRED", "토큰이 만료되었습니다"),
 	REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EXPIRED", "다시 로그인 해주세요."),
 	TOKEN_AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "TOKEN_AUTHENTICATION_FAILED", "토큰 인증에 실패했습니다."),
-	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "권한이 없습니다");
+	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "권한이 없습니다"),
+	ALREADY_LOGGED_OUT(HttpStatus.UNAUTHORIZED, "ALREADY_LOGGED_OUT", "이미 로그아웃된 사용자입니다. 재로그인 해주세요");
 
 	private final HttpStatus status;
 	private final String errorCode;
