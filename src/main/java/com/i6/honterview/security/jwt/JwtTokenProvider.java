@@ -1,5 +1,7 @@
 package com.i6.honterview.security.jwt;
 
+import static org.springframework.util.StringUtils.*;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 	private static final String AUTHENTICATION_CLAIM_NAME = "roles";
+	private static final String AUTHENTICATION_SCHEME = "Bearer ";
 	private final RedisRepository redisRepository;
 
 	@Value("${jwt.secret-key}")
@@ -109,5 +112,12 @@ public class JwtTokenProvider {
 
 	private SecretKey getSignInKey() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+	}
+
+	public String getTokenBearer(String bearerTokenHeader) {
+		if (hasText(bearerTokenHeader) && bearerTokenHeader.startsWith(AUTHENTICATION_SCHEME)) {
+			return bearerTokenHeader.substring(AUTHENTICATION_SCHEME.length());
+		}
+		return null;
 	}
 }

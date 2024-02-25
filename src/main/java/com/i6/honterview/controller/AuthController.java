@@ -38,11 +38,11 @@ public class AuthController {
 	@Operation(summary = "로그아웃")
 	@PostMapping("/logout")
 	public ResponseEntity<ApiResponse<String>> logout(
-		@RequestHeader("Authorization") String accessToken,
+		@RequestHeader("Authorization") String authorizationToken,
 		@CookieValue(name = "refreshToken") String refreshToken,
 		@AuthenticationPrincipal UserDetailsImpl userDetails
 	) {
-		authService.logout(refreshToken, accessToken, Long.parseLong(userDetails.getUsername()));
+		authService.logout(refreshToken, authorizationToken, Long.parseLong(userDetails.getUsername()));
 		return ResponseEntity.ok(ApiResponse.ok("로그아웃 되었습니다."));
 	}
 }

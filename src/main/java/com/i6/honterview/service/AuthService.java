@@ -43,12 +43,13 @@ public class AuthService {
 		return new TokenResponse(accessToken, refreshToken);
 	}
 
-	public void logout(String refreshToken, String accessToken, Long id) {
+	public void logout(String refreshToken, String authorizationToken, Long id) {
 		if (redisRepository.hasKey(refreshToken)) {
 			Long loggedInUserId = Long.valueOf(redisRepository.get(refreshToken).toString());
 			if (loggedInUserId.equals(id)) {
+				String accessToken = jwtTokenProvider.getTokenBearer(authorizationToken);
 				redisRepository.delete(refreshToken);
-				redisRepository.saveBlackList(accessToken.substring(7),"accessToken");
+				redisRepository.saveBlackList(accessToken,"accessToken");
 			}
 		}
 	}
