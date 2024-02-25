@@ -72,7 +72,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		accessTokenCookie.setPath("/");
 		response.addCookie(accessTokenCookie);
 
-		// TODO: cookie로 토큰 전달
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
 		refreshTokenCookie.setSecure(true);
 		refreshTokenCookie.setHttpOnly(true);

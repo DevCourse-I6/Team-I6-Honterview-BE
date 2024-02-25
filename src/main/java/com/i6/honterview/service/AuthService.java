@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.redis.RefreshToken;
-import com.i6.honterview.dto.request.ReissueTokenRequest;
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -27,11 +26,11 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	public TokenResponse reissue(ReissueTokenRequest request) {
-		RefreshToken oldRefreshToken = refreshTokenRepository.findById(request.refreshToken())
+	public TokenResponse reissue(String request) {
+		RefreshToken oldRefreshToken = refreshTokenRepository.findById(request)
 			.orElseThrow(() -> new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED));
 
-		Long id = jwtTokenProvider.getMemberId(request.refreshToken());
+		Long id = jwtTokenProvider.getMemberId(request);
 		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
