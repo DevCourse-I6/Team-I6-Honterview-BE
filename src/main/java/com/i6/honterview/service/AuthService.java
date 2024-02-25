@@ -42,4 +42,14 @@ public class AuthService {
 		redisRepository.saveRefreshToken(refreshToken, memberId);
 		return new TokenResponse(accessToken, refreshToken);
 	}
+
+	public void logout(String refreshToken, String accessToken, Long id) {
+		if (redisRepository.hasKey(refreshToken)) {
+			Long loggedInUserId = Long.valueOf(redisRepository.get(refreshToken).toString());
+			if (loggedInUserId.equals(id)) {
+				redisRepository.delete(refreshToken);
+				redisRepository.saveBlackList(accessToken.substring(7),"accessToken");
+			}
+		}
+	}
 }

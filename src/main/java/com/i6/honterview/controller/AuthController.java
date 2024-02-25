@@ -1,13 +1,17 @@
 package com.i6.honterview.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.response.ApiResponse;
+import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,5 +33,16 @@ public class AuthController {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
 		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
 		return ResponseEntity.ok(response);
+	}
+
+	@Operation(summary = "로그아웃")
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<String>> logout(
+		@RequestHeader("Authorization") String accessToken,
+		@CookieValue(name = "refreshToken") String refreshToken,
+		@AuthenticationPrincipal UserDetailsImpl userDetails
+	) {
+		authService.logout(refreshToken, accessToken, Long.parseLong(userDetails.getUsername()));
+		return ResponseEntity.ok(ApiResponse.ok("로그아웃 되었습니다."));
 	}
 }

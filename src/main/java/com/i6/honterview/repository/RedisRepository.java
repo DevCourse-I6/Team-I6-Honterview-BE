@@ -38,10 +38,10 @@ public class RedisRepository {
 	public void saveBlackList(String key, Object value) {
 		ValueOperations<String, Object> valueOperations = redisBlackListTemplate.opsForValue();
 		valueOperations.set(key, value);
-		redisTemplate.expire(key, BLACKLIST_EXPIRATION_MINUTES, TimeUnit.MINUTES);
+		redisBlackListTemplate.expire(key, BLACKLIST_EXPIRATION_MINUTES, TimeUnit.MINUTES);
 	}
 
 	public boolean hasKeyBlackList(String key) {
-		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+		return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
 	}
 }
