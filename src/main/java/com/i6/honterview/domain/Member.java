@@ -45,13 +45,15 @@ public class Member extends BaseEntity {
 	@Column(name = "role")
 	private Role role;
 
-	// TODO : status
-
 	@Builder
 	public Member(String email, String nickname, Provider provider, Role role) {
 		this.email = email;
 		this.nickname = nickname;
 		this.provider = provider;
 		this.role = role;
+	}
+
+	public void updateLastLoginAt() {
+		this.lastLoginAt = LocalDateTime.now();
 	}
 }

@@ -1,5 +1,8 @@
 package com.i6.honterview.security.jwt;
 
+import static org.springframework.util.StringUtils.*;
+
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -14,38 +17,47 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.i6.honterview.exception.SecurityCustomException;
+import com.i6.honterview.exception.SecurityErrorCode;
+import com.i6.honterview.repository.RedisRepository;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 	private static final String AUTHENTICATION_CLAIM_NAME = "roles";
+	private static final String AUTHENTICATION_SCHEME = "Bearer ";
+	private final RedisRepository redisRepository;
 
 	@Value("${jwt.secret-key}")
 	private String secretKey;
 
-	@Value("${jwt.access-expiry-milliseconds}")
-	private int accessExpiryMilliseconds;
+	@Value("${jwt.access-expiry-seconds}")
+	private int accessExpirySeconds;
 
-	@Value("${jwt.refresh-expiry-milliseconds}")
-	private int refreshExpiryMilliseconds;
+	@Value("${jwt.refresh-expiry-seconds}")
+	private int refreshExpirySeconds;
 
 	public String generateAccessToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, accessExpiryMilliseconds);
+		return getString(userDetails, accessExpirySeconds);
 	}
 
 	public String generateRefreshToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, refreshExpiryMilliseconds);
+		return getString(userDetails, refreshExpirySeconds);
 	}
 
 	private String getString(UserDetailsImpl userDetails, int expiryMilliseconds) {
-		Date now = new Date();
+		Instant now = Instant.now();
+		Instant expirationTime = now.plusSeconds(expiryMilliseconds);
+
 		String authorities = null;
 		if (userDetails.getAuthorities() != null) {
 			authorities = userDetails.getAuthorities().stream()
@@ -53,8 +65,8 @@ public class JwtTokenProvider {
 				.collect(Collectors.joining(","));
 		}
 		return Jwts.builder()
-			.issuedAt(now)
-			.expiration(new Date(System.currentTimeMillis() + expiryMilliseconds))
+			.issuedAt(Date.from(now))
+			.expiration(Date.from(expirationTime))
 			.subject(userDetails.getUsername())
 			.claim(AUTHENTICATION_CLAIM_NAME, authorities)
 			.signWith(getSignInKey())
@@ -93,14 +105,19 @@ public class JwtTokenProvider {
 			.verifyWith(getSignInKey())
 			.build()
 			.parse(token);
-	}
-
-	public Long getMemberId(String token) {
-		return Long.parseLong(verifyAndExtractClaims(token)
-			.getSubject());
+		if (redisRepository.hasKeyBlackList(token)) {
+			throw new SecurityCustomException(SecurityErrorCode.ALREADY_LOGGED_OUT);
+		}
 	}
 
 	private SecretKey getSignInKey() {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+	}
+
+	public String getTokenBearer(String bearerTokenHeader) {
+		if (hasText(bearerTokenHeader) && bearerTokenHeader.startsWith(AUTHENTICATION_SCHEME)) {
+			return bearerTokenHeader.substring(AUTHENTICATION_SCHEME.length());
+		}
+		return null;
 	}
 }
