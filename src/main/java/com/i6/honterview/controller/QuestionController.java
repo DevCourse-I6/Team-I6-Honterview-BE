@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +23,7 @@ import com.i6.honterview.dto.response.QuestionDetailResponse;
 import com.i6.honterview.dto.response.QuestionHeartClickResponse;
 import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.response.ApiResponse;
+import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.QuestionHeartService;
 import com.i6.honterview.service.QuestionService;
 
@@ -85,7 +87,8 @@ public class QuestionController {// TODO: 회원 연동
 
 	@Operation(summary = "질문 생성")
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createQuestion(@Valid @RequestBody QuestionCreateRequest request) {
+	public ResponseEntity<ApiResponse<Long>> createQuestion(
+		@Valid @RequestBody QuestionCreateRequest request) {
 		Long id = questionService.createQuestion(request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
 			.path("/{id}")
@@ -114,8 +117,9 @@ public class QuestionController {// TODO: 회원 연동
 	@Operation(summary = "질문 좋아요/좋아요 취소")
 	@PostMapping("/{id}/hearts")
 	public ResponseEntity<ApiResponse<QuestionHeartClickResponse>> clickQuestionHeart(
-		@Parameter(description = "질문 id", example = "123") @PathVariable Long id) {
-		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, 1L); //TODO: 회원 연동
+		@Parameter(description = "질문 id", example = "123") @PathVariable Long id,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, userDetails.getId());
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }
