@@ -20,7 +20,6 @@ import com.i6.honterview.dto.response.QuestionResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.AnswerRepository;
-import com.i6.honterview.repository.CategoryRepository;
 import com.i6.honterview.repository.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {// TODO: 멤버&관리자 연동
 
 	private final QuestionRepository questionRepository;
-	private final CategoryRepository categoryRepository;
 	private final AnswerRepository answerRepository;
 	private final CategoryService categoryService;
 
