@@ -45,12 +45,16 @@ public class AuthService {
 
 	public void logout(String refreshToken, String authorizationToken, Long id) {
 		if (redisRepository.hasKey(refreshToken)) {
-			Long loggedInUserId = Long.valueOf(redisRepository.get(refreshToken).toString());
-			if (loggedInUserId.equals(id)) {
+			Long userIdByRefresh = Long.valueOf(redisRepository.get(refreshToken).toString());
+			if (userIdByRefresh.equals(id)) {
 				String accessToken = jwtTokenProvider.getTokenBearer(authorizationToken);
 				redisRepository.delete(refreshToken);
-				redisRepository.saveBlackList(accessToken,"accessToken");
+				redisRepository.saveBlackList(accessToken, "accessToken");
+			} else {
+				throw new SecurityCustomException(SecurityErrorCode.LOGOUT_FORBIDDEN);
 			}
+		} else {
+			throw new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED);
 		}
 	}
 }
