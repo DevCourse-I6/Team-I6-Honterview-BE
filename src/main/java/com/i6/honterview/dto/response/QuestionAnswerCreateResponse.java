@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record QuestionAnswerCreateResponse(
 	@Schema(description = "질문 id", example = "123")
 	Long questionId,
+	
 	@Schema(description = "답변 id", example = "123")
 	Long answerId
 ) {

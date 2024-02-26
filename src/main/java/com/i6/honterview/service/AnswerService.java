@@ -18,9 +18,8 @@ public class AnswerService {
 
 	private final AnswerRepository answerRepository;
 
-	public Answer createAnswer(AnswerCreateRequest answerCreateRequest, Question question, Interview interview) {
-		Answer answer = answerRepository.save(
-			answerCreateRequest.toEntity(question, interview));
+	public Answer createAnswer(AnswerCreateRequest request, Question question, Interview interview) {
+		Answer answer = answerRepository.save(request.toEntity(question, interview));
 		return answer;
 	}
 }
