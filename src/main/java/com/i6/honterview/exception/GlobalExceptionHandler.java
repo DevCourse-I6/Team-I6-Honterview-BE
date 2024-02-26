@@ -1,7 +1,14 @@
 package com.i6.honterview.exception;
 
+import static com.i6.honterview.exception.ErrorCode.*;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,6 +32,16 @@ public class GlobalExceptionHandler {
 		log.warn(">>>>> SecurityCustomException : {}", ex.getMessage());
 		SecurityErrorCode errorCode = ex.getErrorCode();
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+		log.warn(">>>>> validation Failed : {}", ex.getMessage());
+		BindingResult bindingResult = ex.getBindingResult();
+		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+		ErrorResponse errorResponse = INVALID_INPUT_VALUE.getErrorResponse();
+		fieldErrors.forEach(error -> errorResponse.addValidation(error.getField(), error.getDefaultMessage()));
+		return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
 	}
 
 	@ExceptionHandler(Exception.class)
