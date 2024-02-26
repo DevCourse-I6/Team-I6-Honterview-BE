@@ -87,7 +87,7 @@ public class QuestionController {// TODO: 회원 연동
 
 	@Operation(summary = "질문 생성")
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createQuestion(
+	public ResponseEntity<ApiResponse<Long>> createQuestion(	// TODO: 작성자 정보 포함
 		@Valid @RequestBody QuestionCreateRequest request) {
 		Long id = questionService.createQuestion(request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
