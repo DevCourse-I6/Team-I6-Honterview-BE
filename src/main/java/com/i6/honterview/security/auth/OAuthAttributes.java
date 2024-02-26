@@ -70,7 +70,6 @@ public class OAuthAttributes {
 	}
 
 	private static OAuthAttributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
-		System.out.println(attributes.toString());
 		return OAuthAttributes.builder()
 			.nickname((String)attributes.get("login"))
 			.email((String)attributes.get("email"))

@@ -30,8 +30,7 @@ public class AnswerController {
 	public ResponseEntity<ApiResponse<AnswerHeartClickResponse>> clickAnswerHeart(
 		@Parameter(description = "답변 id", example = "123")@PathVariable Long id,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		System.out.println(userDetails.getId());
-		AnswerHeartClickResponse response = answerHeartService.clickAnswerHeart(id, 1L);    //TODO: 회원 연동
+		AnswerHeartClickResponse response = answerHeartService.clickAnswerHeart(id, userDetails.getId());
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }

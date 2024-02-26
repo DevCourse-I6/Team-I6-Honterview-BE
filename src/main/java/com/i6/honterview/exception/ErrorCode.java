@@ -32,6 +32,9 @@ public enum ErrorCode {
 	INTERVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "INTERVIEW_DELETE_FORBIDDEN", "삭제할 수 없는 인터뷰입니다."),
 	FIRST_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "FIRST_QUESTION_NOT_FOUND", "첫번째 질문이 존재하지 않습니다.");
 
+	// common
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
+	;
 	private final HttpStatus status;
 	private final String code;
 	private final String message;
