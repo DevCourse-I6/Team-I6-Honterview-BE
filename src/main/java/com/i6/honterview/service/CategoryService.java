@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class CategoryService {
+
+	private static final int CATEGORY_MAX_COUNT = 3;
 	private final CategoryRepository categoryRepository;
 
 	@Transactional(readOnly = true)
@@ -57,4 +59,18 @@ public class CategoryService {
 			.orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 		categoryRepository.delete(category);
 	}
+
+	public List<Category> validateAndGetCategories(List<Long> categoryIds) {
+		int categoryIdsSize = categoryIds.size();
+		if (categoryIdsSize == 0 || categoryIdsSize > CATEGORY_MAX_COUNT)
+			throw new CustomException(ErrorCode.INVALID_CATEGORY_COUNT);
+
+		List<Category> categories = categoryRepository.findAllById(categoryIds);
+		// Question은 적어도 하나 이상의 카테고리와 연결되어 있어야 함
+		if (categories.isEmpty())
+			throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
+
+		return categories;
+	}
+
 }
