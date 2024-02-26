@@ -47,17 +47,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Map<String, Object> body = new HashMap<>();
 		body.put(CHECKING_EXIST_KEY, true);
 
-		Member member = memberRepository.findByEmailAndProvider(email, provider)
-			.orElseGet(() -> {
+		Member member = memberRepository.findByEmailAndProvider(email, provider).orElseGet(() -> {
 				body.put(CHECKING_EXIST_KEY, false);
-				Member newMember = Member.builder()
+				return Member.builder()
 					.provider(provider)
 					.nickname(nickname)
 					.email(email)
 					.role(Role.ROLE_USER)
 					.build();
-				return memberRepository.save(newMember);
 			});
+		member.updateLastLoginAt();
+		member = memberRepository.save(member);
 
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 
