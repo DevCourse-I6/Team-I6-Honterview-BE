@@ -74,13 +74,13 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 			.toList();
 	}
 
-	public Long createQuestion(QuestionCreateRequest request) {
+	public Question createQuestion(QuestionCreateRequest request) {
 		validateCategoryIds(request.categoryIds());
 		List<Category> categories = findAndValidateCategories(request.categoryIds());
 
 		String creator = "MEMBER_1"; // TODO: role에 따른 질문 생성자 정보 저장
 		Question question = questionRepository.save(request.toEntity(categories, creator));
-		return question.getId();
+		return question;
 	}
 
 	public void updateQuestion(Long id, QuestionUpdateRequest request) {

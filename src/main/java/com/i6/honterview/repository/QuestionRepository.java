@@ -20,4 +20,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long>, Quest
 		+ "ORDER BY RAND() LIMIT 3", nativeQuery = true)
 	List<Question> findRandomQuestionsByCategoryIds(@Param("categoryIds") List<Long> categoryIds,
 		@Param("questionId") Long questionId);
+
 }
