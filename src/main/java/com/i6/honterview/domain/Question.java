@@ -82,4 +82,10 @@ public class Question extends BaseEntity {
 		questionHearts.remove(heart);
 		this.heartsCount--;
 	}
+
+	public List<Long> getCategoryIds() {
+		return this.questionCategories.stream()
+			.map(questionCategory -> questionCategory.getCategory().getId())
+			.toList();
+	}
 }

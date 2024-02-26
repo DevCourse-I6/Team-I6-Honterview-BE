@@ -11,5 +11,6 @@ import com.i6.honterview.domain.Interview;
 public interface InterviewRepository extends JpaRepository<Interview, Long> {
 
 	@Query("SELECT i FROM Interview i LEFT JOIN FETCH i.interviewQuestions WHERE i.id = :interviewId")
-	Optional<Interview> findWithQuestionsById(@Param("interviewId") Long interviewId);
+	Optional<Interview> findByIdWithInterviewQuestions(@Param("interviewId") Long interviewId);
+
 }

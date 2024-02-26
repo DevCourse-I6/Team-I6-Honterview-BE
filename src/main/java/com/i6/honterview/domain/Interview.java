@@ -72,4 +72,8 @@ public class Interview extends BaseEntity {
 	public boolean isDeletable() {
 		return this.status != InterviewStatus.COMPLETED;
 	}
+
+	public void addQuestion(Question question) {
+		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	}
 }

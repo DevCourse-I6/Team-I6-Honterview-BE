@@ -3,11 +3,17 @@ package com.i6.honterview.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.domain.Answer;
 import com.i6.honterview.domain.Interview;
+import com.i6.honterview.domain.InterviewQuestion;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.domain.enums.InterviewStatus;
+import com.i6.honterview.dto.request.AnswerCreateRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
+import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
+import com.i6.honterview.dto.request.QuestionCreateRequest;
+import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.InterviewRepository;
@@ -24,6 +30,8 @@ public class InterviewService {
 	private final InterviewRepository interviewRepository;
 	private final MemberRepository memberRepository;
 	private final QuestionRepository questionRepository;
+	private final QuestionService questionService;
+	private final AnswerService answerService;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberRepository.findById(memberId)
@@ -45,7 +53,7 @@ public class InterviewService {
 	}
 
 	public void deleteInterview(Long id, Long memberId) {
-		Interview interview = interviewRepository.findWithQuestionsById(id)
+		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
 		if (!interview.isSameInterviewee(memberId)) {
@@ -56,5 +64,40 @@ public class InterviewService {
 			throw new CustomException(ErrorCode.INTERVIEW_DELETE_FORBIDDEN);
 		}
 		interviewRepository.delete(interview);
+	}
+
+	public QuestionAnswerCreateResponse createQuestionAndAnswer(Long id, QuestionAnswerCreateRequest request) {
+		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+
+		Question firstQuestion = getFirstQuestionFromInterview(interview);
+
+		Question question;
+		if (request.sequence() != 1) { // 첫번째 질문이 아닐 경우 질문 저장
+			question = createQuestion(request.questionContent(), firstQuestion);
+			interview.addQuestion(question);
+		} else {
+			question = firstQuestion;
+		}
+		Answer answer = createAnswer(request.answerContent(), interview, question);
+		return QuestionAnswerCreateResponse.of(question, answer);
+	}
+
+	private Answer createAnswer(String answerContent, Interview interview, Question question) {
+		AnswerCreateRequest answerCreateRequest = new AnswerCreateRequest(answerContent);
+		return answerService.createAnswer(answerCreateRequest, question, interview);
+	}
+
+	private Question createQuestion(String questionContent, Question firstQuestion) {
+		QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest(
+			questionContent, firstQuestion.getId(), firstQuestion.getCategoryIds());
+		return questionService.createQuestion(questionCreateRequest);
+	}
+
+	private Question getFirstQuestionFromInterview(Interview interview) {
+		return interview.getInterviewQuestions().stream()
+			.findFirst()
+			.map(InterviewQuestion::getQuestion)
+			.orElseThrow(() -> new CustomException(ErrorCode.FIRST_QUESTION_NOT_FOUND));
 	}
 }
