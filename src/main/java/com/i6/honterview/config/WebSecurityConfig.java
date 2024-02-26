@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,7 +65,7 @@ public class WebSecurityConfig {
 	private RequestMatcher[] requestPermitAll() {
 		List<RequestMatcher> requestMatchers = List.of(
 			// Member
-			antMatcher("/api/*/auth/**"),
+			antMatcher("/api/*/auth/reissue"),
 
 			// DOCS
 			antMatcher("/swagger-ui/**"),
@@ -132,9 +133,9 @@ public class WebSecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.rememberMe(AbstractHttpConfigurer::disable)
-			.logout(AbstractHttpConfigurer::disable)
 			.headers(headers -> headers
-				.frameOptions(frameOptions -> frameOptions.disable()))
+				.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+			)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 	}
 }

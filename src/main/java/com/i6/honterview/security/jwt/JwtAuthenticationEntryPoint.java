@@ -3,6 +3,7 @@ package com.i6.honterview.security.jwt;
 import java.io.IOException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
@@ -34,8 +35,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 			errorResponse = SecurityErrorCode.ACCESS_TOKEN_EXPIRED.getErrorResponse();
 		} else if (authException instanceof BadCredentialsException) {
 			// 토큰이 없거나 인증에 실패한 경우
-			log.warn("Token Unauthorized : " + authException.getMessage());
+			log.warn("Token unauthorized : " + authException.getMessage());
 			errorResponse = SecurityErrorCode.TOKEN_AUTHENTICATION_FAILED.getErrorResponse();
+		} else if (authException instanceof AccountExpiredException) {
+			log.warn("Token credential expired : "+authException.getMessage());
+			errorResponse = SecurityErrorCode.ALREADY_LOGGED_OUT.getErrorResponse();
 		} else {
 			// 다른 인증 오류의 경우
 			log.warn("Unauthorized : " + authException.getMessage());

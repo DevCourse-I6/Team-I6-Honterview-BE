@@ -4,11 +4,14 @@ import static org.springframework.util.StringUtils.*;
 
 import java.io.IOException;
 
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.i6.honterview.exception.SecurityCustomException;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -22,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final String AUTHENTICATION_HEADER = "Authorization";
-	private static final String AUTHENTICATION_SCHEME = "Bearer ";
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
@@ -38,6 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		} catch (ExpiredJwtException e) {
 			logger.warn("ExpiredJwtException Occurred");
 			throw new CredentialsExpiredException("토큰의 유효기간이 만료되었습니다.");
+		} catch (SecurityCustomException e) {
+			logger.warn("Already Logged Out");
+			throw new AccountExpiredException(e.getMessage());
 		} catch (Exception e) {
 			logger.warn("JwtAuthentication Failed.");
 			throw new BadCredentialsException("토큰 인증에 실패하였습니다.");
@@ -47,9 +52,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private String getToken(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AUTHENTICATION_HEADER);
-		if (hasText(bearerToken) && bearerToken.startsWith(AUTHENTICATION_SCHEME)) {
-			return bearerToken.substring(AUTHENTICATION_SCHEME.length());
-		}
-		return null;
+		return jwtTokenProvider.getTokenBearer(bearerToken);
 	}
 }
