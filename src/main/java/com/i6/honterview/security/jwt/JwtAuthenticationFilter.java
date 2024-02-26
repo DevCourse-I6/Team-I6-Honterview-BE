@@ -4,6 +4,7 @@ import static org.springframework.util.StringUtils.*;
 
 import java.io.IOException;
 
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
@@ -41,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			throw new CredentialsExpiredException("토큰의 유효기간이 만료되었습니다.");
 		} catch (SecurityCustomException e) {
 			logger.warn("Already Logged Out");
-			throw new CredentialsExpiredException(e.getMessage());
+			throw new AccountExpiredException(e.getMessage());
 		} catch (Exception e) {
 			logger.warn("JwtAuthentication Failed.");
 			throw new BadCredentialsException("토큰 인증에 실패하였습니다.");
