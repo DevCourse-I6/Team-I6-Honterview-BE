@@ -18,6 +18,7 @@ import com.i6.honterview.dto.response.AnswerResponse;
 import com.i6.honterview.dto.response.PageResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
 import com.i6.honterview.dto.response.QuestionResponse;
+import com.i6.honterview.dto.response.QuestionWithCategoriesResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.AnswerRepository;
@@ -35,17 +36,18 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	private final CategoryService categoryService;
 
 	@Transactional(readOnly = true)
-	public PageResponse<QuestionResponse> getQuestions(int page, int size, String query, List<String> categoryNames,
+	public PageResponse<QuestionWithCategoriesResponse> getQuestions(int page, int size, String query,
+		List<String> categoryNames,
 		String orderType) {
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Question> questions = questionRepository.
 			findQuestionsByKeywordAndCategoryNamesWithPage(pageable, query, categoryNames, orderType);
-		return PageResponse.of(questions, QuestionResponse::from);
+		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
 	}
 
 	@Transactional(readOnly = true)
 	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
-		Question question = questionRepository.findById(id)
+		Question question = questionRepository.findQuestionByIdWithCategories(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
 		Pageable pageable = PageRequest.of(page - 1, size);

@@ -22,6 +22,7 @@ import com.i6.honterview.dto.response.PageResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
 import com.i6.honterview.dto.response.QuestionHeartClickResponse;
 import com.i6.honterview.dto.response.QuestionResponse;
+import com.i6.honterview.dto.response.QuestionWithCategoriesResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.QuestionHeartService;
@@ -44,14 +45,14 @@ public class QuestionController {// TODO: 회원 연동
 
 	@Operation(summary = "질문 목록 조회")
 	@GetMapping
-	public ResponseEntity<ApiResponse<PageResponse<QuestionResponse>>> getQuestions(
+	public ResponseEntity<ApiResponse<PageResponse<QuestionWithCategoriesResponse>>> getQuestions(
 		@Parameter(description = "페이지 번호", example = "1") @RequestParam(value = "page", defaultValue = "1") int page,
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
 		@Parameter(description = "검색어", example = "자바스크립트") @RequestParam(value = "query", required = false) String query,
 		@Parameter(description = "조회할 카테고리 이름 목록", example = "프론트엔드") @RequestParam(value = "categories", required = false) List<String> categoryNames,
 		@Parameter(description = "정렬 순서", example = "recent 최신순, hearts 좋아요순") @RequestParam(value = "order", defaultValue = "recent") String orderType
 	) {
-		PageResponse<QuestionResponse> response =
+		PageResponse<QuestionWithCategoriesResponse> response =
 			questionService.getQuestions(page, size, query, categoryNames, orderType);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
