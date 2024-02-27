@@ -76,12 +76,12 @@ public class QuestionController {// TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
-	@Operation(summary = "같은 카테고리의 다른 질문 랜덤 조회")
+	@Operation(summary = "특정 질문에 대한 꼬리질문 3개 랜덤 조회")
 	@GetMapping("/{id}/random")
-	public ResponseEntity<ApiResponse<List<QuestionResponse>>> getRandomQuestionsByCategories(
+	public ResponseEntity<ApiResponse<List<QuestionResponse>>> getRandomTailQuestions(
 		@Parameter(description = "질문 id", example = "123") @PathVariable Long id
 	) {
-		List<QuestionResponse> response = questionService.getRandomQuestionsByCategories(id);
+		List<QuestionResponse> response = questionService.getRandomTailQuestions(id);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

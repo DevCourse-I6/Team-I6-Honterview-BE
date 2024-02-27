@@ -1,6 +1,7 @@
 package com.i6.honterview.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.i6.honterview.dto.request.AnswerVisibilityUpdateRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
+import com.i6.honterview.dto.response.AnswersVisibilityUpdateResponse;
 import com.i6.honterview.dto.response.InterviewInfoResponse;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.response.ApiResponse;
@@ -68,11 +71,21 @@ public class InterviewController {
 
 	@Operation(summary = "면접/답변 저장(면접 연습 중)")
 	@PostMapping("/{id}")
-	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> completeInterviewAndSave(
+	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> createQuestionAndAnswer(
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
 		@RequestBody QuestionAnswerCreateRequest request
 	) {
 		QuestionAnswerCreateResponse response = interviewService.createQuestionAndAnswer(id, request);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@Operation(summary = "답변 공개여부 수정(면접 결과)")
+	@PatchMapping("/{id}/visibility")
+	public ResponseEntity<ApiResponse<AnswersVisibilityUpdateResponse>> changeAnswersVisibility(
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
+		@RequestBody List<AnswerVisibilityUpdateRequest> request
+	) {
+		AnswersVisibilityUpdateResponse response = interviewService.changeAnswersVisibility(id, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
