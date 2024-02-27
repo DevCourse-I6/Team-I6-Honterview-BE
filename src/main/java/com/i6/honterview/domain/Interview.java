@@ -47,6 +47,9 @@ public class Interview extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private InterviewStatus status = InterviewStatus.IN_PROGRESS;
 
+	@Column(name = "timer", nullable = false)
+	private int timer;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
@@ -54,9 +57,10 @@ public class Interview extends BaseEntity {
 	@OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<InterviewQuestion> interviewQuestions = new ArrayList<>();
 
-	public Interview(AnswerType answerType, Integer questionCount, Member member, Question question) {
+	public Interview(AnswerType answerType, Integer questionCount, int timer, Member member, Question question) {
 		this.answerType = answerType;
 		this.questionCount = questionCount;
+		this.timer = timer;
 		this.member = member;
 		this.interviewQuestions.add(new InterviewQuestion(this, question));
 	}
