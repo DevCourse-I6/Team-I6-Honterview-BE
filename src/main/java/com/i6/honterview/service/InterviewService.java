@@ -97,7 +97,9 @@ public class InterviewService {
 	public InterviewInfoResponse getInterviewInfo(Long id) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		return null;
+
+		Question question = getFirstQuestionFromInterview(interview);
+		return InterviewInfoResponse.of(interview, question.getQuestionCategories());
 	}
 
 	private Answer createAnswer(String answerContent, Interview interview, Question question) {
