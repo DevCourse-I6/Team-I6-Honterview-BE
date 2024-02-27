@@ -26,7 +26,7 @@ public record InterviewCreateRequest(
 	@NotNull(message = "타이머 시간은 필수 선택 항목입니다.")
 	@Min(value = 10, message = "타이머 시간은 10초 이상이어야 합니다.")
 	@Max(value = 600, message = "타이머 시간은 10분(600초) 이하이어야 합니다.")
-	int timer,
+	Integer timer,
 
 	@Schema(description = "질문 ID", example = "123")
 	@NotNull(message = "질문 ID는 필수 입력값 입니다.")

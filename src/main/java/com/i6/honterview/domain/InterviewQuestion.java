@@ -34,7 +34,7 @@ public class InterviewQuestion {
 	private Question question;
 
 	@Column(name = "processingTime")
-	private int processingTime;
+	private Integer processingTime;
 
 	public InterviewQuestion(Interview interview, Question question, int processingTime) {
 		this.interview = interview;
