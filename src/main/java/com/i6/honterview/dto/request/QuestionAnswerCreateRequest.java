@@ -19,6 +19,9 @@ public record QuestionAnswerCreateRequest(
 
 	@Schema(description = "답변", example = "조회된 엔티티의 개수만큼 연관된 엔티티를 조회하기 위해 추가적인 쿼리가 발생하는 문제를 의미합니다.")
 	@NotBlank(message = "답변 내용은 필수 항목입니다.")
-	String answerContent
-) {
+	String answerContent,
+
+	@Schema(description = "해당 질문 답변에 걸린 시간", example = "60")
+	int processingTime	//nullable
+	) {
 }

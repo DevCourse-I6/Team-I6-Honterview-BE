@@ -86,7 +86,7 @@ public class InterviewService {
 		Question question;
 		if (request.sequence() != 1) { // 첫번째 질문이 아닐 경우 질문 저장
 			question = createQuestion(request.questionContent(), firstQuestion);
-			interview.addQuestion(question);
+			interview.addQuestion(question, request.processingTime());
 		} else {
 			question = firstQuestion;
 		}

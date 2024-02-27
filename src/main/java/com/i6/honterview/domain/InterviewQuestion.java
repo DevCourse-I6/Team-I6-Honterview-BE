@@ -33,11 +33,12 @@ public class InterviewQuestion {
 	@JoinColumn(name = "question_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Question question;
 
-	@Column(name = "sequence")
-	private int sequence;
+	@Column(name = "processingTime")
+	private int processingTime;
 
-	public InterviewQuestion(Interview interview, Question question) {
+	public InterviewQuestion(Interview interview, Question question, int processingTime) {
 		this.interview = interview;
 		this.question = question;
+		this.processingTime = processingTime;
 	}
 }

@@ -62,7 +62,7 @@ public class Interview extends BaseEntity {
 		this.questionCount = questionCount;
 		this.timer = timer;
 		this.member = member;
-		this.interviewQuestions.add(new InterviewQuestion(this, question));
+		this.interviewQuestions.add(new InterviewQuestion(this, question, 0));
 	}
 
 	public void changeStatus(InterviewStatus status) {
@@ -77,7 +77,7 @@ public class Interview extends BaseEntity {
 		return this.status != InterviewStatus.COMPLETED;
 	}
 
-	public void addQuestion(Question question) {
-		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	public void addQuestion(Question question, int processingTime) {
+		this.interviewQuestions.add(new InterviewQuestion(this, question, processingTime));
 	}
 }
