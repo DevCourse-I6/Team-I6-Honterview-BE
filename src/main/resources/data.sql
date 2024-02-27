@@ -57,5 +57,5 @@ INSERT INTO interview (answer_type, question_count, interview_status, member_id)
 VALUES ('TEXT', 3, 'IN_PROGRESS', 1);
 
 -- InterviewQuestion 더미 데이터
-INSERT INTO interview_question (interview_id, question_id)
-VALUES (1, 1);
+INSERT INTO interview_question (interview_id, question_id, sequence)
+VALUES (1, 1, 1);
