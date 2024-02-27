@@ -13,6 +13,7 @@ import com.i6.honterview.dto.request.AnswerCreateRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
 import com.i6.honterview.dto.request.TailQuestionSaveRequest;
+import com.i6.honterview.dto.response.InterviewInfoResponse;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -81,6 +82,12 @@ public class InterviewService {
 		}
 		Answer answer = createAnswer(request.answerContent(), interview, question);
 		return QuestionAnswerCreateResponse.of(question, answer);
+	}
+
+	public InterviewInfoResponse getInterviewInfo(Long id) {
+		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		return null;
 	}
 
 	private Answer createAnswer(String answerContent, Interview interview, Question question) {
