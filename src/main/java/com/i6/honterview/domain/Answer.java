@@ -79,4 +79,8 @@ public class Answer extends BaseEntity {
 			.filter(heart -> heart.hasHeartedByMember(memberId))
 			.findFirst();
 	}
+
+	public void changeVisibility(Visibility visibility) {
+		this.visibility = visibility;
+	}
 }
