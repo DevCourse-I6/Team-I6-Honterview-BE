@@ -1,5 +1,6 @@
 package com.i6.honterview.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long>, AnswerQue
 
 	@Query("SELECT DISTINCT a FROM Answer a LEFT JOIN FETCH a.answerHearts WHERE a.id = ?1")
 	Optional<Answer> findByIdWithHearts(@Param("id") Long id);
+
+	List<Answer> findByInterviewId(Long id);
 }
