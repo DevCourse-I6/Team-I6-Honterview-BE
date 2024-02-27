@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,6 +47,7 @@ public class Question extends BaseEntity {
 	@Column(name = "created_by", nullable = false)
 	private String createdBy;
 
+	@Builder
 	public Question(String content, Long parentId, List<Category> categories, String createdBy) {
 		this.content = content;
 		this.parentId = parentId;

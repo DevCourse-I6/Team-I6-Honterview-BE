@@ -87,14 +87,15 @@ public class QuestionController {// TODO: 회원 연동
 
 	@Operation(summary = "질문 생성")
 	@PostMapping
-	public ResponseEntity<ApiResponse<Long>> createQuestion(	// TODO: 작성자 정보 포함
-		@Valid @RequestBody QuestionCreateRequest request) {
-		Long id = questionService.createQuestion(request).getId();
+	public ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(
+		@Valid @RequestBody QuestionCreateRequest request,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		QuestionResponse question = questionService.createQuestion(request, userDetails.getUsername());
 		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
 			.path("/{id}")
-			.buildAndExpand(id)
+			.buildAndExpand(question.id())
 			.toUri();
-		return ResponseEntity.created(location).body(ApiResponse.created(id));
+		return ResponseEntity.created(location).body(ApiResponse.created(question));
 	}
 
 	@Operation(summary = "질문 수정")

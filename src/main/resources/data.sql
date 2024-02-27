@@ -53,8 +53,8 @@ INSERT INTO member (email, nickname, provider, role)
 VALUES ('test@gmail.com', 'test', 'KAKAO', 'ROLE_USER');
 
 -- Interview 더미 데이터
-INSERT INTO interview (id, answer_type, question_count, interview_status, member_id)
-VALUES (1, 'TEXT', 3, 'IN_PROGRESS', 1);
+INSERT INTO interview (answer_type, question_count, interview_status, member_id)
+VALUES ('TEXT', 3, 'IN_PROGRESS', 1);
 
 -- InterviewQuestion 더미 데이터
 INSERT INTO interview_question (interview_id, question_id)

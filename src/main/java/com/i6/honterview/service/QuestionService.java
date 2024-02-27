@@ -13,6 +13,7 @@ import com.i6.honterview.domain.Category;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.dto.request.QuestionCreateRequest;
 import com.i6.honterview.dto.request.QuestionUpdateRequest;
+import com.i6.honterview.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.dto.response.AnswerResponse;
 import com.i6.honterview.dto.response.PageResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
@@ -71,12 +72,15 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 			.toList();
 	}
 
-	public Question createQuestion(QuestionCreateRequest request) {
+	public QuestionResponse createQuestion(QuestionCreateRequest request, String creator) {
 		List<Category> categories = categoryService.validateAndGetCategories(request.categoryIds());
-
-		String creator = "MEMBER_1"; // TODO: role에 따른 질문 생성자 정보 저장
 		Question question = questionRepository.save(request.toEntity(categories, creator));
-		return question;
+		return QuestionResponse.from(question);
+	}
+
+	public Question saveTailQuestion(TailQuestionSaveRequest request) {
+		List<Category> categories = categoryService.validateAndGetCategories(request.categoryIds());
+		return questionRepository.save(request.toEntity(categories));
 	}
 
 	public void updateQuestion(Long id, QuestionUpdateRequest request) {

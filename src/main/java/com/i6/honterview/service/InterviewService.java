@@ -12,7 +12,7 @@ import com.i6.honterview.domain.enums.InterviewStatus;
 import com.i6.honterview.dto.request.AnswerCreateRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
-import com.i6.honterview.dto.request.QuestionCreateRequest;
+import com.i6.honterview.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -89,9 +89,9 @@ public class InterviewService {
 	}
 
 	private Question createQuestion(String questionContent, Question firstQuestion) {
-		QuestionCreateRequest questionCreateRequest = new QuestionCreateRequest(
+		TailQuestionSaveRequest tailQuestionSaveRequest = new TailQuestionSaveRequest(
 			questionContent, firstQuestion.getId(), firstQuestion.getCategoryIds());
-		return questionService.createQuestion(questionCreateRequest);
+		return questionService.saveTailQuestion(tailQuestionSaveRequest);
 	}
 
 	private Question getFirstQuestionFromInterview(Interview interview) {
