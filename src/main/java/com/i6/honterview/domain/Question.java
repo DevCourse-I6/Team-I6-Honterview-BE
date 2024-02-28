@@ -90,4 +90,10 @@ public class Question extends BaseEntity {
 			.map(questionCategory -> questionCategory.getCategory().getId())
 			.toList();
 	}
+
+	public List<String> getCategoryNames() {
+		return this.questionCategories.stream()
+			.map(category -> category.getCategory().getCategoryName())
+			.toList();
+	}
 }

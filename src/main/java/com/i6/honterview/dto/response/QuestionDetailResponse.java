@@ -20,9 +20,10 @@ public record QuestionDetailResponse(
 	@Schema(description = "답변 목록")
 	PageResponse<AnswerResponse> answers) {
 	public static QuestionDetailResponse from(Question question, PageResponse<AnswerResponse> answers) {
-		List<String> categoryNames = question.getQuestionCategories().stream()
-			.map(category -> category.getCategory().getCategoryName())
-			.toList();
-		return new QuestionDetailResponse(question.getId(), question.getContent(), categoryNames, answers);
+		return new QuestionDetailResponse(
+			question.getId(),
+			question.getContent(),
+			question.getCategoryNames(),
+			answers);
 	}
 }
