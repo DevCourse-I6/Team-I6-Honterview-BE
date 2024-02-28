@@ -49,7 +49,7 @@ public class Interview extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private InterviewStatus status = InterviewStatus.IN_PROGRESS;
 
-	@Column(name = "timer", nullable = false)
+	@Column(name = "timer")
 	private Integer timer;
 
 	@ManyToOne(fetch = FetchType.LAZY)
