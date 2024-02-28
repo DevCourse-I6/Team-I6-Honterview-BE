@@ -22,6 +22,7 @@ public enum ErrorCode {
 
 	// answer
 	ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_NOT_FOUND", "존재하지 않는 답변입니다."),
+	ANSWER_DUPLICATED(HttpStatus.BAD_REQUEST, "ANSWER_DUPLICATED", "답변이 이미 존재합니다."),
 
 	// member
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "존재하지 않는 회원입니다."),
@@ -31,6 +32,7 @@ public enum ErrorCode {
 	INTERVIEWEE_NOT_SAME(HttpStatus.FORBIDDEN, "INTERVIEWEE_NOT_SAME", "동일한 면접자가 아닙니다."),
 	INTERVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "INTERVIEW_DELETE_FORBIDDEN", "삭제할 수 없는 인터뷰입니다."),
 	FIRST_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "FIRST_QUESTION_NOT_FOUND", "첫번째 질문이 존재하지 않습니다."),
+	TOO_MANY_ANSWERS(HttpStatus.BAD_REQUEST, "TOO_MANY_ANSWERS", "면접 연습 질문 갯수를 초과하였습니다."),
 
 	// common
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요.");

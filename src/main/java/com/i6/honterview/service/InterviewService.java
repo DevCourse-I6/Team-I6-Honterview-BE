@@ -59,7 +59,7 @@ public class InterviewService {
 		Interview interview = interviewRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
-			interview.changeStatus(InterviewStatus.RESULT_CHECK);
+			interview.changeStatus(InterviewStatus.COMPLETED);
 		}
 	}
 
@@ -81,17 +81,26 @@ public class InterviewService {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
-		Question firstQuestion = interview.findFirstQuestion();
+		validateAnswerCount(interview);
 
+		Question firstQuestion = interview.findFirstQuestion();
 		Question question;
-		if (request.sequence() != 1) { // 첫번째 질문이 아닐 경우 질문 저장
+		if (interview.getAnswers().isEmpty()) { // 첫번째 질문 -> 답변만 생성
+			question = firstQuestion;
+		} else { // 이후 꼬리질문 -> 질문, 답변 생성
 			question = createQuestion(request.questionContent(), firstQuestion);
 			interview.addQuestion(question);
-		} else {
-			question = firstQuestion;
 		}
+
 		Answer answer = createAnswer(request.answerContent(), interview, question);
 		return QuestionAnswerCreateResponse.of(question, answer);
+	}
+
+	private void validateAnswerCount(Interview interview) {
+		int answerCount = interview.getAnswers().size();
+		if (answerCount >= interview.getQuestionCount()) {
+			throw new CustomException(ErrorCode.TOO_MANY_ANSWERS);
+		}
 	}
 
 	public InterviewInfoResponse getInterviewInfo(Long id) {
