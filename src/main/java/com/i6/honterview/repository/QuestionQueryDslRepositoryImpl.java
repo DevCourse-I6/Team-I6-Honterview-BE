@@ -6,6 +6,7 @@ import static com.i6.honterview.domain.QQuestionCategory.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +82,8 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 		return queryFactory
 			.selectFrom(question)
 			.distinct()
-			.leftJoin(question.questionCategories, questionCategory)
+			.leftJoin(question.questionCategories, questionCategory).fetchJoin()
+			.leftJoin(questionCategory.category, category).fetchJoin()
 			.where(condition)
 			.orderBy(getOrderSpecifier(orderType))
 			.offset(pageable.getOffset())
@@ -105,4 +107,17 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 			.leftJoin(question.questionCategories, questionCategory)
 			.where(condition);
 	}
+
+	public Optional<Question> findQuestionByIdWithCategories(Long id) {
+		Question questionWithCategories = queryFactory
+			.selectFrom(question)
+			.distinct()
+			.leftJoin(question.questionCategories, questionCategory).fetchJoin()
+			.leftJoin(questionCategory.category, category).fetchJoin()
+			.where(question.id.eq(id))
+			.fetchFirst();
+
+		return Optional.ofNullable(questionWithCategories);
+	}
+
 }

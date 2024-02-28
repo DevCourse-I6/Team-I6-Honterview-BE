@@ -6,8 +6,8 @@ import com.i6.honterview.domain.Question;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "질문 상세 응답")
-public record QuestionDetailResponse(
+@Schema(description = "질문 응답")
+public record QuestionWithCategoriesResponse(
 	@Schema(description = "질문 id", example = "123")
 	Long id,
 
@@ -15,14 +15,14 @@ public record QuestionDetailResponse(
 	String content,
 
 	@Schema(description = "카테고리 이름 목록")
-	List<String> categoryNames,
+	List<String> categoryNames
+) {
 
-	@Schema(description = "답변 목록")
-	PageResponse<AnswerResponse> answers) {
-	public static QuestionDetailResponse from(Question question, PageResponse<AnswerResponse> answers) {
+	public static QuestionWithCategoriesResponse from(Question question) {
 		List<String> categoryNames = question.getQuestionCategories().stream()
 			.map(category -> category.getCategory().getCategoryName())
 			.toList();
-		return new QuestionDetailResponse(question.getId(), question.getContent(), categoryNames, answers);
+
+		return new QuestionWithCategoriesResponse(question.getId(), question.getContent(), categoryNames);
 	}
 }
