@@ -15,9 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import com.i6.honterview.domain.QCategory;
-import com.i6.honterview.domain.QQuestion;
-import com.i6.honterview.domain.QQuestionCategory;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -112,15 +109,15 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 	}
 
 	public Optional<Question> findQuestionByIdWithCategories(Long id) {
-		Question question = queryFactory
-			.selectFrom(QQuestion.question)
+		Question questionWithCategories = queryFactory
+			.selectFrom(question)
 			.distinct()
-			.leftJoin(QQuestion.question.questionCategories, QQuestionCategory.questionCategory).fetchJoin()
-			.leftJoin(QQuestionCategory.questionCategory.category, QCategory.category).fetchJoin()
-			.where(QQuestion.question.id.eq(id))
+			.leftJoin(question.questionCategories, questionCategory).fetchJoin()
+			.leftJoin(questionCategory.category, category).fetchJoin()
+			.where(question.id.eq(id))
 			.fetchFirst();
 
-		return Optional.ofNullable(question);
+		return Optional.ofNullable(questionWithCategories);
 	}
 
 }
