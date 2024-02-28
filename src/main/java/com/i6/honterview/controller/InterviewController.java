@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.i6.honterview.dto.request.AnswerVisibilityUpdateRequest;
 import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
 import com.i6.honterview.dto.response.AnswersVisibilityUpdateResponse;
+import com.i6.honterview.dto.response.InterviewInfoResponse;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
@@ -84,6 +86,15 @@ public class InterviewController {
 		@RequestBody List<AnswerVisibilityUpdateRequest> request
 	) {
 		AnswersVisibilityUpdateResponse response = interviewService.changeAnswersVisibility(id, request);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@Operation(summary = "면접 현황 조회")
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiResponse<InterviewInfoResponse>> getInterviewInfo(
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id
+	) {
+		InterviewInfoResponse response = interviewService.getInterviewInfo(id);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }

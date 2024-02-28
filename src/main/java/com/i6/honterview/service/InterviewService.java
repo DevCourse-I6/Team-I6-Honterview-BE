@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.i6.honterview.domain.Answer;
 import com.i6.honterview.domain.Interview;
-import com.i6.honterview.domain.InterviewQuestion;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
 import com.i6.honterview.domain.enums.InterviewStatus;
@@ -21,6 +20,8 @@ import com.i6.honterview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.dto.request.QuestionAnswerCreateRequest;
 import com.i6.honterview.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.dto.response.AnswersVisibilityUpdateResponse;
+import com.i6.honterview.dto.response.InterviewInfoResponse;
+import com.i6.honterview.dto.response.QuestionAndAnswerResponse;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
@@ -80,7 +81,7 @@ public class InterviewService {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
-		Question firstQuestion = getFirstQuestionFromInterview(interview);
+		Question firstQuestion = interview.findFirstQuestion();
 
 		Question question;
 		if (request.sequence() != 1) { // 첫번째 질문이 아닐 경우 질문 저장
@@ -91,6 +92,13 @@ public class InterviewService {
 		}
 		Answer answer = createAnswer(request.answerContent(), interview, question);
 		return QuestionAnswerCreateResponse.of(question, answer);
+	}
+
+	public InterviewInfoResponse getInterviewInfo(Long id) {
+		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		List<QuestionAndAnswerResponse> questionsAndAnswers = createQuestionAndAnswerResponses(interview);
+		return InterviewInfoResponse.of(interview, questionsAndAnswers);
 	}
 
 	private Answer createAnswer(String answerContent, Interview interview, Question question) {
@@ -104,11 +112,14 @@ public class InterviewService {
 		return questionService.saveTailQuestion(tailQuestionSaveRequest);
 	}
 
-	private Question getFirstQuestionFromInterview(Interview interview) {
+	private List<QuestionAndAnswerResponse> createQuestionAndAnswerResponses(Interview interview) {// TODO: N+1 문제 해결
 		return interview.getInterviewQuestions().stream()
-			.findFirst()
-			.map(InterviewQuestion::getQuestion)
-			.orElseThrow(() -> new CustomException(ErrorCode.FIRST_QUESTION_NOT_FOUND));
+			.map(interviewQuestion -> {
+				Question question = interviewQuestion.getQuestion();
+				Answer answer = answerRepository.findByInterviewAndQuestion(interview, question).orElse(null);
+				return QuestionAndAnswerResponse.of(question, answer, 0); //TODO: processingTime 조회 로직 추가
+			})
+			.collect(Collectors.toList());
 	}
 
 	public AnswersVisibilityUpdateResponse changeAnswersVisibility(Long interviewId,

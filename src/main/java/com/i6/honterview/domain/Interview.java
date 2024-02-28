@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.i6.honterview.domain.enums.AnswerType;
 import com.i6.honterview.domain.enums.InterviewStatus;
+import com.i6.honterview.exception.CustomException;
+import com.i6.honterview.exception.ErrorCode;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,8 +49,8 @@ public class Interview extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private InterviewStatus status = InterviewStatus.IN_PROGRESS;
 
-	@Column(name = "timer", nullable = false)
-	private int timer;
+	@Column(name = "timer")
+	private Integer timer;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
@@ -57,7 +59,7 @@ public class Interview extends BaseEntity {
 	@OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<InterviewQuestion> interviewQuestions = new ArrayList<>();
 
-	public Interview(AnswerType answerType, Integer questionCount, int timer, Member member, Question question) {
+	public Interview(AnswerType answerType, Integer questionCount, Integer timer, Member member, Question question) {
 		this.answerType = answerType;
 		this.questionCount = questionCount;
 		this.timer = timer;
@@ -79,5 +81,13 @@ public class Interview extends BaseEntity {
 
 	public void addQuestion(Question question) {
 		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	}
+
+	public Question findFirstQuestion() {
+		if (interviewQuestions != null && !interviewQuestions.isEmpty()) {
+			return interviewQuestions.get(0).getQuestion();
+		} else {
+			throw new CustomException(ErrorCode.FIRST_QUESTION_NOT_FOUND);
+		}
 	}
 }
