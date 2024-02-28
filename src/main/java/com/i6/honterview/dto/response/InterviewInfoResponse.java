@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.i6.honterview.domain.Interview;
+import com.i6.honterview.domain.enums.AnswerType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -14,6 +15,9 @@ public record InterviewInfoResponse(
 	@Schema(description = "타이머 시간(초), null일 경우 반환X", example = "90")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Integer timer,
+
+	@Schema(description = "답변 타입(TEXT or RECORD)", example = "TEXT")
+	AnswerType answerType,
 
 	@Schema(description = "해당 면접의 총 질문 개수", example = "3")
 	int questionCount,
@@ -29,6 +33,7 @@ public record InterviewInfoResponse(
 		return new InterviewInfoResponse(
 			interview.getId(),
 			interview.getTimer(),
+			interview.getAnswerType(),
 			interview.getQuestionCount(),
 			questionsAndAnswers,
 			interview.findFirstQuestion().getCategoryNames()
