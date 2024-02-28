@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import com.i6.honterview.domain.enums.AnswerType;
 import com.i6.honterview.domain.enums.InterviewStatus;
+import com.i6.honterview.exception.CustomException;
+import com.i6.honterview.exception.ErrorCode;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -79,5 +81,13 @@ public class Interview extends BaseEntity {
 
 	public void addQuestion(Question question) {
 		this.interviewQuestions.add(new InterviewQuestion(this, question));
+	}
+
+	public Question findFirstQuestion() {
+		if (interviewQuestions != null && !interviewQuestions.isEmpty()) {
+			return interviewQuestions.get(0).getQuestion();
+		} else {
+			throw new CustomException(ErrorCode.FIRST_QUESTION_NOT_FOUND);
+		}
 	}
 }

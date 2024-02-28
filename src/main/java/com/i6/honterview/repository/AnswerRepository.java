@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.i6.honterview.domain.Answer;
+import com.i6.honterview.domain.Interview;
+import com.i6.honterview.domain.Question;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long>, AnswerQueryDslRepository {
 
@@ -15,4 +17,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long>, AnswerQue
 	Optional<Answer> findByIdWithHearts(@Param("id") Long id);
 
 	List<Answer> findByInterviewId(Long id);
+
+	Optional<Answer> findByInterviewAndQuestion(Interview interview, Question question);
 }
