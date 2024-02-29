@@ -43,7 +43,7 @@ public class Interview extends BaseEntity {
 	private AnswerType answerType;
 
 	@Column(name = "question_count", nullable = false)
-	private Integer questionCount;
+	private int questionCount;
 
 	@Column(name = "interview_status", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -58,6 +58,9 @@ public class Interview extends BaseEntity {
 
 	@OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<InterviewQuestion> interviewQuestions = new ArrayList<>();
+
+	@OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Answer> answers = new ArrayList<>();
 
 	public Interview(AnswerType answerType, Integer questionCount, Integer timer, Member member, Question question) {
 		this.answerType = answerType;

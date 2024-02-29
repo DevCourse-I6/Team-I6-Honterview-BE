@@ -2,15 +2,10 @@ package com.i6.honterview.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "면접에 대한 질문과 답변 정보")
 public record QuestionAnswerCreateRequest(
-
-	@Schema(description = "질문/답변 순서", example = "1")
-	@NotNull
-	Long sequence,
 
 	@Schema(description = "질문", example = "JPA N+1 문제에 대해 설명해주세요.")
 	@NotBlank(message = "질문 내용은 필수 항목입니다.")

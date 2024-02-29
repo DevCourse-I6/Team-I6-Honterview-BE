@@ -11,6 +11,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.i6.honterview.domain.Answer;
+import com.i6.honterview.domain.Interview;
+import com.i6.honterview.domain.Question;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -38,5 +40,13 @@ public class AnswerQueryDslRepositoryImpl implements AnswerQueryDslRepository {
 			.from(answer)
 			.where(answer.question.id.eq(questionId));
 		return PageableExecutionUtils.getPage(answers, pageable, countQuery::fetchOne);
+	}
+
+	@Override
+	public boolean existsByInterviewAndQuestion(Interview interview, Question question) {
+		return queryFactory.selectFrom(answer)
+			.where(answer.interview.eq(interview)
+				.and(answer.question.eq(question)))
+			.fetchFirst() != null;
 	}
 }
