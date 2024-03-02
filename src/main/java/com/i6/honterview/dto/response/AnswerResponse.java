@@ -16,7 +16,7 @@ public record AnswerResponse(
 	String nickname,
 
 	@Schema(description = "좋아요 수")
-	int heartsCount
+	Long heartsCount
 
 ) {
 	public static AnswerResponse from(Answer answer) {
@@ -24,6 +24,6 @@ public record AnswerResponse(
 			answer.getId(),
 			answer.getContent(),
 			answer.getMember().getNickname(),
-			answer.getAnswerHearts().size());
+			(long)answer.getAnswerHearts().size());
 	}
 }
