@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.i6.honterview.config.GptConfig;
+import com.i6.honterview.domain.enums.InterviewStatus;
 import com.i6.honterview.dto.request.GptApiRequest;
 import com.i6.honterview.dto.request.GptQuestionCreateRequest;
 import com.i6.honterview.dto.request.Message;
@@ -18,6 +19,7 @@ import com.i6.honterview.dto.response.GptQuestionCreateResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.exception.OpenAiException;
+import com.i6.honterview.repository.InterviewRepository;
 import com.i6.honterview.response.ErrorResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -33,12 +35,20 @@ public class GptService {
 	@Value("${openai.end-point}")
 	private String endPoint;
 	private final GptConfig gptConfig;
+	private final InterviewRepository interviewRepository; //TODO: service로 변경
 
-	public GptQuestionCreateResponse createGptQuestion(GptQuestionCreateRequest request) {
+	public GptQuestionCreateResponse createGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
+
+		boolean isInterviewing = interviewRepository.existsByIdAndStatus(interviewId, InterviewStatus.IN_PROGRESS);
+		if (!isInterviewing) {
+			throw new CustomException(ErrorCode.INTERVIEW_NOT_PROCESSING);
+		}
+
 		String prompt = "면접 질문 : " + request.prevQuestion()
 			+ "답변 : " + request.prevAnswer()
 			+ "이에 대한 꼬리 질문 하나만 생성";
 		GptApiRequest apiRequest = new GptApiRequest(model, List.of(new Message("user", prompt)));
+
 		try {
 			return gptConfig.restTemplate().postForObject(endPoint, apiRequest, GptQuestionCreateResponse.class);
 		} catch (HttpClientErrorException e) {

@@ -71,6 +71,11 @@ jwt:
   access-expiry-seconds: 1800 #30 min
   refresh-expiry-seconds: 604800 #7 day
 
+openai:
+  secret-key: openai-secret
+  model: gpt-3.5-turbo-0125
+  end-point: https://api.openai.com/v1/chat/completions
+
 logging:
   level:
     org.hibernate.SQL: DEBUG

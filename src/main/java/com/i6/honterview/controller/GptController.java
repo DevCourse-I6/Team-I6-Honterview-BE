@@ -3,6 +3,7 @@ package com.i6.honterview.controller;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +27,12 @@ public class GptController {
 
 	private final GptService gptService;
 
-	@PostMapping
+	@PostMapping("/{interviewId}")
 	public ResponseEntity<ApiResponse<GptQuestionCreateResponse>> createGptQuestion(
+		@PathVariable Long interviewId,
 		@Valid @RequestBody GptQuestionCreateRequest request
 	) {
-		GptQuestionCreateResponse response = gptService.createGptQuestion(request);
+		GptQuestionCreateResponse response = gptService.createGptQuestion(interviewId, request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
 			.path("/{id}")
 			.buildAndExpand(response.id())
