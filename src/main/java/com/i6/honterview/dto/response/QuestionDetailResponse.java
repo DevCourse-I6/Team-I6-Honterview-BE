@@ -15,7 +15,7 @@ public record QuestionDetailResponse(
 	String content,
 
 	@Schema(description = "좋아요 수")
-	Long heartsCount,
+	long heartsCount,
 
 	@Schema(description = "카테고리 이름 목록")
 	List<String> categoryNames,
