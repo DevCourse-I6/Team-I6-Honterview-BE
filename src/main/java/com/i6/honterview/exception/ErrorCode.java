@@ -19,6 +19,7 @@ public enum ErrorCode {
 	// question
 	QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION_NOT_FOUND", "존재하지 않는 질문입니다."),
 	ORDER_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "ORDER_TYPE_NOT_FOUND", "지원하지 않는 정렬 방식입니다."),
+	GPT_QUESTION_CREATE_FAIL(HttpStatus.BAD_REQUEST, "GPT_QUESTION_CREATE_FAIL", "문제 생성에 실패했습니다."),
 
 	// answer
 	ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_NOT_FOUND", "존재하지 않는 답변입니다."),
