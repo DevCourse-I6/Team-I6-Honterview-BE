@@ -15,7 +15,7 @@ public record AnswerResponse(
 	@Schema(description = "답변 작성자", example = "라이언")
 	String nickname,
 
-	@Schema(description = "좋아요 수")
+	@Schema(description = "좋아요 수", example = "5")
 	long heartsCount
 
 ) {
