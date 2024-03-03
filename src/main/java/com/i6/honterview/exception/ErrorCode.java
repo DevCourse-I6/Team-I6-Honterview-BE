@@ -19,6 +19,7 @@ public enum ErrorCode {
 	// question
 	QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION_NOT_FOUND", "존재하지 않는 질문입니다."),
 	ORDER_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "ORDER_TYPE_NOT_FOUND", "지원하지 않는 정렬 방식입니다."),
+	GPT_QUESTION_CREATE_FAIL(HttpStatus.BAD_REQUEST, "GPT_QUESTION_CREATE_FAIL", "문제 생성에 실패했습니다."),
 
 	// answer
 	ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "ANSWER_NOT_FOUND", "존재하지 않는 답변입니다."),
@@ -33,9 +34,11 @@ public enum ErrorCode {
 	INTERVIEW_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "INTERVIEW_DELETE_FORBIDDEN", "삭제할 수 없는 인터뷰입니다."),
 	FIRST_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "FIRST_QUESTION_NOT_FOUND", "첫번째 질문이 존재하지 않습니다."),
 	TOO_MANY_ANSWERS(HttpStatus.BAD_REQUEST, "TOO_MANY_ANSWERS", "면접 연습 질문 갯수를 초과하였습니다."),
+	INTERVIEW_NOT_PROCESSING(HttpStatus.FORBIDDEN, "INTERVIEW_NOT_PROCESSING", "진행중인 면접이 아닙니다."),
 
 	// common
-	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요.");
+	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 에러");
 
 	private final HttpStatus status;
 	private final String code;

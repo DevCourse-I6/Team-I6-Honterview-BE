@@ -34,6 +34,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(errorCode.getStatus()).body(errorCode.getErrorResponse());
 	}
 
+	@ExceptionHandler(OpenAiException.class)
+	protected ResponseEntity<ErrorResponse> handleOpenAiException(OpenAiException ex) {
+		ErrorResponse response = new ErrorResponse(ex.getCode(), ex.getMessage());
+		log.warn(">>>>> OpenAiException : {}", response.getErrorMessage());
+		return ResponseEntity.status(ex.getStatus()).body(response);
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 		log.warn(">>>>> validation Failed : {}", ex.getMessage());
