@@ -66,6 +66,17 @@ spring:
             client-secret: github_client_secret
             redirect-uri: http://localhost:8080/login/oauth2/code/github
 
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: honterview-s3-bucket
+
+
 jwt:
   secret-key: EENY5W0eegTf1naQB2eDeyCLl5kRS2b8xa5c4qLdS0hmVjtbvo8tOyhPMcAmtPuQ
   access-expiry-seconds: 1800 #30 min
