@@ -23,7 +23,20 @@ public class Record {
 	@Column(name = "file_name", nullable = false)
 	private String fileName;
 
-	public Record(String fileName) {
+	@Column(name = "processing_time", nullable = false)
+	private int processingTime;
+
+	public Record(String fileName, int processingTime) {
 		this.fileName = fileName;
+		this.processingTime = processingTime;
+	}
+
+	@Override
+	public String toString() {
+		return "Record{" +
+			"id=" + id +
+			", fileName='" + fileName + '\'' +
+			", processingTime=" + processingTime +
+			'}';
 	}
 }
