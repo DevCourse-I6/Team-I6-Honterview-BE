@@ -21,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,6 +58,10 @@ public class Answer extends BaseEntity {
 
 	@OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<AnswerHeart> answerHearts = new HashSet<>();
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "video_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Video video;
 
 	public Answer(String content, Question question, Interview interview) {
 		this.content = content;

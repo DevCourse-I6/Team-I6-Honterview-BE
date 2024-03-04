@@ -60,8 +60,8 @@ spring:
               - name
               - email
           github:
-            client-id: ${GITHUB_CLIENT_ID}
-            client-secret: ${GITHUB_CLIENT_SECRET}
+            client-id: ${GIT_CLIENT_ID}
+            client-secret: ${GIT_CLIENT_SECRET}
             redirect-uri: ${HOST_URI}/login/oauth2/code/github
 
 jwt:

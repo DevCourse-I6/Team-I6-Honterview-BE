@@ -36,6 +36,12 @@ public enum ErrorCode {
 	TOO_MANY_ANSWERS(HttpStatus.BAD_REQUEST, "TOO_MANY_ANSWERS", "면접 연습 질문 갯수를 초과하였습니다."),
 	INTERVIEW_NOT_PROCESSING(HttpStatus.FORBIDDEN, "INTERVIEW_NOT_PROCESSING", "진행중인 면접이 아닙니다."),
 
+	// file
+	FILE_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "FILE_UPLOAD_FAILED", "파일 업로드에 실패하였습니다."),
+	FILE_DOWNLOAD_FAILED(HttpStatus.BAD_REQUEST, "FILE_DOWNLOAD_FAILED", "파일 다운로드에 실패하였습니다."),
+	VIDEO_NOT_FOUND(HttpStatus.BAD_REQUEST, "VIDEO_NOT_FOUND", "영상 기록이 존재하지 않습니다."),
+	INVALID_FILE_FORMAT(HttpStatus.BAD_REQUEST, "INVALID_FILE_FORMAT", "유효하지 않은 파일 형식입니다."),
+
 	// common
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 에러");
