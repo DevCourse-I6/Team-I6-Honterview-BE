@@ -23,6 +23,8 @@ import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.service.FileService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +38,9 @@ public class FileController {
 	private final FileService fileService;
 
 	@Operation(summary = "파일 업로드", description = "파일을 S3에 업로드합니다.")
-	@PostMapping("/upload")
+	@PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ApiResponse<FileUploadResponse>> uploadFile( // TODO : answer와 연결
-		@RequestPart("request") FileUploadRequest request,
+		@RequestPart("request") @Parameter(schema = @Schema(type = "string", format = "binary")) FileUploadRequest request,
 		@RequestPart("file") MultipartFile file
 	) {
 		FileUploadResponse response = fileService.uploadFile(request, file);
