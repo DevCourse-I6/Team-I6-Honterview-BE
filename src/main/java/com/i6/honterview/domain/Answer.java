@@ -60,8 +60,8 @@ public class Answer extends BaseEntity {
 	private Set<AnswerHeart> answerHearts = new HashSet<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "record_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private Record record;
+	@JoinColumn(name = "video_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+	private Video video;
 
 	public Answer(String content, Question question, Interview interview) {
 		this.content = content;

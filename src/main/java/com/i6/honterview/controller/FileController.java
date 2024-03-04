@@ -44,20 +44,20 @@ public class FileController {
 		FileUploadResponse response = fileService.uploadFile(request, file);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
-			.path("/api/v1/files/download/{recordId}")
-			.buildAndExpand(response.recordId())
+			.path("/api/v1/files/download/{videoId}")
+			.buildAndExpand(response.videoId())
 			.toUri();
 
 		return ResponseEntity.created(location).body(ApiResponse.created(response));
 	}
 
 	@Operation(summary = "파일 다운로드", description = "S3로부터 파일을 다운로드 합니다.")
-	@GetMapping("/download/{recordId}")
+	@GetMapping("/download/{videoId}")
 	public ResponseEntity<Resource> downloadFile(
-		@PathVariable Long recordId,
+		@PathVariable Long videoId,
 		HttpServletResponse response
 	) {
-		Resource resource = fileService.downloadFile(recordId);
+		Resource resource = fileService.downloadFile(videoId);
 
 		// 브라우저에서 파일을 다운로드하기 위한 헤더 추가
 		// ex) Content-Disposition: attachment; filename="example.mp3"

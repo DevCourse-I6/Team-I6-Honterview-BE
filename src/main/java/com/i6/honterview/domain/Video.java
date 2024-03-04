@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "record")
+@Table(name = "video")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Record {
+public class Video extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
@@ -26,14 +26,14 @@ public class Record {
 	@Column(name = "processing_time", nullable = false)
 	private int processingTime;
 
-	public Record(String fileName, int processingTime) {
+	public Video(String fileName, int processingTime) {
 		this.fileName = fileName;
 		this.processingTime = processingTime;
 	}
 
 	@Override
 	public String toString() {
-		return "Record{" +
+		return "Video{" +
 			"id=" + id +
 			", fileName='" + fileName + '\'' +
 			", processingTime=" + processingTime +

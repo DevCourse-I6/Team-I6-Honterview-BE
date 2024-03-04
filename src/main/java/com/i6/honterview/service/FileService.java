@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.i6.honterview.domain.Record;
+import com.i6.honterview.domain.Video;
 import com.i6.honterview.dto.request.FileUploadRequest;
 import com.i6.honterview.dto.response.FileUploadResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
-import com.i6.honterview.repository.RecordRepository;
+import com.i6.honterview.repository.VideoRepository;
 import com.i6.honterview.util.FileUtils;
 
 import io.awspring.cloud.s3.S3Exception;
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class FileService {
 
-	private final RecordRepository recordRepository;
+	private final VideoRepository videoRepository;
 	private final S3Template s3Template;
 
 	@Value("${spring.cloud.aws.s3.bucket}")
@@ -44,9 +44,9 @@ public class FileService {
 		String newFileName = FileUtils.generateFileName(originalFileName);
 		try (InputStream inputStream = file.getInputStream()) {
 			S3Resource resource = s3Template.upload(s3Bucket, newFileName, inputStream);
-			Record record = recordRepository.save(new Record(resource.getFilename(), request.processingTime()));
-			log.info("File uploaded successfully: {}", record);
-			return FileUploadResponse.from(record);
+			Video video = videoRepository.save(new Video(resource.getFilename(), request.processingTime()));
+			log.info("File uploaded successfully: {}", video);
+			return FileUploadResponse.from(video);
 		} catch (IOException e) {
 			log.error("IOException occurred: ", e);
 			throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
@@ -56,11 +56,11 @@ public class FileService {
 		}
 	}
 
-	public Resource downloadFile(Long recordId) {
+	public Resource downloadFile(Long videoId) {
 		try {
-			Record record = recordRepository.findById(recordId)
-				.orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
-			return s3Template.download(s3Bucket, record.getFileName());
+			Video video = videoRepository.findById(videoId)
+				.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND));
+			return s3Template.download(s3Bucket, video.getFileName());
 		} catch (S3Exception e) {
 			log.error("S3 download failed : ", e);
 			throw new CustomException(ErrorCode.FILE_DOWNLOAD_FAILED);
