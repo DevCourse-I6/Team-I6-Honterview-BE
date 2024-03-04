@@ -66,8 +66,13 @@ spring:
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
-  access-expiry-milliseconds: 120000 # 5min
-  refresh-expiry-milliseconds: 86400000 #1 day
+  access-expiry-seconds: 1800 #30 min
+  refresh-expiry-seconds: 604800 #7 day
+
+openai:
+  secret-key: ${OPEN_AI_SECRET_KEY}
+  model: ${GPT_MODEL}
+  end-point: https://api.openai.com/v1/chat/completions
 
 logging:
   level:
