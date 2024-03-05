@@ -38,7 +38,7 @@ public enum ErrorCode {
 
 	// file
 	GENERATE_UPLOAD_URL_FAILED(HttpStatus.BAD_REQUEST, "GENERATE_UPLOAD_URL_FAILED", "파일 업로드 URL 생성에 실패하였습니다."),
-	FILE_DOWNLOAD_FAILED(HttpStatus.BAD_REQUEST, "FILE_DOWNLOAD_FAILED", "파일 다운로드에 실패하였습니다."),
+	GENERATE_DOWNLOAD_URL_FAILED(HttpStatus.BAD_REQUEST, "GENERATE_DOWNLOAD_URL_FAILED", "파일 다운로드 URL 생성에 실패하였습니다."),
 	VIDEO_NOT_FOUND(HttpStatus.BAD_REQUEST, "VIDEO_NOT_FOUND", "영상 기록이 존재하지 않습니다."),
 
 	// common
