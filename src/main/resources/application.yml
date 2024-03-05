@@ -2,12 +2,6 @@ spring:
   profiles:
     active: dev
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 10MB # TODO 영상 파일 사이즈 조절
-      max-request-size: 10MB
-
   cloud:
     aws:
       credentials:
