@@ -9,4 +9,4 @@ ARG JAR_PATH=build/libs
 COPY ${JAR_PATH}/honterview-0.0.1-SNAPSHOT.jar honterview.jar
 
 # 컨테이너가 시작될 때 애플리케이션 실행
-ENTRYPOINT ["java","-Duser.timezone=Asia/Seoul","-jar","app.jar"]
+ENTRYPOINT ["java","-Duser.timezone=Asia/Seoul","-jar","honterview.jar"]
