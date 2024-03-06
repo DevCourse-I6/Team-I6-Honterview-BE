@@ -85,4 +85,13 @@ jobs:
             -e TZ=Asia/Seoul \
             ${{ secrets.DOCKER_ID }}/honterview:${{ env.TAG_NAME }}
           
+          docker pull redis
+
+          docker run -d \
+            --name honterview-redis \
+            --network=honterview \
+            -p 6379:6379 \
+            redis
+
+          docker system prune -f
           "
