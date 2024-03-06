@@ -1,7 +1,6 @@
 package com.i6.honterview.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.i6.honterview.dto.response.DownloadUrlResponse;
 import com.i6.honterview.dto.response.UploadUrlResponse;
 import com.i6.honterview.response.ApiResponse;
-import com.i6.honterview.security.auth.UserDetailsImpl;
+import com.i6.honterview.security.resolver.CurrentAccount;
 import com.i6.honterview.service.FileService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +30,9 @@ public class FileController {
 	@GetMapping("/upload-url")
 	public ResponseEntity<ApiResponse<UploadUrlResponse>> getUploadUrl(
 		@Parameter(description = "인터뷰 id", example = "123") @RequestParam Long interviewId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails
+		@CurrentAccount Long memberId
 	) {
-		UploadUrlResponse response = fileService.generateUploadUrl(interviewId, userDetails.getId());
+		UploadUrlResponse response = fileService.generateUploadUrl(interviewId, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -41,7 +40,7 @@ public class FileController {
 	@GetMapping("/download-url/{videoId}")
 	public ResponseEntity<ApiResponse<DownloadUrlResponse>> getDownloadUrl(
 		@Parameter(description = "영상 id", example = "123") @PathVariable Long videoId,
-		@AuthenticationPrincipal UserDetailsImpl userDetails
+		@CurrentAccount Long memberId
 	) {
 		DownloadUrlResponse response = fileService.generateDownloadUrl(videoId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
