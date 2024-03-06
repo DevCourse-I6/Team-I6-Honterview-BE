@@ -21,11 +21,11 @@ jobs:
       ## create application.yml
       - name: make application.yml
         run: |
-          mkdir -p ./api/src/main/resources
-          touch ./api/src/main/resources/application.yml
+          mkdir -p ./src/main/resources
+          touch ./src/main/resources/application.yml
         shell: bash
       - name: deliver application.yml
-        run: echo "${{ secrets.APPLICATION }}" > ./api/src/main/resources/application.yml
+        run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
         shell: bash
 
       # 빌드 및 테스트 단계.
@@ -33,12 +33,8 @@ jobs:
         run: chmod +x gradlew
 
       # gradle build
-      #      - name: Build with Gradle
-      #        run: ./gradlew build -x test
-
-      # gradle build
-      - name: Make jar with Gradle
-        run: ./gradlew bootJar
+      - name: Build with Gradle
+        run: ./gradlew build -x test
 
       # push 하기 위해 로그인
       - name: Docker Hub 로그인
