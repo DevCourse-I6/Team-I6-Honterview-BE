@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +21,7 @@ import com.i6.honterview.dto.response.AnswersVisibilityUpdateResponse;
 import com.i6.honterview.dto.response.InterviewInfoResponse;
 import com.i6.honterview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.response.ApiResponse;
-import com.i6.honterview.security.auth.UserDetailsImpl;
+import com.i6.honterview.security.resolver.CurrentAccount;
 import com.i6.honterview.service.InterviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,8 +42,8 @@ public class InterviewController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<Long>> createInterview(
 		@Valid @RequestBody InterviewCreateRequest request,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		Long id = interviewService.createInterview(request, userDetails.getId());
+		@CurrentAccount Long memberId) {
+		Long id = interviewService.createInterview(request, memberId);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
 			.path("/{id}")
 			.buildAndExpand(id)
@@ -64,14 +63,14 @@ public class InterviewController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteInterview(
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		interviewService.deleteInterview(id, userDetails.getId());
+		@CurrentAccount Long memberId) {
+		interviewService.deleteInterview(id, memberId);
 		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "면접/답변 저장(면접 연습 중)")
 	@PostMapping("/{id}")
-	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> createQuestionAndAnswer(
+	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> createQuestionAndAnswer(// TODO: 멤버 연동
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
 		@RequestBody QuestionAnswerCreateRequest request
 	) {
@@ -81,7 +80,7 @@ public class InterviewController {
 
 	@Operation(summary = "답변 공개여부 수정(면접 결과)")
 	@PatchMapping("/{id}/visibility")
-	public ResponseEntity<ApiResponse<AnswersVisibilityUpdateResponse>> changeAnswersVisibility(
+	public ResponseEntity<ApiResponse<AnswersVisibilityUpdateResponse>> changeAnswersVisibility(// TODO: 멤버 연동
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
 		@RequestBody List<AnswerVisibilityUpdateRequest> request
 	) {
