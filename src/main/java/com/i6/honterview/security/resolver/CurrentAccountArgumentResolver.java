@@ -14,7 +14,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.i6.honterview.exception.SecurityCustomException;
 import com.i6.honterview.exception.SecurityErrorCode;
-import com.i6.honterview.security.auth.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,9 @@ public class CurrentAccountArgumentResolver implements HandlerMethodArgumentReso
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		validateAuthentication(authentication);
-		UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
-		return userDetails.getId();
+		//validateAuthentication(authentication);
+		//UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal(); // TODO: 추후 주석 제거
+		return 1L; // TODO: userDetails.getId()로 변경
 	}
 
 	private void validateAuthentication(Authentication authentication) {
