@@ -35,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
 		return Arrays.asList(
 			"http://127.0.0.1:3000",
 			"http://localhost:3000",
-			"https://team-i6-honterview-fe.vercel.app/"
+			"https://team-i6-honterview-fe.vercel.app"
 		).toArray(String[]::new);
 	}
 }
