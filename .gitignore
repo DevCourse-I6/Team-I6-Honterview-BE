@@ -36,3 +36,9 @@ data
 
 ### VS Code ###
 .vscode/
+
+
+### yml
+application.yml
+application-dev.yml
+application-prod.yml
