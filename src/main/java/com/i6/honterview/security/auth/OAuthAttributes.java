@@ -29,7 +29,6 @@ public class OAuthAttributes {
 		return switch (provider) {
 			case KAKAO -> ofKakao(nameAttributeName, attributes);
 			case GOOGLE -> ofGoogle(nameAttributeName, attributes);
-			case NAVER -> ofNaver(nameAttributeName, attributes);
 			case GITHUB -> ofGithub(nameAttributeName, attributes);
 			default -> throw new IllegalArgumentException("지원되지 않는 프로바이더 타입: " + provider);
 		};
@@ -54,17 +53,6 @@ public class OAuthAttributes {
 			.email((String)attributes.get("email"))
 			.provider(Provider.GOOGLE)
 			.providerId((String)attributes.get("sub"))
-			.attributeKey(userNameAttributeName)
-			.build();
-	}
-
-	private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-		Map<String, Object> response = (Map<String, Object>)attributes.get("response");
-		return OAuthAttributes.builder()
-			.nickname((String) response.get("name"))
-			.email((String) response.get("email"))
-			.provider(Provider.NAVER)
-			.providerId(String.valueOf(response.get("id")))
 			.attributeKey(userNameAttributeName)
 			.build();
 	}

@@ -25,7 +25,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oauth2User = super.loadUser(userRequest);
 
-		// 공급자(Google, Naver, ...) ID
+		// 공급자(Google, Kakao, ...) ID
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
 		// nameAttributeKey 식별자(google-sub, kakao-id, ...)
