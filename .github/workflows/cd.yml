@@ -71,6 +71,8 @@ jobs:
           # Docker 컨테이너 중지 및 제거
           docker stop honterview || true
           docker rm honterview || true
+          docker stop honterview-redis || true
+          docker rm honterview-redis || true
           
           # 필요시 Docker 네트워크 생성 (예시)
           docker network ls | grep honterview || docker network create honterview
