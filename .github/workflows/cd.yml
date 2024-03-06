@@ -33,8 +33,12 @@ jobs:
         run: chmod +x gradlew
 
       # gradle build
-      - name: Build with Gradle
-        run: ./gradlew build -x test
+      #      - name: Build with Gradle
+      #        run: ./gradlew build -x test
+
+      # gradle build
+      - name: Make jar with Gradle
+        run: ./gradlew bootJar
 
       # push 하기 위해 로그인
       - name: Docker Hub 로그인
