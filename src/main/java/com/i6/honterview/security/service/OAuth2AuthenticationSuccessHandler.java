@@ -66,17 +66,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		redisRepository.saveRefreshToken(refreshToken, member.getId());
 
 		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-		accessTokenCookie.setSecure(true);
-		accessTokenCookie.setHttpOnly(true);
+		// accessTokenCookie.setSecure(true);
+		// accessTokenCookie.setHttpOnly(true);
 		accessTokenCookie.setPath("/");
+		accessTokenCookie.setDomain("honterview.site");
 		response.addCookie(accessTokenCookie);
 
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-		refreshTokenCookie.setSecure(true);
-		refreshTokenCookie.setHttpOnly(true);
+		// refreshTokenCookie.setSecure(true);
+		// refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setPath("/");
+		accessTokenCookie.setDomain("honterview.site");
 		response.addCookie(refreshTokenCookie);
 
+		response.sendRedirect("http://localhost:3000");
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }
