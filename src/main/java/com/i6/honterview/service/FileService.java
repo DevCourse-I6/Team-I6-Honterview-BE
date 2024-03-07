@@ -46,8 +46,8 @@ public class FileService {
 		String fileName = FileUtils.generateFileName();
 		try {
 			URL url = s3Template.createSignedPutURL(s3Bucket, fileName, Duration.ofMinutes(10));
-			videoRepository.save(new Video(fileName)); // TODO: answer과 연관지어야 함
-			return new UploadUrlResponse(url.toString());
+			Video video = videoRepository.save(new Video(fileName));
+			return UploadUrlResponse.of(video, url.toString());
 		} catch (S3Exception e) {
 			log.error("createSignedPutURL failed : ", e);
 			throw new CustomException(ErrorCode.GENERATE_UPLOAD_URL_FAILED);
