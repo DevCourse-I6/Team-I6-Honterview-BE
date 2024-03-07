@@ -44,9 +44,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # 태그 추출
-      - name: Extract tag name
-        id: extract_tag
-        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+      - name: Extract branch or tag name
+        id: ref
+        run: |
+          REF_NAME=${GITHUB_REF#refs/*/}
+          echo "::set-output name=name::${REF_NAME//\//-}"
 
       # Docker 이미지 빌드 및 푸시
       - name: Build and Push Docker Image
@@ -55,7 +57,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
+          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.ref.outputs.name }}
 
       # EC2 배포
       - name: Deploy to AWS EC2
