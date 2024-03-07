@@ -21,14 +21,14 @@ jobs:
       ## create application.yml
       - name: make application.yml
         run: |
-          mkdir -p ./api/src/main/resources
-          touch ./api/src/main/resources/application.yml
+          mkdir -p ./src/main/resources
+          touch ./src/main/resources/application.yml
         shell: bash
       - name: deliver application.yml
-        run: echo "${{ secrets.APPLICATION }}" > ./api/src/main/resources/application.yml
+        run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
         shell: bash
 
-      # 빌드 및 테스트 단계.
+      # gradlew 권한 설정
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -43,12 +43,10 @@ jobs:
           username: ${{ secrets.DOCKER_ID }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 태그 생성
-      - name: Generate Tag
-        id: generate-tag
-        run: |
-          DATE=$(date +'%Y%m%d%H%M%S')
-          echo "TAG_NAME=v${DATE}" >> $GITHUB_ENV
+      # 태그 추출
+      - name: Extract tag name
+        id: extract_tag
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
 
       # Docker 이미지 빌드 및 푸시
       - name: Build and Push Docker Image
@@ -57,52 +55,43 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ env.TAG_NAME }}
+          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
 
-      # Docker 파일을 EC2 서버에 배포
-      - name: Deploy to Prod
-        uses: appleboy/ssh-action@master
-        id: deploy-prod
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_PEM_KEY }}
-          port: 22
-          script: |
-            if [ ! -z "$(docker ps -q)" ]; then
-              docker stop $(docker ps -q)
-            fi
+      # EC2 배포
+      - name: Deploy to AWS EC2
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PEM_KEY }}" > ~/.ssh/ec2_key.pem
+          chmod 600 ~/.ssh/ec2_key.pem
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2_key.pem ubuntu@${{ secrets.EC2_HOST }} "
+          docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
+          
+          # Docker 컨테이너 중지 및 제거
+          docker stop honterview || true
+          docker rm honterview || true
+          docker stop honterview-redis || true
+          docker rm honterview-redis || true
+          
+          # 필요시 Docker 네트워크 생성 (예시)
+          docker network ls | grep honterview || docker network create honterview
+          
+          # Docker 이미지 업데이트
+          docker pull ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
+          
+          # Docker 컨테이너 실행
+          docker run -d --name honterview \
+            --network=honterview \
+            -p 8080:8080 \
+            -e TZ=Asia/Seoul \
+            ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
+          
+          docker pull redis
 
-            if [ ! -z "$(docker ps -aq)" ]; then
-              docker rm $(docker ps -aq)
-            fi
+          docker run -d \
+            --name honterview-redis \
+            --network=honterview \
+            -p 6379:6379 \
+            redis
 
-            if [ ! -z "$(docker network ls -qf name=honterview)" ]; then
-              docker network rm honterview
-            fi
-
-            docker login -u ${{ secrets.DOCKER_ID }} -p ${{ secrets.DOCKER_PASSWORD }}
-            
-            docker pull ${{ secrets.DOCKER_ID }}/honterview:${{ env.TAG_NAME }}
-
-            docker network create honterview
-            
-            
-            docker rmi $(docker images -q)
-            
-            docker run -d \
-              --name honterview \
-              --network=honterview \
-              -p 8080:8080 \
-              -e TZ=Asia/Seoul \
-              ${{ secrets.DOCKER_ID }}/honterview:${{ env.TAG_NAME }}
-
-            docker pull redis
-
-            docker run -d \
-              --name honterview-redis \
-              --network=honterview \
-              -p 6379:6379 \
-              redis
-
-            docker system prune -f
+          docker system prune -f
+          "
