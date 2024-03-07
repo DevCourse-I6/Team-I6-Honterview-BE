@@ -2,7 +2,8 @@ name: Java CD with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
@@ -44,11 +45,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # 태그 추출
-      - name: Extract branch or tag name
-        id: ref
+      - name: Extract tag name
+        id: tag
         run: |
-          REF_NAME=${GITHUB_REF#refs/*/}
-          echo "::set-output name=name::${REF_NAME//\//-}"
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "name=${TAG_NAME//\//-}" >> $GITHUB_OUTPUT
 
       # Docker 이미지 빌드 및 푸시
       - name: Build and Push Docker Image
@@ -57,7 +58,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.ref.outputs.name }}
+          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
 
       # EC2 배포
       - name: Deploy to AWS EC2
@@ -78,14 +79,14 @@ jobs:
           docker network ls | grep honterview || docker network create honterview
           
           # Docker 이미지 업데이트
-          docker pull ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
+          docker pull ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
           
           # Docker 컨테이너 실행
           docker run -d --name honterview \
             --network=honterview \
             -p 8080:8080 \
             -e TZ=Asia/Seoul \
-            ${{ secrets.DOCKER_ID }}/honterview:${{ steps.extract_tag.outputs.tag }}
+            ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
           
           docker pull redis
 
