@@ -2,8 +2,7 @@ name: Java CD with Gradle
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ "dev" ]
 
 permissions:
   contents: read
@@ -44,13 +43,6 @@ jobs:
           username: ${{ secrets.DOCKER_ID }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 태그 추출
-      - name: Extract tag name
-        id: tag
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          echo "name=${TAG_NAME//\//-}" >> $GITHUB_OUTPUT
-
       # Docker 이미지 빌드 및 푸시
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v2
@@ -58,7 +50,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
+          tags: ${{ secrets.DOCKER_ID }}/honterview
 
       # EC2 배포
       - name: Deploy to AWS EC2
@@ -79,14 +71,14 @@ jobs:
           docker network ls | grep honterview || docker network create honterview
           
           # Docker 이미지 업데이트
-          docker pull ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
+          docker pull ${{ secrets.DOCKER_ID }}/honterview
           
           # Docker 컨테이너 실행
           docker run -d --name honterview \
             --network=honterview \
             -p 8080:8080 \
             -e TZ=Asia/Seoul \
-            ${{ secrets.DOCKER_ID }}/honterview:${{ steps.tag.outputs.name }}
+            ${{ secrets.DOCKER_ID }}/honterview
           
           docker pull redis
 
