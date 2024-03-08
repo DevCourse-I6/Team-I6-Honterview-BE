@@ -63,11 +63,12 @@ public class Answer extends BaseEntity {
 	@JoinColumn(name = "video_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Video video;
 
-	public Answer(String content, Question question, Interview interview) {
+	public Answer(String content, Question question, Interview interview, Video video) {
 		this.content = content;
 		this.question = question;
 		this.interview = interview;
 		this.member = interview.getMember();
+		this.video = video;
 	}
 
 	public void addHeart(AnswerHeart heart) {

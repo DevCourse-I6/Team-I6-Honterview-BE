@@ -13,6 +13,7 @@ import com.i6.honterview.domain.Answer;
 import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
+import com.i6.honterview.domain.Video;
 import com.i6.honterview.domain.enums.InterviewStatus;
 import com.i6.honterview.dto.request.AnswerCreateRequest;
 import com.i6.honterview.dto.request.AnswerVisibilityUpdateRequest;
@@ -29,6 +30,7 @@ import com.i6.honterview.repository.AnswerRepository;
 import com.i6.honterview.repository.InterviewRepository;
 import com.i6.honterview.repository.MemberRepository;
 import com.i6.honterview.repository.QuestionRepository;
+import com.i6.honterview.repository.VideoRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,6 +45,7 @@ public class InterviewService {
 	private final QuestionService questionService;
 	private final AnswerService answerService;
 	private final AnswerRepository answerRepository;
+	private final VideoRepository videoRepository;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberRepository.findById(memberId)
@@ -92,8 +95,18 @@ public class InterviewService {
 			interview.addQuestion(question);
 		}
 
-		Answer answer = createAnswer(request.answerContent(), interview, question);
+		Video video = getVideo(request);
+		Answer answer = createAnswer(request.answerContent(), interview, question, video);
 		return QuestionAnswerCreateResponse.of(question, answer);
+	}
+
+	private Video getVideo(QuestionAnswerCreateRequest request) {
+		if (request.videoId() != null) {
+			return videoRepository.findById(request.videoId())
+				.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND))
+				.changeProcessingTime(request.processingTime());
+		}
+		return null;
 	}
 
 	private void validateAnswerCount(Interview interview) {
@@ -110,9 +123,9 @@ public class InterviewService {
 		return InterviewInfoResponse.of(interview, questionsAndAnswers);
 	}
 
-	private Answer createAnswer(String answerContent, Interview interview, Question question) {
+	private Answer createAnswer(String answerContent, Interview interview, Question question, Video video) {
 		AnswerCreateRequest answerCreateRequest = new AnswerCreateRequest(answerContent);
-		return answerService.createAnswer(answerCreateRequest, question, interview);
+		return answerService.createAnswer(answerCreateRequest, question, interview, video);
 	}
 
 	private Question createQuestion(String questionContent, Question firstQuestion) {

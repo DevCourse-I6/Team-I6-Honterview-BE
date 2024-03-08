@@ -38,4 +38,9 @@ public class Video extends BaseEntity {
 			", processingTime=" + processingTime +
 			'}';
 	}
+
+	public Video changeProcessingTime(Integer processingTime) {
+		this.processingTime = processingTime;
+		return this;
+	}
 }
