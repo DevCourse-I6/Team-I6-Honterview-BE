@@ -15,6 +15,7 @@ import com.i6.honterview.domain.enums.InterviewStatus;
 import com.i6.honterview.dto.request.GptApiRequest;
 import com.i6.honterview.dto.request.GptQuestionCreateRequest;
 import com.i6.honterview.dto.request.Message;
+import com.i6.honterview.dto.request.GptNewQuestionCreateRequest;
 import com.i6.honterview.dto.response.GptApiResponse;
 import com.i6.honterview.dto.response.GptQuestionCreateResponse;
 import com.i6.honterview.exception.CustomException;
@@ -40,10 +41,19 @@ public class GptService {
 	private final InterviewRepository interviewRepository; //TODO: service로 변경
 
 	// TODO: 호출 횟수 제한
-	public GptQuestionCreateResponse createGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
+	public GptQuestionCreateResponse createTailGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
 		validateInterviewStatus(interviewId);
+		String prompt = generateTailQuestionPrompt(request);
+		return createGptQuestion(prompt);
+	}
 
-		String prompt = generatePrompt(request);
+	public GptQuestionCreateResponse createNewGptQuestion(Long interviewId, GptNewQuestionCreateRequest request) {
+		validateInterviewStatus(interviewId);
+		String prompt = generateNewQuestionPrompt(request.prevQuestion());
+		return createGptQuestion(prompt);
+	}
+
+	private GptQuestionCreateResponse createGptQuestion(String prompt) {
 		GptApiRequest apiRequest = new GptApiRequest(model, List.of(new Message("user", prompt)));
 		try {
 			GptApiResponse response = invokeGptApi(apiRequest);
@@ -51,20 +61,27 @@ public class GptService {
 			return GptQuestionCreateResponse.from(response.id(), response.choices().get(0));
 		} catch (HttpClientErrorException e) {
 			ErrorResponse errorResponse = handleHttpClientErrorException(e.getResponseBodyAsString());
-			HttpStatus status = (HttpStatus)e.getStatusCode();
+			HttpStatus status = (HttpStatus) e.getStatusCode();
 			throw new OpenAiException(errorResponse, status);
 		} catch (Exception e) {
-			log.error("Exception Occurred during creating tail question. : {}", e);
+			log.error("Exception Occurred during creating GPT question: {}", e);
 			throw new CustomException(ErrorCode.GPT_QUESTION_CREATE_FAIL);
 		}
 	}
 
-	private String generatePrompt(GptQuestionCreateRequest request) {
+	private String generateTailQuestionPrompt(GptQuestionCreateRequest request) {
 		return """
             면접 질문 : %s
             답변 : %s
             이에 대한 꼬리 질문 하나만 생성
             """.formatted(request.prevQuestion(), request.prevAnswer());
+	}
+
+	private String generateNewQuestionPrompt(String oldQuestion) {
+		return """
+			면접 질문 : %s,
+			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 생성
+			""".formatted(oldQuestion);
 	}
 
 	private GptApiResponse invokeGptApi(GptApiRequest apiRequest) {
