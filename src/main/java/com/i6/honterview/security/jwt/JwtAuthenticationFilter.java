@@ -45,6 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			throw new AccountExpiredException(e.getMessage());
 		} catch (Exception e) {
 			logger.warn("JwtAuthentication Failed.");
+			logger.error(e.getMessage());
 			throw new BadCredentialsException("토큰 인증에 실패하였습니다.");
 		}
 		filterChain.doFilter(request, response);
