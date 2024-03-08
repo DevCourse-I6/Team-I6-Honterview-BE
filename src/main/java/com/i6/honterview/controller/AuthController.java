@@ -1,6 +1,10 @@
 package com.i6.honterview.controller;
 
+import java.io.IOException;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -9,11 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.response.ApiResponse;
-import com.i6.honterview.security.resolver.CurrentAccount;
+import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.service.AuthService;
+import com.i6.honterview.util.HttpResponseUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "인증")
@@ -35,12 +42,24 @@ public class AuthController {
 
 	@Operation(summary = "로그아웃")
 	@PostMapping("/logout")
-	public ResponseEntity<ApiResponse<String>> logout(
+	public void logout(
 		@RequestHeader("Authorization") String authorizationToken,
 		@CookieValue(name = "refreshToken") String refreshToken,
-		@CurrentAccount Long memberId
-	) {
-		authService.logout(refreshToken, authorizationToken, memberId);
-		return ResponseEntity.ok(ApiResponse.ok("로그아웃 되었습니다."));
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		HttpServletResponse response
+	) throws IOException {
+		authService.logout(refreshToken, authorizationToken, userDetails.getId());
+		Cookie accessTokenCookie = new Cookie("accessToken", null);
+		accessTokenCookie.setMaxAge(0);
+		accessTokenCookie.setPath("/");
+		accessTokenCookie.setDomain("honterview.site");
+
+		Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+		refreshTokenCookie.setMaxAge(0);
+		refreshTokenCookie.setPath("/");
+		response.addCookie(accessTokenCookie);
+		refreshTokenCookie.setDomain("honterview.site");
+
+		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
 	}
 }
