@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class FileUtils {
 
 	private static final String FILENAME_PREFIX = "honterview_";
-	private static final String FILE_EXTENSTION = ".mp4"; // TODO 프론트랑 파일 확장자 정하기
+	private static final String FILE_EXTENSTION = ".webm";
 
 	private FileUtils() {
 	}
