@@ -14,7 +14,7 @@ public class FileUtils {
 	/**
 	 * 유니크한 파일 이름을 생성합니다
 	 *
-	 * @return ex) honterview_202403040929137878.mp4
+	 * @return ex) honterview_202403040929137878.webm
 	 */
 
 	public static String generateFileName() {
