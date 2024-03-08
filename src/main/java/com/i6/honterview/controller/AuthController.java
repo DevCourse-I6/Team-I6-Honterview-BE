@@ -57,9 +57,10 @@ public class AuthController {
 		Cookie refreshTokenCookie = new Cookie("refreshToken", null);
 		refreshTokenCookie.setMaxAge(0);
 		refreshTokenCookie.setPath("/");
-		response.addCookie(accessTokenCookie);
 		refreshTokenCookie.setDomain("honterview.site");
 
+		response.addCookie(accessTokenCookie);
+		response.addCookie(refreshTokenCookie);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
 	}
 }
