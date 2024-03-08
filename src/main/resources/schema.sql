@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS answer_heart
 CREATE TABLE IF NOT EXISTS video
 (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
-    file_name       VARCHAR(10) NOT NULL,
+    file_name       VARCHAR(50) NOT NULL,
     processing_time INT         NOT NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
