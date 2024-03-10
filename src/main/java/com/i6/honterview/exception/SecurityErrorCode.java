@@ -15,7 +15,8 @@ public enum SecurityErrorCode {
 	TOKEN_AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "TOKEN_AUTHENTICATION_FAILED", "토큰 인증에 실패했습니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "권한이 없습니다"),
 	ALREADY_LOGGED_OUT(HttpStatus.UNAUTHORIZED, "ALREADY_LOGGED_OUT", "이미 로그아웃된 사용자입니다. 재로그인 해주세요"),
-	LOGOUT_FORBIDDEN(HttpStatus.FORBIDDEN, "LOGOUT_FORBIDDEN", "로그아웃 에러가 발생했습니다. 권한이 없습니다.");
+	LOGOUT_FORBIDDEN(HttpStatus.FORBIDDEN, "LOGOUT_FORBIDDEN", "로그아웃 에러가 발생했습니다. 권한이 없습니다."),
+	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_NOT_FOUND", "관리자를 찾을 수 없습니다.");
 
 	private final HttpStatus status;
 	private final String errorCode;

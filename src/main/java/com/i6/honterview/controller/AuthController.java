@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.i6.honterview.dto.request.LoginRequest;
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
@@ -21,6 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "인증")
@@ -62,5 +65,14 @@ public class AuthController {
 		response.addCookie(accessTokenCookie);
 		response.addCookie(refreshTokenCookie);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
+	}
+
+	@Operation(summary = "관리자 로그인")
+	@PostMapping("/admin/login")
+	ResponseEntity<ApiResponse<TokenResponse>> adminLogin(
+		@Valid @RequestBody LoginRequest request
+	) {
+		TokenResponse tokenResponse = authService.adminLogin(request);
+		return ResponseEntity.ok(ApiResponse.ok(tokenResponse));
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.i6.honterview.domain.Admin;
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.enums.Provider;
 
@@ -35,6 +36,16 @@ public class UserDetailsImpl implements UserDetails {
 			authorities,
 			member.getProvider()
 		);
+	}
+
+	public static UserDetailsImpl from(Admin admin) {
+		List<GrantedAuthority> authorities = admin.getRole() != null ?
+			List.of(new SimpleGrantedAuthority(admin.getRole().name()))
+			: null;
+		return UserDetailsImpl.builder()
+			.id(admin.getId())
+			.authorities(authorities)
+			.build();
 	}
 
 	@Override
