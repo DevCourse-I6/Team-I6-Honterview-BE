@@ -7,11 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.Question;
+import com.i6.honterview.domain.QuestionBookmark;
 import com.i6.honterview.domain.QuestionHeart;
+import com.i6.honterview.dto.response.QuestionBookmarkClickResponse;
 import com.i6.honterview.dto.response.QuestionHeartClickResponse;
 import com.i6.honterview.exception.CustomException;
 import com.i6.honterview.exception.ErrorCode;
 import com.i6.honterview.repository.MemberRepository;
+import com.i6.honterview.repository.QuestionBookmarkRepository;
 import com.i6.honterview.repository.QuestionHeartRepository;
 import com.i6.honterview.repository.QuestionRepository;
 
@@ -22,9 +25,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionHeartService {
 
-	private final QuestionHeartRepository questionHeartRepository;
 	private final QuestionRepository questionRepository;
 	private final MemberRepository memberRepository;
+	private final QuestionHeartRepository questionHeartRepository;
+	private final QuestionBookmarkRepository questionBookmarkRepository;
 
 	public QuestionHeartClickResponse clickQuestionHeart(Long questionId, Long memberId) {
 		Question question = questionRepository.findByIdWithHearts(questionId)
@@ -46,5 +50,21 @@ public class QuestionHeartService {
 			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 		QuestionHeart questionHeart = questionHeartRepository.save(new QuestionHeart(question, member));
 		question.addHeart(questionHeart);
+	}
+
+	public QuestionBookmarkClickResponse clickQuestionBookmark(Long questionId, Long memberId) {
+		Question question = questionRepository.findById(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+		Optional<QuestionBookmark> questionBookmarkOptional = questionBookmarkRepository.findByQuestionIdAndMemberId(
+			question.getId(),
+			member.getId());
+
+		questionBookmarkOptional.ifPresentOrElse(
+			questionBookmarkRepository::delete,
+			() -> questionBookmarkRepository.save(new QuestionBookmark(question, member)));
+		return new QuestionBookmarkClickResponse(questionBookmarkOptional.isEmpty());
 	}
 }

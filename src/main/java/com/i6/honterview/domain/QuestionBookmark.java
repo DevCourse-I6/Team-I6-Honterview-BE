@@ -1,7 +1,5 @@
 package com.i6.honterview.domain;
 
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -18,9 +16,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "question_heart")
+@Table(name = "question_bookmark")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class QuestionHeart extends BaseEntity {
+public class QuestionBookmark extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
@@ -35,16 +33,8 @@ public class QuestionHeart extends BaseEntity {
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Member member;
 
-	public QuestionHeart(Question question, Member member) {
+	public QuestionBookmark(Question question, Member member) {
 		this.question = question;
 		this.member = member;
-	}
-
-	public boolean hasHeartedByMember(Long memberId) {
-		return Objects.equals(this.member.getId(), memberId);
-	}
-
-	public void setQuestion(Question question) {
-		this.question = question;
 	}
 }

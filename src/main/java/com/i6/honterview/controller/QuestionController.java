@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.i6.honterview.dto.request.QuestionCreateRequest;
 import com.i6.honterview.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.dto.response.PageResponse;
+import com.i6.honterview.dto.response.QuestionBookmarkClickResponse;
 import com.i6.honterview.dto.response.QuestionDetailResponse;
 import com.i6.honterview.dto.response.QuestionHeartClickResponse;
 import com.i6.honterview.dto.response.QuestionResponse;
@@ -123,4 +124,14 @@ public class QuestionController {// TODO: 회원 연동
 		QuestionHeartClickResponse response = questionHeartService.clickQuestionHeart(id, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
+
+	@Operation(summary = "질문 북마크/북마크 취소")
+	@PostMapping("/{id}/bookmarks")
+	public ResponseEntity<ApiResponse<QuestionBookmarkClickResponse>> clickQuestionBookmark(
+		@Parameter(description = "질문 id", example = "123") @PathVariable Long id,
+		@CurrentAccount Long memberId) {
+		QuestionBookmarkClickResponse response = questionHeartService.clickQuestionBookmark(id, memberId);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
 }
