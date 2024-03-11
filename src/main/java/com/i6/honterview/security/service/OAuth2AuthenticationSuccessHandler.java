@@ -68,13 +68,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
 
-		accessTokenCookie.setMaxAge(1800);
 		accessTokenCookie.setPath("/");
 		accessTokenCookie.setHttpOnly(true);
 		accessTokenCookie.setDomain("honterview.site");
 		response.addCookie(accessTokenCookie);
 
-		refreshTokenCookie.setMaxAge(604800);
 		refreshTokenCookie.setPath("/");
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setDomain("honterview.site");

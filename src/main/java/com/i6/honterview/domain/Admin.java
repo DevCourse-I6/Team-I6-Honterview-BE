@@ -36,4 +36,11 @@ public class Admin extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role")
 	private Role role;
+
+	public Admin(String name, String email, String password, Role role) {
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+	}
 }

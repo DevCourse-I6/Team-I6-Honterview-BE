@@ -67,6 +67,9 @@ public class WebSecurityConfig {
 			// Member
 			antMatcher("/api/*/auth/reissue"),
 
+			// Admin
+			antMatcher("/api/*/auth/admin/**"),
+
 			// DOCS
 			antMatcher("/swagger-ui/**"),
 			antMatcher("/swagger-ui"),

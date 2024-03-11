@@ -139,7 +139,7 @@ public class InterviewService {
 			.map(interviewQuestion -> {
 				Question question = interviewQuestion.getQuestion();
 				Answer answer = answerRepository.findByInterviewAndQuestion(interview, question).orElse(null);
-				return QuestionAndAnswerResponse.of(question, answer, 0); //TODO: processingTime 조회 로직 추가
+				return QuestionAndAnswerResponse.of(question, answer); //TODO: processingTime 조회 로직 추가
 			})
 			.collect(Collectors.toList());
 	}

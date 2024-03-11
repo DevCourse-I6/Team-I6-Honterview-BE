@@ -27,13 +27,13 @@ public record QuestionAndAnswerResponse(
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	Long videoId
 ) {
-	public static QuestionAndAnswerResponse of(Question question, Answer answer, Integer processingTime) {
+	public static QuestionAndAnswerResponse of(Question question, Answer answer) {
 		return new QuestionAndAnswerResponse(
 			question.getId(),
 			question.getContent(),
 			answer != null ? answer.getId() : null,
 			answer != null ? answer.getContent() : null,
-			processingTime,
+			answer != null ? answer.getVideo().getProcessingTime() : null,
 			answer != null && answer.getVideo() != null ? answer.getVideo().getId() : null
 		);
 	}
