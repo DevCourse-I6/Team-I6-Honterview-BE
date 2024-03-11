@@ -3,6 +3,7 @@ package com.i6.honterview.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -79,19 +80,23 @@ public class AuthService {
 	}
 
 	public TokenResponse adminLogin(LoginRequest request) {
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-			request.email(),
-			request.password()
-		);
+		try {
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				request.email(),
+				request.password()
+			);
 
-		Authentication authenticate = authenticationManager.authenticate(authentication);
-		SecurityContextHolder.getContext().setAuthentication(authenticate);
+			Authentication authenticate = authenticationManager.authenticate(authentication);
+			SecurityContextHolder.getContext().setAuthentication(authenticate);
 
-		UserDetailsImpl userDetails = (UserDetailsImpl)authenticate.getPrincipal();
-		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-		redisRepository.saveRefreshToken(refreshToken, userDetails.getId());
+			UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
+			String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
+			String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+			redisRepository.saveRefreshToken(refreshToken, userDetails.getId());
 
-		return new TokenResponse(accessToken, refreshToken);
+			return new TokenResponse(accessToken, refreshToken);
+		} catch (AuthenticationException e) {
+			throw new CustomException(ErrorCode.ID_PASSWORD_MATCH_FAIL);
+		}
 	}
 }
