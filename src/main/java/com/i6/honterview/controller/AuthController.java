@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.dto.request.AdminSignUpRequest;
 import com.i6.honterview.dto.request.LoginRequest;
+import com.i6.honterview.dto.response.LoginUserResponse;
 import com.i6.honterview.dto.response.TokenResponse;
 import com.i6.honterview.response.ApiResponse;
 import com.i6.honterview.security.auth.UserDetailsImpl;
@@ -102,5 +104,19 @@ public class AuthController {
 		response.addCookie(refreshTokenCookie);
 
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse);
+	}
+
+	@Operation(summary = "로그인한 사용자 조회")
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<LoginUserResponse>> getLoginUser(
+		@AuthenticationPrincipal UserDetailsImpl userDetails
+	) {
+		LoginUserResponse response;
+		if (userDetails != null) {
+			response = new LoginUserResponse(userDetails.getId(), userDetails.getAuthorities());
+		} else {
+			response = null;
+		}
+		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }
