@@ -27,6 +27,7 @@ public enum ErrorCode {
 
 	// member
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "존재하지 않는 회원입니다."),
+	DUPLICATED_MEMBER_EMAIL(HttpStatus.BAD_REQUEST, "DUPLICATED_MEMBER_EMAIL", "이미 가입된 이메일입니다."),
 
 	// interview
 	INTERVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "INTERVIEW_NOT_FOUND", "존재하지 않는 면접입니다."),

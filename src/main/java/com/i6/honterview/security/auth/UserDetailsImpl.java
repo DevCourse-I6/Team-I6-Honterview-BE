@@ -18,24 +18,26 @@ import lombok.Getter;
 public class UserDetailsImpl implements UserDetails {
 	private Long id;
 	private Provider provider;
+	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
 
 	@Builder
-	public UserDetailsImpl(Long id, Collection<? extends GrantedAuthority> authorities, Provider provider) {
+	public UserDetailsImpl(Long id, Collection<? extends GrantedAuthority> authorities, Provider provider, String password) {
 		this.id = id;
 		this.authorities = authorities;
 		this.provider = provider;
+		this.password = password;
 	}
 
 	public static UserDetailsImpl from(Member member) {
 		List<GrantedAuthority> authorities = member.getRole() != null ?
 			List.of(new SimpleGrantedAuthority(member.getRole().name()))
 			: null;
-		return new UserDetailsImpl(
-			member.getId(),
-			authorities,
-			member.getProvider()
-		);
+		return UserDetailsImpl.builder()
+			.id(member.getId())
+			.authorities(authorities)
+			.provider(member.getProvider())
+			.build();
 	}
 
 	public static UserDetailsImpl from(Admin admin) {
@@ -45,6 +47,7 @@ public class UserDetailsImpl implements UserDetails {
 		return UserDetailsImpl.builder()
 			.id(admin.getId())
 			.authorities(authorities)
+			.password(admin.getPassword())
 			.build();
 	}
 
@@ -55,7 +58,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return null;
+		return password;
 	}
 
 	@Override
