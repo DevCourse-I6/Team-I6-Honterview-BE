@@ -134,4 +134,16 @@ public class QuestionController {// TODO: 회원 연동
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
+	@Operation(summary = "마이페이지 북마크 질문 목록 조회")
+	@GetMapping("/mypage")
+	public ResponseEntity<ApiResponse<PageResponse<QuestionWithCategoriesResponse>>> getBookmarkedQuestionsMypage(
+		@Parameter(description = "페이지 번호", example = "1") @RequestParam(value = "page", defaultValue = "1") int page,
+		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
+		@CurrentAccount Long memberId
+	) {
+		PageResponse<QuestionWithCategoriesResponse> response =
+			questionService.getBookmarkedQuestionsMypage(page, size, memberId);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
 }
