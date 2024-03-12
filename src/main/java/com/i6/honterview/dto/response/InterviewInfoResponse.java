@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.i6.honterview.domain.Interview;
 import com.i6.honterview.domain.enums.AnswerType;
+import com.i6.honterview.domain.enums.InterviewStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -22,6 +23,9 @@ public record InterviewInfoResponse(
 	@Schema(description = "해당 면접의 총 질문 개수", example = "3")
 	int questionCount,
 
+	@Schema(description = "진행 상태", example = "IN_PROGRESS/COMPLETED")
+	InterviewStatus status,
+
 	@Schema(description = "해당 면접의 질문&답변 목록")
 	List<QuestionAndAnswerResponse> questionsAndAnswers,
 
@@ -35,6 +39,7 @@ public record InterviewInfoResponse(
 			interview.getTimer(),
 			interview.getAnswerType(),
 			interview.getQuestionCount(),
+			interview.getStatus(),
 			questionsAndAnswers,
 			interview.findFirstQuestion().getCategoryNames()
 		);
