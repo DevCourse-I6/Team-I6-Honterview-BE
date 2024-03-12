@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.i6.honterview.exception.SecurityCustomException;
 import com.i6.honterview.exception.SecurityErrorCode;
-import com.i6.honterview.repository.RedisRepository;
 import com.i6.honterview.security.auth.UserDetailsImpl;
+import com.i6.honterview.service.RedisService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 	private static final String AUTHENTICATION_CLAIM_NAME = "roles";
 	private static final String AUTHENTICATION_SCHEME = "Bearer ";
-	private final RedisRepository redisRepository;
+	private final RedisService redisService;
 
 	@Value("${jwt.secret-key}")
 	private String secretKey;
@@ -105,7 +105,7 @@ public class JwtTokenProvider {
 			.verifyWith(getSignInKey())
 			.build()
 			.parse(token);
-		if (redisRepository.hasKeyBlackList(token)) {
+		if (redisService.hasKeyBlackList(token)) {
 			throw new SecurityCustomException(SecurityErrorCode.ALREADY_LOGGED_OUT);
 		}
 	}

@@ -12,16 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisRepository {
 
-	private static final int REFRESH_TOKEN_EXPIRATION_DAYS = 7;
-	private static final int BLACKLIST_EXPIRATION_MINUTES = 30;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final RedisTemplate<String, Object> redisBlackListTemplate;
-
-	public void saveRefreshToken(String key, Object value) {
-		ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-		valueOperations.set(key, value);
-		redisTemplate.expire(key, REFRESH_TOKEN_EXPIRATION_DAYS, TimeUnit.DAYS);
-	}
 
 	public Object get(String key) {
 		return redisTemplate.opsForValue().get(key);
@@ -35,13 +27,13 @@ public class RedisRepository {
 		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
 	}
 
-	public void saveBlackList(String key, Object value) {
-		ValueOperations<String, Object> valueOperations = redisBlackListTemplate.opsForValue();
-		valueOperations.set(key, value);
-		redisBlackListTemplate.expire(key, BLACKLIST_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-	}
-
 	public boolean hasKeyBlackList(String key) {
 		return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
+	}
+
+	public void saveWithExpiration(String key, Object value, int expiration, TimeUnit timeUnit) {
+		ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+		valueOperations.set(key, value);
+		redisTemplate.expire(key, expiration, timeUnit);
 	}
 }
