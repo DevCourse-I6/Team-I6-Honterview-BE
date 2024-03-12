@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.common.dto.ApiResponse;
-import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.answer.dto.request.AnswerVisibilityUpdateRequest;
 import com.i6.honterview.domain.answer.dto.response.AnswersVisibilityUpdateResponse;
@@ -25,7 +23,6 @@ import com.i6.honterview.domain.interview.dto.request.QuestionAnswerCreateReques
 import com.i6.honterview.domain.interview.dto.response.InterviewInfoResponse;
 import com.i6.honterview.domain.interview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.domain.interview.service.InterviewService;
-import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -99,16 +96,4 @@ public class InterviewController {
 		InterviewInfoResponse response = interviewService.getInterviewInfo(id);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
-
-	@Operation(summary = "마이페이지 면접 목록 조회")
-	@GetMapping("/mypage")
-	public ResponseEntity<ApiResponse<PageResponse<InterviewMypageResponse>>> getInterviewsMypage(
-		@Parameter(description = "페이지 번호", example = "1") @RequestParam(value = "page", defaultValue = "1") int page,
-		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
-		@CurrentAccount Long memberId
-	) {
-		PageResponse<InterviewMypageResponse> response = interviewService.getInterviewsMypage(page, size, memberId);
-		return ResponseEntity.ok(ApiResponse.ok(response));
-	}
-
 }
