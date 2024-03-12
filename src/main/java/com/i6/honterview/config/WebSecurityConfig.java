@@ -19,12 +19,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.i6.honterview.security.jwt.JwtAccessDeniedHandler;
-import com.i6.honterview.security.jwt.JwtAuthenticationEntryPoint;
-import com.i6.honterview.security.jwt.JwtAuthenticationFilter;
-import com.i6.honterview.security.jwt.JwtTokenProvider;
-import com.i6.honterview.security.service.OAuth2AuthenticationSuccessHandler;
-import com.i6.honterview.security.service.Oauth2UserService;
+import com.i6.honterview.common.security.jwt.JwtAccessDeniedHandler;
+import com.i6.honterview.common.security.jwt.JwtAuthenticationEntryPoint;
+import com.i6.honterview.common.security.jwt.JwtAuthenticationFilter;
+import com.i6.honterview.common.security.jwt.JwtTokenProvider;
+import com.i6.honterview.common.security.service.OAuth2AuthenticationSuccessHandler;
+import com.i6.honterview.common.security.service.Oauth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -120,7 +120,7 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
-				.permitAll()	// TODO : Authenticated()로 변경
+				.permitAll()    // TODO : Authenticated()로 변경
 			)
 			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
