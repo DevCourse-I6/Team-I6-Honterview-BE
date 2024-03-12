@@ -33,7 +33,7 @@ public record QuestionAndAnswerResponse(
 			question.getContent(),
 			answer != null ? answer.getId() : null,
 			answer != null ? answer.getContent() : null,
-			answer != null ? answer.getVideo().getProcessingTime() : null,
+			answer != null && answer.getVideo() != null ? answer.getVideo().getProcessingTime() : null,
 			answer != null && answer.getVideo() != null ? answer.getVideo().getId() : null
 		);
 	}
