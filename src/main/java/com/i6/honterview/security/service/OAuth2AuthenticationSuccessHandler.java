@@ -14,9 +14,9 @@ import com.i6.honterview.domain.Member;
 import com.i6.honterview.domain.enums.Provider;
 import com.i6.honterview.domain.enums.Role;
 import com.i6.honterview.repository.MemberRepository;
-import com.i6.honterview.repository.RedisRepository;
 import com.i6.honterview.security.auth.UserDetailsImpl;
 import com.i6.honterview.security.jwt.JwtTokenProvider;
+import com.i6.honterview.service.RedisService;
 import com.i6.honterview.util.HttpResponseUtil;
 
 import jakarta.servlet.ServletException;
@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private static final String CHECKING_EXIST_KEY = "exist";
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
-	private final RedisRepository redisRepository;
+	private final RedisService redisService;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -63,7 +63,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-		redisRepository.saveRefreshToken(refreshToken, member.getId());
+		redisService.saveRefreshToken(refreshToken, member.getId());
 
 		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
