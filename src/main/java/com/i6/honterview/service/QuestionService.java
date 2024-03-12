@@ -96,4 +96,11 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 			.map(QuestionResponse::from)
 			.toList();
 	}
+
+	public PageResponse<QuestionWithCategoriesResponse> getBookmarkedQuestionsMypage(int page, int size,
+		Long memberId) {
+		Pageable pageable = PageRequest.of(page - 1, size);  // TODO : PageRequest 리팩토링
+		Page<Question> questions = questionRepository.findByMemberIdWithPage(pageable, memberId);
+		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
+	}
 }

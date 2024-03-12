@@ -2,6 +2,7 @@ package com.i6.honterview.repository;
 
 import static com.i6.honterview.domain.QCategory.*;
 import static com.i6.honterview.domain.QQuestion.*;
+import static com.i6.honterview.domain.QQuestionBookmark.*;
 import static com.i6.honterview.domain.QQuestionCategory.*;
 
 import java.util.ArrayList;
@@ -118,6 +119,27 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 			.fetchFirst();
 
 		return Optional.ofNullable(questionWithCategories);
+	}
+
+	@Override
+	public Page<Question> findByMemberIdWithPage(Pageable pageable, Long memberId) {
+
+		List<Question> questions = queryFactory
+			.select(question)
+			.from(questionBookmark)
+			.join(questionBookmark.question, question)
+			.where(questionBookmark.member.id.eq(memberId))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory
+			.select(question.count())
+			.from(questionBookmark)
+			.join(questionBookmark.question, question)
+			.where(questionBookmark.member.id.eq(memberId));
+
+		return PageableExecutionUtils.getPage(questions, pageable, countQuery::fetchOne);
 	}
 
 }
