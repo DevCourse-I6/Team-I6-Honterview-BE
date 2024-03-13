@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.i6.honterview.domain.interview.entity.Interview;
-import com.i6.honterview.domain.interview.entity.Video;
-import com.i6.honterview.domain.interview.dto.response.DownloadUrlResponse;
-import com.i6.honterview.domain.interview.dto.response.UploadUrlResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
+import com.i6.honterview.common.util.FileNameUtil;
+import com.i6.honterview.domain.interview.dto.response.DownloadUrlResponse;
+import com.i6.honterview.domain.interview.dto.response.UploadUrlResponse;
+import com.i6.honterview.domain.interview.entity.Interview;
+import com.i6.honterview.domain.interview.entity.Video;
 import com.i6.honterview.domain.interview.repository.InterviewRepository;
 import com.i6.honterview.domain.interview.repository.VideoRepository;
-import com.i6.honterview.common.util.FileUtils;
 
 import io.awspring.cloud.s3.S3Exception;
 import io.awspring.cloud.s3.S3Template;
@@ -43,7 +43,7 @@ public class FileService {
 			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
 		}
 
-		String fileName = FileUtils.generateFileName();
+		String fileName = FileNameUtil.generateFileName();
 		try {
 			URL url = s3Template.createSignedPutURL(s3Bucket, fileName, Duration.ofMinutes(10));
 			Video video = videoRepository.save(new Video(fileName));
