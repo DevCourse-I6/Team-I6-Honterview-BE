@@ -23,6 +23,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 		AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		log.warn("Access Denied: ", accessDeniedException);
-		HttpResponseUtil.writeErrorResponse(response, HttpStatus.UNAUTHORIZED, UNAUTHORIZED.getErrorResponse());
+		HttpResponseUtil.writeErrorResponse(response, HttpStatus.FORBIDDEN, FORBIDDEN.getErrorResponse());
 	}
 }
