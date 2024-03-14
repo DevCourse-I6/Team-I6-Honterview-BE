@@ -81,7 +81,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		refreshTokenCookie.setDomain("honterview.site");
 		response.addCookie(refreshTokenCookie);
 
-		response.sendRedirect("http://localhost:3000");
+		response.sendRedirect("http://localhost:3000/auth");
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }

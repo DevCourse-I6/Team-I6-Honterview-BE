@@ -138,7 +138,6 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		Question question = questionRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 		questionRepository.delete(question);
-		// TODO : 연관된 답변 삭제
 	}
 
 	public List<QuestionResponse> getQuestionsByCategoryNames(List<String> categoryNames) {
