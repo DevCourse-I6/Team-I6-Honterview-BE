@@ -56,7 +56,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	@Transactional(readOnly = true)
 	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
 		// 현재 로그인한 사용자. 로그인하지 않은 경우 Optional.empty() 반환
-		Optional<UserDetailsImpl> currentUserDetails = getCurrentUserDetails();
+		UserDetailsImpl currentUserDetails = getCurrentUserDetails().orElse(null);
 
 		// id로 질문 조회
 		Question question = questionRepository.findQuestionByIdWithCategoriesAndHearts(id)
@@ -67,15 +67,19 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		boolean isBookmarkedByCurrentMember = isQuestionBookmarkedByMember(question, currentUserDetails);
 
 		// 답변 목록 조회
+		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(id, page, size, currentUserDetails);
+
+		return QuestionDetailResponse.of(question, answerResponse, isHeartedByCurrentMember,
+			isBookmarkedByCurrentMember);
+	}
+
+	private PageResponse<AnswerResponse> getAnswerResponse(Long id, int page, int size,
+		UserDetailsImpl currentUserDetails) {
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Answer> answers = answerRepository.findByQuestionIdWithMemberAndHearts(id, pageable);
 
 		// 조회된 답변을 DTO로 변환, 로그인한 사용자는 각 답변에 대한 좋아요 여부를 확인
-		PageResponse<AnswerResponse> answerResponse = PageResponse.of(answers, answer -> AnswerResponse.from(answer,
-			currentUserDetails.orElse(null)));
-
-		return QuestionDetailResponse.of(question, answerResponse, isHeartedByCurrentMember,
-			isBookmarkedByCurrentMember);
+		return PageResponse.of(answers, answer -> AnswerResponse.from(answer, currentUserDetails));
 	}
 
 	private Optional<UserDetailsImpl> getCurrentUserDetails() {
@@ -90,16 +94,18 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		return Optional.empty();
 	}
 
-	private boolean isQuestionHeartedByMember(Question question, Optional<UserDetailsImpl> userDetails) {
-		return userDetails
-			.map(user -> question.findQuestionHeartByMemberId(user.getId()).isPresent())
-			.orElse(false);
+	private boolean isQuestionHeartedByMember(Question question, UserDetailsImpl userDetails) {
+		if (userDetails == null) {
+			return false;
+		}
+		return question.findQuestionHeartByMemberId(userDetails.getId()).isPresent();
 	}
 
-	private boolean isQuestionBookmarkedByMember(Question question, Optional<UserDetailsImpl> userDetails) {
-		return userDetails
-			.map(user -> questionBookmarkService.isBookmarkedByMemberId(question.getId(), user.getId()))
-			.orElse(false);
+	private boolean isQuestionBookmarkedByMember(Question question, UserDetailsImpl userDetails) {
+		if (userDetails == null) {
+			return false;
+		}
+		return questionBookmarkService.isBookmarkedByMemberId(question.getId(), userDetails.getId());
 	}
 
 	public List<QuestionResponse> getRandomTailQuestions(Long parentId) {
