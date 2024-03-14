@@ -55,7 +55,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 
 	@Transactional(readOnly = true)
 	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
-		// 현재 로그인한 사용자. 로그인하지 않은 경우 Optional.empty() 반환
+		// 현재 로그인한 사용자 조회
 		UserDetailsImpl currentUserDetails = getCurrentUserDetails().orElse(null);
 
 		// id로 질문 조회
