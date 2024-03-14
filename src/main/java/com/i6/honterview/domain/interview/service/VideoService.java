@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FileService {
+public class VideoService {
 
 	private final VideoRepository videoRepository;
 	private final InterviewRepository interviewRepository;

@@ -9,19 +9,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.i6.honterview.domain.user.entity.Admin;
-import com.i6.honterview.domain.user.entity.Member;
-import com.i6.honterview.domain.user.dto.request.AdminSignUpRequest;
-import com.i6.honterview.domain.user.dto.request.LoginRequest;
-import com.i6.honterview.domain.user.dto.response.TokenResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.common.exception.SecurityCustomException;
 import com.i6.honterview.common.exception.SecurityErrorCode;
-import com.i6.honterview.domain.user.repository.AdminRepository;
-import com.i6.honterview.domain.user.repository.MemberRepository;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.common.security.jwt.JwtTokenProvider;
+import com.i6.honterview.domain.user.dto.request.AdminSignUpRequest;
+import com.i6.honterview.domain.user.dto.request.LoginRequest;
+import com.i6.honterview.domain.user.dto.response.TokenResponse;
+import com.i6.honterview.domain.user.entity.Admin;
+import com.i6.honterview.domain.user.entity.Member;
+import com.i6.honterview.domain.user.repository.AdminRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class AuthService {
 
-	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisService redisService;
 	private final AuthenticationManager authenticationManager;
@@ -43,8 +42,7 @@ public class AuthService {
 			throw new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED);
 		}
 		Long memberId = Long.parseLong(redisService.get(token).toString());
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member = memberService.findById(memberId);
 
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);

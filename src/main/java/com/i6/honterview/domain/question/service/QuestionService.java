@@ -8,20 +8,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.common.dto.PageResponse;
+import com.i6.honterview.common.exception.CustomException;
+import com.i6.honterview.common.exception.ErrorCode;
+import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
-import com.i6.honterview.domain.question.entity.Category;
-import com.i6.honterview.domain.question.entity.Question;
+import com.i6.honterview.domain.answer.service.AnswerService;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
-import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
-import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionWithCategoriesResponse;
-import com.i6.honterview.common.exception.CustomException;
-import com.i6.honterview.common.exception.ErrorCode;
-import com.i6.honterview.domain.answer.repository.AnswerRepository;
+import com.i6.honterview.domain.question.entity.Category;
+import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.repository.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {// TODO: 멤버&관리자 연동
 
 	private final QuestionRepository questionRepository;
-	private final AnswerRepository answerRepository;
+	private final AnswerService answerService;
 	private final CategoryService categoryService;
 
 	@Transactional(readOnly = true)
@@ -51,7 +51,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
 		Pageable pageable = PageRequest.of(page - 1, size);
-		Page<Answer> answers = answerRepository.findByQuestionIdWithMember(id, pageable);
+		Page<Answer> answers = answerService.findByQuestionIdWithMember(id, pageable);
 		PageResponse<AnswerResponse> answerResponse = PageResponse.of(answers, AnswerResponse::from);
 
 		return QuestionDetailResponse.from(question, answerResponse);
@@ -76,16 +76,14 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	}
 
 	public void updateQuestion(Long id, QuestionUpdateRequest request) {
-		Question question = questionRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+		Question question = findById(id);
 
 		List<Category> categories = categoryService.validateAndGetCategories(request.categoryIds());
 		question.changeContentAndCategories(request.content(), categories);
 	}
 
 	public void deleteQuestion(Long id) {
-		Question question = questionRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+		Question question = findById(id);
 		questionRepository.delete(question);
 	}
 
@@ -101,5 +99,15 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		Pageable pageable = PageRequest.of(page - 1, size);  // TODO : PageRequest 리팩토링
 		Page<Question> questions = questionRepository.findByMemberIdWithPage(pageable, memberId);
 		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
+	}
+
+	public Question findByIdWithHearts(Long questionId) {
+		return questionRepository.findByIdWithHearts(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+	}
+
+	public Question findById(Long questionId) {
+		return questionRepository.findById(questionId)
+			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 	}
 }

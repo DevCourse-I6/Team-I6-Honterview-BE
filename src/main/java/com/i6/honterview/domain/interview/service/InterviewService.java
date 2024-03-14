@@ -12,32 +12,30 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.i6.honterview.domain.answer.entity.Answer;
-import com.i6.honterview.domain.answer.service.AnswerService;
-import com.i6.honterview.domain.interview.entity.Interview;
-import com.i6.honterview.domain.user.entity.Member;
-import com.i6.honterview.domain.question.entity.Question;
-import com.i6.honterview.domain.interview.entity.Video;
-import com.i6.honterview.domain.interview.entity.InterviewStatus;
-import com.i6.honterview.domain.answer.dto.request.AnswerCreateRequest;
-import com.i6.honterview.domain.answer.dto.request.AnswerVisibilityUpdateRequest;
-import com.i6.honterview.domain.interview.dto.request.InterviewCreateRequest;
-import com.i6.honterview.domain.interview.dto.request.QuestionAnswerCreateRequest;
-import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
-import com.i6.honterview.domain.answer.dto.response.AnswersVisibilityUpdateResponse;
-import com.i6.honterview.domain.interview.dto.response.InterviewInfoResponse;
-import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 import com.i6.honterview.common.dto.PageResponse;
-import com.i6.honterview.domain.interview.dto.response.QuestionAndAnswerResponse;
-import com.i6.honterview.domain.interview.dto.response.QuestionAnswerCreateResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
-import com.i6.honterview.domain.answer.repository.AnswerRepository;
+import com.i6.honterview.domain.answer.dto.request.AnswerCreateRequest;
+import com.i6.honterview.domain.answer.dto.request.AnswerVisibilityUpdateRequest;
+import com.i6.honterview.domain.answer.dto.response.AnswersVisibilityUpdateResponse;
+import com.i6.honterview.domain.answer.entity.Answer;
+import com.i6.honterview.domain.answer.service.AnswerService;
+import com.i6.honterview.domain.interview.dto.request.InterviewCreateRequest;
+import com.i6.honterview.domain.interview.dto.request.QuestionAnswerCreateRequest;
+import com.i6.honterview.domain.interview.dto.response.InterviewInfoResponse;
+import com.i6.honterview.domain.interview.dto.response.QuestionAndAnswerResponse;
+import com.i6.honterview.domain.interview.dto.response.QuestionAnswerCreateResponse;
+import com.i6.honterview.domain.interview.entity.Interview;
+import com.i6.honterview.domain.interview.entity.InterviewStatus;
+import com.i6.honterview.domain.interview.entity.Video;
 import com.i6.honterview.domain.interview.repository.InterviewRepository;
-import com.i6.honterview.domain.user.repository.MemberRepository;
-import com.i6.honterview.domain.question.repository.QuestionRepository;
 import com.i6.honterview.domain.interview.repository.VideoRepository;
+import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
+import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
+import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
+import com.i6.honterview.domain.user.entity.Member;
+import com.i6.honterview.domain.user.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,19 +45,15 @@ import lombok.RequiredArgsConstructor;
 public class InterviewService {
 
 	private final InterviewRepository interviewRepository;
-	private final MemberRepository memberRepository;
-	private final QuestionRepository questionRepository;
+	private final MemberService memberService;
 	private final QuestionService questionService;
 	private final AnswerService answerService;
-	private final AnswerRepository answerRepository;
 	private final VideoRepository videoRepository;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member = memberService.findById(memberId);
 
-		Question question = questionRepository.findById(request.questionId())
-			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
+		Question question = questionService.findById(request.questionId());
 
 		Interview interview = interviewRepository.save(request.toEntity(member, question));
 		return interview.getId();
@@ -145,10 +139,10 @@ public class InterviewService {
 		return interview.getInterviewQuestions().stream()
 			.map(interviewQuestion -> {
 				Question question = interviewQuestion.getQuestion();
-				Answer answer = answerRepository.findByInterviewAndQuestion(interview, question).orElse(null);
-				return QuestionAndAnswerResponse.of(question, answer); //TODO: processingTime 조회 로직 추가
+				Answer answer = answerService.findByInterviewAndQuestion(interview, question).orElse(null);
+				return QuestionAndAnswerResponse.of(question, answer);
 			})
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public AnswersVisibilityUpdateResponse changeAnswersVisibility(Long interviewId,
@@ -156,7 +150,7 @@ public class InterviewService {
 		Interview interview = interviewRepository.findById(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 
-		List<Answer> answers = answerRepository.findByInterviewId(interview.getId());
+		List<Answer> answers = answerService.findByInterviewId(interview.getId());
 		Map<Long, Answer> answerMap = answers.stream()
 			.collect(Collectors.toMap(Answer::getId, Function.identity()));
 
