@@ -1,5 +1,7 @@
 package com.i6.honterview.common.security.service;
 
+import static com.i6.honterview.common.util.NicknameGeneratorUtil.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,14 +12,14 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.i6.honterview.common.security.auth.UserDetailsImpl;
+import com.i6.honterview.common.security.jwt.JwtTokenProvider;
+import com.i6.honterview.common.util.HttpResponseUtil;
 import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.entity.Provider;
 import com.i6.honterview.domain.user.entity.Role;
 import com.i6.honterview.domain.user.repository.MemberRepository;
-import com.i6.honterview.common.security.auth.UserDetailsImpl;
-import com.i6.honterview.common.security.jwt.JwtTokenProvider;
 import com.i6.honterview.domain.user.service.RedisService;
-import com.i6.honterview.common.util.HttpResponseUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -42,7 +44,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Map<String, Object> attributes = defaultOAuth2User.getAttributes();
 		String email = (String)attributes.get("email");
 		Provider provider = (Provider)attributes.get("provider");
-		String nickname = (String)attributes.get("nickname");
 
 		Map<String, Object> body = new HashMap<>();
 		body.put(CHECKING_EXIST_KEY, true);
@@ -51,7 +52,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 			body.put(CHECKING_EXIST_KEY, false);
 			return Member.builder()
 				.provider(provider)
-				.nickname(nickname)
+				.nickname(generateRandomNickname())
 				.email(email)
 				.role(Role.ROLE_USER)
 				.build();
@@ -69,11 +70,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
 
 		accessTokenCookie.setPath("/");
+		accessTokenCookie.setMaxAge(1800);
 		accessTokenCookie.setHttpOnly(true);
 		accessTokenCookie.setDomain("honterview.site");
 		response.addCookie(accessTokenCookie);
 
 		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setMaxAge(604800);
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setDomain("honterview.site");
 		response.addCookie(refreshTokenCookie);
