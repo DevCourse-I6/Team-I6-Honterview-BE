@@ -94,16 +94,18 @@ public class AuthController {
 		Cookie refreshTokenCookie = new Cookie("refreshToken", tokenResponse.refreshToken());
 
 		accessTokenCookie.setPath("/");
+		accessTokenCookie.setMaxAge(1800);
 		accessTokenCookie.setHttpOnly(true);
 		accessTokenCookie.setDomain("honterview.site");
 		response.addCookie(accessTokenCookie);
 
 		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setMaxAge(604800);
 		refreshTokenCookie.setHttpOnly(true);
 		refreshTokenCookie.setDomain("honterview.site");
 		response.addCookie(refreshTokenCookie);
 
-		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse);
+		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse); // TODO: tokenResponse 제거
 	}
 
 	@Operation(summary = "로그인한 사용자 조회")
