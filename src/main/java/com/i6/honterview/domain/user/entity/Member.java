@@ -55,4 +55,8 @@ public class Member extends BaseEntity {
 	public void updateLastLoginAt() {
 		this.lastLoginAt = LocalDateTime.now();
 	}
+
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
 }
