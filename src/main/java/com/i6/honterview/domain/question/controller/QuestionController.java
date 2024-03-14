@@ -4,9 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +17,6 @@ import com.i6.honterview.common.dto.ApiResponse;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
-import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.domain.question.dto.response.QuestionBookmarkClickResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionHeartClickResponse;
@@ -97,23 +94,6 @@ public class QuestionController {// TODO: 회원 연동
 			.buildAndExpand(question.id())
 			.toUri();
 		return ResponseEntity.created(location).body(ApiResponse.created(question));
-	}
-
-	@Operation(summary = "질문 수정")
-	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateQuestion(
-		@Parameter(description = "질문 id", example = "123") @PathVariable Long id,
-		@Valid @RequestBody QuestionUpdateRequest request) {
-		questionService.updateQuestion(id, request);
-		return ResponseEntity.noContent().build();
-	}
-
-	@Operation(summary = "질문 삭제")
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteQuestion(
-		@Parameter(description = "질문 id", example = "123") @PathVariable Long id) {
-		questionService.deleteQuestion(id);
-		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "질문 좋아요/좋아요 취소")
