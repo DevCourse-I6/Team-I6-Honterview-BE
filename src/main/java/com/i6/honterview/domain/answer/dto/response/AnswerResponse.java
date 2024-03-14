@@ -1,5 +1,6 @@
 package com.i6.honterview.domain.answer.dto.response;
 
+import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.domain.answer.entity.Answer;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,14 +17,23 @@ public record AnswerResponse(
 	String nickname,
 
 	@Schema(description = "좋아요 수", example = "5")
-	long heartsCount
+	long heartsCount,
 
+	@Schema(description = "로그인한 사용자의 답변 좋아요 여부", example = "true")
+	boolean isHearted
 ) {
-	public static AnswerResponse from(Answer answer) {
+	public static AnswerResponse from(Answer answer, UserDetailsImpl currentUser) {
+		boolean isHeartedByCurrentMember = false;
+		if (currentUser != null) {
+			isHeartedByCurrentMember = answer.findAnswerHeartByMemberId(currentUser.getId()).isPresent();
+		}
+
 		return new AnswerResponse(
 			answer.getId(),
 			answer.getContent(),
 			answer.getMember().getNickname(),
-			answer.getAnswerHearts().size());
+			answer.getAnswerHearts().size(),
+			isHeartedByCurrentMember
+		);
 	}
 }

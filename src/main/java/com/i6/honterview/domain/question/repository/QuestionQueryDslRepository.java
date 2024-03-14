@@ -14,7 +14,7 @@ public interface QuestionQueryDslRepository {
 
 	List<Question> findQuestionsByCategoryNames(List<String> categoryNames);
 
-	Optional<Question> findQuestionByIdWithCategories(Long id);
-
 	Page<Question> findByMemberIdWithPage(Pageable pageable, Long memberId);
+
+	Optional<Question> findQuestionByIdWithCategoriesAndHearts(Long id);
 }

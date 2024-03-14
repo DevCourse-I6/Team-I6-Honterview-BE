@@ -25,6 +25,7 @@ import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionHeartClickResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionWithCategoriesResponse;
+import com.i6.honterview.domain.question.service.QuestionBookmarkService;
 import com.i6.honterview.domain.question.service.QuestionHeartService;
 import com.i6.honterview.domain.question.service.QuestionService;
 
@@ -42,6 +43,7 @@ public class QuestionController {// TODO: 회원 연동
 
 	private final QuestionService questionService;
 	private final QuestionHeartService questionHeartService;
+	private final QuestionBookmarkService questionBookmarkService;
 
 	@Operation(summary = "질문 목록 조회")
 	@GetMapping
@@ -130,7 +132,7 @@ public class QuestionController {// TODO: 회원 연동
 	public ResponseEntity<ApiResponse<QuestionBookmarkClickResponse>> clickQuestionBookmark(
 		@Parameter(description = "질문 id", example = "123") @PathVariable Long id,
 		@CurrentAccount Long memberId) {
-		QuestionBookmarkClickResponse response = questionHeartService.clickQuestionBookmark(id, memberId);
+		QuestionBookmarkClickResponse response = questionBookmarkService.clickQuestionBookmark(id, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }
