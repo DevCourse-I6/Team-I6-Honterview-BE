@@ -40,7 +40,7 @@ public class VideoController {
 	@GetMapping("/download-url/{videoId}")
 	public ResponseEntity<ApiResponse<DownloadUrlResponse>> getDownloadUrl(
 		@Parameter(description = "영상 id", example = "123") @PathVariable Long videoId,
-		@CurrentAccount Long memberId
+		@CurrentAccount Long memberId // TODO:?? 다운로드시 member 비교 로직을 위한걸까요?
 	) {
 		DownloadUrlResponse response = videoService.generateDownloadUrl(videoId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
