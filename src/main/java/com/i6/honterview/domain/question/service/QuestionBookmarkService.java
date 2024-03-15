@@ -36,8 +36,4 @@ public class QuestionBookmarkService {
 			() -> questionBookmarkRepository.save(new QuestionBookmark(question, member)));
 		return new QuestionBookmarkClickResponse(questionBookmarkOptional.isEmpty());
 	}
-
-	public boolean isBookmarkedByMemberId(Long questionId, Long memberId) {
-		return questionBookmarkRepository.existsByQuestionIdAndMemberId(questionId, memberId);
-	}
 }

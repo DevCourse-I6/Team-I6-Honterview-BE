@@ -29,6 +29,7 @@ import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.entity.InterviewStatus;
 import com.i6.honterview.domain.interview.entity.Video;
 import com.i6.honterview.domain.interview.repository.InterviewRepository;
+import com.i6.honterview.domain.interview.repository.VideoRepository;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
@@ -47,7 +48,7 @@ public class InterviewService {
 	private final MemberService memberService;
 	private final QuestionService questionService;
 	private final AnswerService answerService;
-	private final VideoService videoService;
+	private final VideoRepository videoRepository;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberService.findById(memberId);
@@ -102,7 +103,8 @@ public class InterviewService {
 
 	private Video getVideo(QuestionAnswerCreateRequest request) {
 		if (request.videoId() != null) {
-			return videoService.findById(request.videoId())
+			return videoRepository.findById(request.videoId())
+				.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND))
 				.changeProcessingTime(request.processingTime());
 		}
 		return null;

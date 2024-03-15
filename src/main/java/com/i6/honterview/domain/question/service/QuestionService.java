@@ -28,6 +28,7 @@ import com.i6.honterview.domain.question.dto.response.QuestionResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionWithCategoriesResponse;
 import com.i6.honterview.domain.question.entity.Category;
 import com.i6.honterview.domain.question.entity.Question;
+import com.i6.honterview.domain.question.repository.QuestionBookmarkRepository;
 import com.i6.honterview.domain.question.repository.QuestionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,9 +39,9 @@ import lombok.RequiredArgsConstructor;
 public class QuestionService {// TODO: 멤버&관리자 연동
 
 	private final QuestionRepository questionRepository;
+	private final QuestionBookmarkRepository questionBookmarkRepository;
 	private final AnswerService answerService;
 	private final CategoryService categoryService;
-	private final QuestionBookmarkService questionBookmarkService;
 
 	@Transactional(readOnly = true)
 	public PageResponse<QuestionWithCategoriesResponse> getQuestions(int page, int size, String query,
@@ -104,7 +105,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		if (userDetails == null) {
 			return false;
 		}
-		return questionBookmarkService.isBookmarkedByMemberId(question.getId(), userDetails.getId());
+		return questionBookmarkRepository.existsByQuestionIdAndMemberId(question.getId(), userDetails.getId());
 	}
 
 	public List<QuestionResponse> getRandomTailQuestions(Long parentId) {
