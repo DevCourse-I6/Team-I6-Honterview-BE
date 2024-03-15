@@ -14,7 +14,6 @@ import com.i6.honterview.domain.answer.dto.request.AnswerCreateRequest;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.repository.AnswerRepository;
 import com.i6.honterview.domain.interview.entity.Interview;
-import com.i6.honterview.domain.interview.entity.Video;
 import com.i6.honterview.domain.question.entity.Question;
 
 import lombok.RequiredArgsConstructor;
@@ -26,12 +25,12 @@ public class AnswerService {
 
 	private final AnswerRepository answerRepository;
 
-	public Answer createAnswer(AnswerCreateRequest request, Question question, Interview interview, Video video) {
+	public Answer createAnswer(AnswerCreateRequest request, Question question, Interview interview) {
 		boolean answerExists = answerRepository.existsByInterviewAndQuestion(interview, question);
 		if (answerExists) {
 			throw new CustomException(ErrorCode.ANSWER_DUPLICATED);
 		}
-		return answerRepository.save(request.toEntity(question, interview, video));
+		return answerRepository.save(request.toEntity(question, interview));
 	}
 
 	public Page<Answer> findByQuestionIdWithMember(Long id, Pageable pageable) {

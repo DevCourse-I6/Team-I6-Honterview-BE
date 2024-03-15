@@ -5,11 +5,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.i6.honterview.common.entity.BaseEntity;
-import com.i6.honterview.domain.user.entity.Member;
-import com.i6.honterview.domain.interview.entity.Visibility;
 import com.i6.honterview.domain.interview.entity.Interview;
-import com.i6.honterview.domain.interview.entity.Video;
+import com.i6.honterview.domain.interview.entity.Visibility;
 import com.i6.honterview.domain.question.entity.Question;
+import com.i6.honterview.domain.user.entity.Member;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,7 +25,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +47,9 @@ public class Answer extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Visibility visibility = Visibility.PUBLIC;
 
+	@Column(name = "processing_time", nullable = false)
+	private int processingTime;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "question_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private Question question;
@@ -64,16 +65,12 @@ public class Answer extends BaseEntity {
 	@OneToMany(mappedBy = "answer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<AnswerHeart> answerHearts = new HashSet<>();
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "video_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-	private Video video;
-
-	public Answer(String content, Question question, Interview interview, Video video) {
+	public Answer(String content, Integer processingTime, Question question, Interview interview) {
 		this.content = content;
+		this.processingTime = processingTime;
 		this.question = question;
 		this.interview = interview;
 		this.member = interview.getMember();
-		this.video = video;
 	}
 
 	public void addHeart(AnswerHeart heart) {
