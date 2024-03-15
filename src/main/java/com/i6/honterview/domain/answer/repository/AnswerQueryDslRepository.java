@@ -8,7 +8,7 @@ import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.question.entity.Question;
 
 public interface AnswerQueryDslRepository {
-	Page<Answer> findByQuestionIdWithMember(Long questionId, Pageable pageable);
+	Page<Answer> findByQuestionIdWithMemberAndHearts(Long questionId, Pageable pageable);
 
 	boolean existsByInterviewAndQuestion(Interview interview, Question question);
 }

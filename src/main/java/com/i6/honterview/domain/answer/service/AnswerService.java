@@ -33,10 +33,6 @@ public class AnswerService {
 		return answerRepository.save(request.toEntity(question, interview));
 	}
 
-	public Page<Answer> findByQuestionIdWithMember(Long id, Pageable pageable) {
-		return answerRepository.findByQuestionIdWithMember(id, pageable);
-	}
-
 	public Answer findByIdWithHearts(Long answerId) {
 		return answerRepository.findByIdWithHearts(answerId)
 			.orElseThrow(() -> new CustomException(ErrorCode.ANSWER_NOT_FOUND));
@@ -48,5 +44,9 @@ public class AnswerService {
 
 	public Optional<Answer> findByInterviewAndQuestion(Interview interview, Question question) {
 		return answerRepository.findByInterviewAndQuestion(interview, question);
+	}
+
+	public Page<Answer> findByQuestionIdWithMemberAndHearts(Long id, Pageable pageable) {
+		return answerRepository.findByQuestionIdWithMemberAndHearts(id, pageable);
 	}
 }

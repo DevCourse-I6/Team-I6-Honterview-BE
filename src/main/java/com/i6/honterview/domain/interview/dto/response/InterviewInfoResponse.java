@@ -3,8 +3,8 @@ package com.i6.honterview.domain.interview.dto.response;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.answer.entity.AnswerType;
+import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.entity.InterviewStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,7 +30,11 @@ public record InterviewInfoResponse(
 	List<QuestionAndAnswerResponse> questionsAndAnswers,
 
 	@Schema(description = "카테고리 이름 목록")
-	List<String> categoryNames
+	List<String> categoryNames,
+
+	@Schema(description = "영상 id, null일 경우 반환X", example = "123")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	Long videoId
 ) {
 	public static InterviewInfoResponse of(Interview interview, List<QuestionAndAnswerResponse> questionsAndAnswers) {
 
@@ -41,7 +45,8 @@ public record InterviewInfoResponse(
 			interview.getQuestionCount(),
 			interview.getStatus(),
 			questionsAndAnswers,
-			interview.findFirstQuestion().getCategoryNames()
+			interview.findFirstQuestion().getCategoryNames(),
+			interview.getVideo() != null ? interview.getVideo().getId() : null
 		);
 	}
 }
