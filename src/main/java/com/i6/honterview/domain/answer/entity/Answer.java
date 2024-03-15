@@ -47,8 +47,8 @@ public class Answer extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Visibility visibility = Visibility.PUBLIC;
 
-	@Column(name = "processing_time", nullable = false)
-	private int processingTime;
+	@Column(name = "processing_time")
+	private Integer processingTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "question_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

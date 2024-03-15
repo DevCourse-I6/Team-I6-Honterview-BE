@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS answer
     visibility      VARCHAR(10) NOT NULL DEFAULT 'PUBLIC',
     processing_time INT,
     interview_id    BIGINT      NOT NULL,
-    video_id        BIGINT,
     created_at      TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -43,6 +42,7 @@ CREATE TABLE IF NOT EXISTS interview
     timer            INT,
     interview_status VARCHAR(20) NOT NULL,
     member_id        BIGINT      NOT NULL,
+    video_id         BIGINT,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

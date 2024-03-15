@@ -26,15 +26,16 @@ public record InterviewInfoResponse(
 	@Schema(description = "진행 상태", example = "IN_PROGRESS/COMPLETED")
 	InterviewStatus status,
 
+	@Schema(description = "영상 id, null일 경우 반환X", example = "123")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	Long videoId,
+
 	@Schema(description = "해당 면접의 질문&답변 목록")
 	List<QuestionAndAnswerResponse> questionsAndAnswers,
 
 	@Schema(description = "카테고리 이름 목록")
-	List<String> categoryNames,
+	List<String> categoryNames
 
-	@Schema(description = "영상 id, null일 경우 반환X", example = "123")
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	Long videoId
 ) {
 	public static InterviewInfoResponse of(Interview interview, List<QuestionAndAnswerResponse> questionsAndAnswers) {
 
@@ -44,9 +45,9 @@ public record InterviewInfoResponse(
 			interview.getAnswerType(),
 			interview.getQuestionCount(),
 			interview.getStatus(),
+			interview.getVideo() != null ? interview.getVideo().getId() : null,
 			questionsAndAnswers,
-			interview.findFirstQuestion().getCategoryNames(),
-			interview.getVideo() != null ? interview.getVideo().getId() : null
+			interview.findFirstQuestion().getCategoryNames()
 		);
 	}
 }
