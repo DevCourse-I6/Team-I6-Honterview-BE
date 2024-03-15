@@ -1,6 +1,7 @@
 package com.i6.honterview.config;
 
 import static com.i6.honterview.domain.user.entity.Role.*;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
 
 import java.util.List;
@@ -116,29 +117,42 @@ public class WebSecurityConfig {
 	/**
 	 * 인증 및 인가가 필요한 엔드포인트에 적용되는 SecurityFilterChain
 	 */
-	// @Bean TODO: 주석 해제
-	// public SecurityFilterChain securityFilterChainAuthorized(HttpSecurity http) throws Exception {
-	// 	configureCommonSecuritySettings(http);
-	// 	http
-	// 		.securityMatchers(matchers -> matchers
-	// 			.requestMatchers(requestHasRoleAdmin())
-	// 		)
-	// 		.authorizeHttpRequests(auth -> auth
-	// 			.requestMatchers(requestHasRoleAdmin()).hasAuthority(ROLE_ADMIN.name()))
-	// 		.exceptionHandling(exception -> {
-	// 			exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
-	// 			exception.accessDeniedHandler(jwtAccessDeniedHandler);
-	// 		})
-	// 		.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class);
-	// 	return http.build();
-	// }
-	//
-	// private RequestMatcher[] requestHasRoleAdmin() {
-	// 	List<RequestMatcher> requestMatchers = List.of(
-	// 		antMatcher("/api/*/admin/**")
-	// 	);
-	// 	return requestMatchers.toArray(RequestMatcher[]::new);
-	// }
+	@Bean
+	public SecurityFilterChain securityFilterChainAuthorized(HttpSecurity http) throws Exception {
+		configureCommonSecuritySettings(http);
+		http
+			.securityMatchers(matchers -> matchers
+				.requestMatchers(requestHasRoleAdmin())
+				.requestMatchers(requestHasRoleUser())
+			)
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers(requestHasRoleAdmin()).hasAuthority(ROLE_ADMIN.name())
+				.requestMatchers(requestHasRoleUser()).hasAuthority(ROLE_USER.name()))
+			.exceptionHandling(exception -> {
+				exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+				exception.accessDeniedHandler(jwtAccessDeniedHandler);
+			})
+			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class);
+		return http.build();
+	}
+
+	private RequestMatcher[] requestHasRoleAdmin() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/*/admin/**")
+		);
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
+
+	private RequestMatcher[] requestHasRoleUser() {
+		List<RequestMatcher> requestMatchers = List.of(
+			antMatcher("/api/*/interviews/**"),
+			antMatcher("/api/*/mypage/**"),
+			antMatcher("/api/*/videos/**"),
+			antMatcher(POST, "/api/*/questions/**"),
+			antMatcher(POST, "/api/*/questions/**")
+		);
+		return requestMatchers.toArray(RequestMatcher[]::new);
+	}
 
 	/**
 	 * 위에서 정의된 엔드포인트 이외에는 authenticated 로 설정
@@ -148,7 +162,7 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
-				.permitAll()    // TODO : Authenticated()로 변경
+					.authenticated()
 			)
 			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
