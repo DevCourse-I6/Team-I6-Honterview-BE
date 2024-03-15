@@ -3,6 +3,8 @@ package com.i6.honterview.domain.answer.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +45,9 @@ public class AnswerService {
 
 	public Optional<Answer> findByInterviewAndQuestion(Interview interview, Question question) {
 		return answerRepository.findByInterviewAndQuestion(interview, question);
+	}
+
+	public Page<Answer> findByQuestionIdWithMemberAndHearts(Long id, Pageable pageable) {
+		return answerRepository.findByQuestionIdWithMemberAndHearts(id, pageable);
 	}
 }

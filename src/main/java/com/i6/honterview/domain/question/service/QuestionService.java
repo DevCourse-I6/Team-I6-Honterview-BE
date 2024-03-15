@@ -19,7 +19,6 @@ import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
-import com.i6.honterview.domain.answer.repository.AnswerRepository;
 import com.i6.honterview.domain.answer.service.AnswerService;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
@@ -40,9 +39,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 
 	private final QuestionRepository questionRepository;
 	private final AnswerService answerService;
-	private final AnswerRepository answerRepository;
 	private final CategoryService categoryService;
-
 	private final QuestionBookmarkService questionBookmarkService;
 
 	@Transactional(readOnly = true)
@@ -78,7 +75,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	private PageResponse<AnswerResponse> getAnswerResponse(Long id, int page, int size,
 		UserDetailsImpl currentUserDetails) {
 		Pageable pageable = PageRequest.of(page - 1, size);
-		Page<Answer> answers = answerRepository.findByQuestionIdWithMemberAndHearts(id, pageable);
+		Page<Answer> answers = answerService.findByQuestionIdWithMemberAndHearts(id, pageable);
 
 		// 조회된 답변을 DTO로 변환, 로그인한 사용자는 각 답변에 대한 좋아요 여부를 확인
 		return PageResponse.of(answers, answer -> AnswerResponse.from(answer, currentUserDetails));
