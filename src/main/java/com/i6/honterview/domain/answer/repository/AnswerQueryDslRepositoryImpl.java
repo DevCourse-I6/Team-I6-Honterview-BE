@@ -1,6 +1,7 @@
 package com.i6.honterview.domain.answer.repository;
 
 import static com.i6.honterview.domain.answer.entity.QAnswer.*;
+import static com.i6.honterview.domain.answer.entity.QAnswerHeart.*;
 import static com.i6.honterview.domain.user.entity.QMember.*;
 
 import java.util.List;
@@ -25,10 +26,11 @@ public class AnswerQueryDslRepositoryImpl implements AnswerQueryDslRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Page<Answer> findByQuestionIdWithMember(Long questionId, Pageable pageable) {
+	public Page<Answer> findByQuestionIdWithMemberAndHearts(Long questionId, Pageable pageable) {
 		List<Answer> answers = queryFactory
 			.selectFrom(answer)
 			.leftJoin(answer.member, member).fetchJoin()
+			.leftJoin(answer.answerHearts, answerHeart).fetchJoin()
 			.where(answer.question.id.eq(questionId))
 			.orderBy(answer.id.desc())
 			.offset(pageable.getOffset())
