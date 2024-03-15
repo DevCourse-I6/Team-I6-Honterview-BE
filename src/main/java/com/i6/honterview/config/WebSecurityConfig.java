@@ -72,6 +72,10 @@ public class WebSecurityConfig {
 			// Admin
 			antMatcher("/api/*/auth/admin/**"),
 
+			// question
+			antMatcher(GET, "/api/*/questions"),
+			antMatcher("/api/*/categories"),
+
 			// DOCS
 			antMatcher("/swagger-ui/**"),
 			antMatcher("/swagger-ui"),
@@ -148,7 +152,6 @@ public class WebSecurityConfig {
 			antMatcher("/api/*/interviews/**"),
 			antMatcher("/api/*/mypage/**"),
 			antMatcher("/api/*/videos/**"),
-			antMatcher(POST, "/api/*/questions/**"),
 			antMatcher(POST, "/api/*/questions/**")
 		);
 		return requestMatchers.toArray(RequestMatcher[]::new);
@@ -162,7 +165,7 @@ public class WebSecurityConfig {
 		configureCommonSecuritySettings(http);
 		http.authorizeHttpRequests(authorize -> authorize
 				.anyRequest()
-					.authenticated()
+				.authenticated()
 			)
 			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
