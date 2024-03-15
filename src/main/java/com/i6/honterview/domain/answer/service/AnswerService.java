@@ -3,8 +3,6 @@ package com.i6.honterview.domain.answer.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +30,6 @@ public class AnswerService {
 			throw new CustomException(ErrorCode.ANSWER_DUPLICATED);
 		}
 		return answerRepository.save(request.toEntity(question, interview, video));
-	}
-
-	public Page<Answer> findByQuestionIdWithMember(Long id, Pageable pageable) {
-		return answerRepository.findByQuestionIdWithMember(id, pageable);
 	}
 
 	public Answer findByIdWithHearts(Long answerId) {

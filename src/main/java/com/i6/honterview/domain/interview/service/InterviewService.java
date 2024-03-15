@@ -29,7 +29,6 @@ import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.entity.InterviewStatus;
 import com.i6.honterview.domain.interview.entity.Video;
 import com.i6.honterview.domain.interview.repository.InterviewRepository;
-import com.i6.honterview.domain.interview.repository.VideoRepository;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
@@ -48,7 +47,7 @@ public class InterviewService {
 	private final MemberService memberService;
 	private final QuestionService questionService;
 	private final AnswerService answerService;
-	private final VideoRepository videoRepository;
+	private final VideoService videoService;
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberService.findById(memberId);
@@ -103,8 +102,7 @@ public class InterviewService {
 
 	private Video getVideo(QuestionAnswerCreateRequest request) {
 		if (request.videoId() != null) {
-			return videoRepository.findById(request.videoId())
-				.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND))
+			return videoService.findById(request.videoId())
 				.changeProcessingTime(request.processingTime());
 		}
 		return null;
@@ -168,5 +166,14 @@ public class InterviewService {
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Interview> interviews = interviewRepository.findByMemberIdWithPage(pageable, memberId);
 		return PageResponse.of(interviews, InterviewMypageResponse::from);
+	}
+
+	public Interview findById(Long id) {
+		return interviewRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+	}
+
+	public boolean existsByIdAndStatus(Long interviewId, InterviewStatus status) {
+		return interviewRepository.existsByIdAndStatus(interviewId, status);
 	}
 }
