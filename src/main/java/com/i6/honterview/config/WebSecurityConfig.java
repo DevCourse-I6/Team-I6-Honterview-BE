@@ -73,7 +73,7 @@ public class WebSecurityConfig {
 			antMatcher("/api/*/auth/admin/**"),
 
 			// question
-			antMatcher(GET, "/api/*/questions"),
+			antMatcher(GET, "/api/*/questions/**"),
 			antMatcher("/api/*/categories"),
 
 			// DOCS
