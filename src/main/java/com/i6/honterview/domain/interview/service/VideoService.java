@@ -45,6 +45,7 @@ public class VideoService {
 		try {
 			URL url = s3Template.createSignedPutURL(s3Bucket, fileName, Duration.ofMinutes(10));
 			Video video = videoRepository.save(new Video(fileName));
+			interview.addVideo(video); // TODO 이미 있는지 확인 validation
 			return UploadUrlResponse.of(video, url.toString());
 		} catch (S3Exception e) {
 			log.error("createSignedPutURL failed : ", e);

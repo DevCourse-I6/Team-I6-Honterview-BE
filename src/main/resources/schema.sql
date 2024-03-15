@@ -23,15 +23,15 @@ CREATE TABLE IF NOT EXISTS member
 
 CREATE TABLE IF NOT EXISTS answer
 (
-    id           BIGINT PRIMARY KEY AUTO_INCREMENT,
-    content      LONGTEXT    NOT NULL,
-    member_id    BIGINT      NOT NULL,
-    question_id  BIGINT      NOT NULL,
-    visibility   VARCHAR(10) NOT NULL DEFAULT 'PUBLIC',
-    interview_id BIGINT      NOT NULL,
-    video_id     BIGINT,
-    created_at   TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    content         LONGTEXT    NOT NULL,
+    member_id       BIGINT      NOT NULL,
+    question_id     BIGINT      NOT NULL,
+    visibility      VARCHAR(10) NOT NULL DEFAULT 'PUBLIC',
+    processing_time INT,
+    interview_id    BIGINT      NOT NULL,
+    created_at      TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS interview
@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS interview
     timer            INT,
     interview_status VARCHAR(20) NOT NULL,
     member_id        BIGINT      NOT NULL,
+    video_id         BIGINT,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -103,11 +104,10 @@ CREATE TABLE IF NOT EXISTS answer_heart
 
 CREATE TABLE IF NOT EXISTS video
 (
-    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
-    file_name       VARCHAR(50) NOT NULL,
-    processing_time INT         NOT NULL,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id         BIGINT PRIMARY KEY AUTO_INCREMENT,
+    file_name  VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS question_bookmark

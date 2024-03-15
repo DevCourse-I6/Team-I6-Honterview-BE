@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "파일")
+@Tag(name = "영상")
 @RestController
 @RequestMapping("/api/v1/videos")
 @RequiredArgsConstructor

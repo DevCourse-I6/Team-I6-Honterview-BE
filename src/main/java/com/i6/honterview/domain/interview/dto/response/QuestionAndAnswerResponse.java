@@ -21,11 +21,8 @@ public record QuestionAndAnswerResponse(
 
 	@Schema(description = "실제 답변 시간(초), null일 경우 반환X", example = "30")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	Integer processingTime,
+	Integer processingTime
 
-	@Schema(description = "영상 id, null일 경우 반환X", example = "123")
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	Long videoId
 ) {
 	public static QuestionAndAnswerResponse of(Question question, Answer answer) {
 		return new QuestionAndAnswerResponse(
@@ -33,8 +30,7 @@ public record QuestionAndAnswerResponse(
 			question.getContent(),
 			answer != null ? answer.getId() : null,
 			answer != null ? answer.getContent() : null,
-			answer != null && answer.getVideo() != null ? answer.getVideo().getProcessingTime() : null,
-			answer != null && answer.getVideo() != null ? answer.getVideo().getId() : null
+			answer != null ? answer.getProcessingTime() : null
 		);
 	}
 }
