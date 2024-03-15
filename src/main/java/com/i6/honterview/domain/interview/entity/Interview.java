@@ -101,4 +101,8 @@ public class Interview extends BaseEntity {
 			throw new CustomException(ErrorCode.FIRST_QUESTION_NOT_FOUND);
 		}
 	}
+
+	public void addVideo(Video video) {
+		this.video = video;
+	}
 }
