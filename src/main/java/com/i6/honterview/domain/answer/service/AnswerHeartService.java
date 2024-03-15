@@ -5,15 +5,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.domain.answer.dto.response.AnswerHeartClickResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.entity.AnswerHeart;
-import com.i6.honterview.domain.user.entity.Member;
-import com.i6.honterview.domain.answer.dto.response.AnswerHeartClickResponse;
-import com.i6.honterview.common.exception.CustomException;
-import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.domain.answer.repository.AnswerHeartRepository;
-import com.i6.honterview.domain.answer.repository.AnswerRepository;
-import com.i6.honterview.domain.user.repository.MemberRepository;
+import com.i6.honterview.domain.user.entity.Member;
+import com.i6.honterview.domain.user.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,12 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class AnswerHeartService {
 
 	private final AnswerHeartRepository answerHeartRepository;
-	private final AnswerRepository answerRepository;
-	private final MemberRepository memberRepository;
+	private final AnswerService answerService;
+	private final MemberService memberService;
 
 	public AnswerHeartClickResponse clickAnswerHeart(Long answerId, Long memberId) {
-		Answer answer = answerRepository.findByIdWithHearts(answerId)
-			.orElseThrow(() -> new CustomException(ErrorCode.ANSWER_NOT_FOUND));
+		Answer answer = answerService.findByIdWithHearts(answerId);
 
 		Optional<AnswerHeart> answerHeartOptional = answer.findAnswerHeartByMemberId(memberId);
 		answerHeartOptional.ifPresentOrElse(
@@ -42,8 +38,7 @@ public class AnswerHeartService {
 	}
 
 	private void addNewAnswerHeart(Answer answer, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member = memberService.findById(memberId);
 		AnswerHeart answerHeart = answerHeartRepository.save(new AnswerHeart(answer, member));
 		answer.addHeart(answerHeart);
 	}

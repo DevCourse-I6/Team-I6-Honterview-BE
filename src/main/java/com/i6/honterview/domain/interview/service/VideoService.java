@@ -14,7 +14,6 @@ import com.i6.honterview.domain.interview.dto.response.DownloadUrlResponse;
 import com.i6.honterview.domain.interview.dto.response.UploadUrlResponse;
 import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.entity.Video;
-import com.i6.honterview.domain.interview.repository.InterviewRepository;
 import com.i6.honterview.domain.interview.repository.VideoRepository;
 
 import io.awspring.cloud.s3.S3Exception;
@@ -26,18 +25,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FileService {
+public class VideoService {
 
 	private final VideoRepository videoRepository;
-	private final InterviewRepository interviewRepository;
+	private final InterviewService interviewService;
 	private final S3Template s3Template;
 
 	@Value("${spring.cloud.aws.s3.bucket}")
 	private String s3Bucket;
 
 	public UploadUrlResponse generateUploadUrl(Long interviewId, Long memberId) {
-		Interview interview = interviewRepository.findById(interviewId)    // TODO interviewService로 분리
-			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		Interview interview = interviewService.findById(interviewId);
 
 		if (!interview.isSameInterviewee(memberId)) {
 			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
@@ -55,9 +53,7 @@ public class FileService {
 	}
 
 	public DownloadUrlResponse generateDownloadUrl(Long videoId) {
-		Video video = videoRepository.findById(videoId)
-			.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND));
-
+		Video video = findById(videoId);
 		try {
 			URL url = s3Template.createSignedGetURL(s3Bucket, video.getFileName(), Duration.ofMinutes(10));
 			return new DownloadUrlResponse(url.toString());
@@ -65,5 +61,10 @@ public class FileService {
 			log.error("createSignedGetURL failed : ", e);
 			throw new CustomException(ErrorCode.GENERATE_DOWNLOAD_URL_FAILED);
 		}
+	}
+
+	public Video findById(Long id) {
+		return videoRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND));
 	}
 }

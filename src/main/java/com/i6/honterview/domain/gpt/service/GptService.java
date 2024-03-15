@@ -10,19 +10,19 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.i6.honterview.config.GptConfig;
-import com.i6.honterview.domain.interview.entity.InterviewStatus;
-import com.i6.honterview.domain.gpt.dto.request.GptApiRequest;
-import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
-import com.i6.honterview.domain.gpt.dto.request.Message;
-import com.i6.honterview.domain.gpt.dto.request.GptNewQuestionCreateRequest;
-import com.i6.honterview.domain.gpt.dto.response.GptApiResponse;
-import com.i6.honterview.domain.gpt.dto.response.GptQuestionCreateResponse;
+import com.i6.honterview.common.dto.ErrorResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.common.exception.OpenAiException;
-import com.i6.honterview.domain.interview.repository.InterviewRepository;
-import com.i6.honterview.common.dto.ErrorResponse;
+import com.i6.honterview.config.GptConfig;
+import com.i6.honterview.domain.gpt.dto.request.GptApiRequest;
+import com.i6.honterview.domain.gpt.dto.request.GptNewQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.request.Message;
+import com.i6.honterview.domain.gpt.dto.response.GptApiResponse;
+import com.i6.honterview.domain.gpt.dto.response.GptQuestionCreateResponse;
+import com.i6.honterview.domain.interview.entity.InterviewStatus;
+import com.i6.honterview.domain.interview.service.InterviewService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class GptService {
 	private String endPoint;
 	private final GptConfig gptConfig;
 	private final ObjectMapper objectMapper;
-	private final InterviewRepository interviewRepository; //TODO: service로 변경
+	private final InterviewService interviewService;
 
 	// TODO: 호출 횟수 제한
 	public GptQuestionCreateResponse createTailGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
@@ -97,7 +97,7 @@ public class GptService {
 	}
 
 	private void validateInterviewStatus(Long interviewId) {
-		boolean isInterviewing = interviewRepository.existsByIdAndStatus(interviewId, InterviewStatus.IN_PROGRESS);
+		boolean isInterviewing = interviewService.existsByIdAndStatus(interviewId, InterviewStatus.IN_PROGRESS);
 		if (!isInterviewing) {
 			throw new CustomException(ErrorCode.INTERVIEW_NOT_PROCESSING);
 		}

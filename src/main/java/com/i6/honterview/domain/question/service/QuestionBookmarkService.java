@@ -5,15 +5,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.i6.honterview.common.exception.CustomException;
-import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.domain.question.dto.response.QuestionBookmarkClickResponse;
 import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.entity.QuestionBookmark;
 import com.i6.honterview.domain.question.repository.QuestionBookmarkRepository;
-import com.i6.honterview.domain.question.repository.QuestionRepository;
 import com.i6.honterview.domain.user.entity.Member;
-import com.i6.honterview.domain.user.repository.MemberRepository;
+import com.i6.honterview.domain.user.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,15 +19,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuestionBookmarkService {
 
-	private final QuestionRepository questionRepository;
-	private final MemberRepository memberRepository;
+	private final QuestionService questionService;
+	private final MemberService memberService;
 	private final QuestionBookmarkRepository questionBookmarkRepository;
 
 	public QuestionBookmarkClickResponse clickQuestionBookmark(Long questionId, Long memberId) {
-		Question question = questionRepository.findById(questionId)
-			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+		Question question = questionService.findById(questionId);
+		Member member = memberService.findById(memberId);
 
 		Optional<QuestionBookmark> questionBookmarkOptional = questionBookmarkRepository.findByQuestionIdAndMemberId(
 			question.getId(),
@@ -40,9 +35,5 @@ public class QuestionBookmarkService {
 			questionBookmarkRepository::delete,
 			() -> questionBookmarkRepository.save(new QuestionBookmark(question, member)));
 		return new QuestionBookmarkClickResponse(questionBookmarkOptional.isEmpty());
-	}
-
-	public boolean isBookmarkedByMemberId(Long questionId, Long memberId) {
-		return questionBookmarkRepository.existsByQuestionIdAndMemberId(questionId, memberId);
 	}
 }
