@@ -19,6 +19,7 @@ import com.i6.honterview.common.dto.ApiResponse;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.common.util.CookieUtil;
 import com.i6.honterview.common.util.HttpResponseUtil;
+import com.i6.honterview.config.JwtConfig;
 import com.i6.honterview.domain.user.dto.request.AdminSignUpRequest;
 import com.i6.honterview.domain.user.dto.request.LoginRequest;
 import com.i6.honterview.domain.user.dto.response.LoginUserResponse;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
+	private final JwtConfig jwtConfig;
 	private static final String ACCESS_COOKIE_NAME ="accessToken";
 	private static final String REFRESH_COOKIE_NAME ="refreshToken";
 
@@ -85,8 +87,8 @@ public class AuthController {
 	) throws IOException { // TODO: 추후 cookieUtil로 리팩토링
 		TokenResponse tokenResponse = authService.adminLogin(request);
 
-		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), 1800, response);
-		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.refreshToken(), 60400, response);
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
 
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse); // TODO: tokenResponse 제거
 	}

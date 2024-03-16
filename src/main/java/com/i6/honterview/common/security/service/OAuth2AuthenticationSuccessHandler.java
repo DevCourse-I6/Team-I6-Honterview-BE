@@ -16,6 +16,7 @@ import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.common.security.jwt.JwtTokenProvider;
 import com.i6.honterview.common.util.CookieUtil;
 import com.i6.honterview.common.util.HttpResponseUtil;
+import com.i6.honterview.config.JwtConfig;
 import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.entity.Provider;
 import com.i6.honterview.domain.user.entity.Role;
@@ -35,6 +36,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
 	private final RedisService redisService;
+	private final JwtConfig jwtConfig;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -66,8 +68,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
 		redisService.saveRefreshToken(refreshToken, member.getId());
 
-		CookieUtil.setCookie("accessToken", accessToken, 1800, response);
-		CookieUtil.setCookie("refreshToken", refreshToken, 60400, response);
+		CookieUtil.setCookie("accessToken", accessToken, jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie("refreshToken", refreshToken, jwtConfig.getRefreshExpirySeconds(), response);
 
 
 		response.sendRedirect("http://localhost:3000/auth");
