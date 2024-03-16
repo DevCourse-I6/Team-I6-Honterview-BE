@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
@@ -50,8 +51,8 @@ public class JwtTokenProvider {
 		return getString(userDetails, accessExpirySeconds);
 	}
 
-	public String generateRefreshToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, refreshExpirySeconds);
+	public String generateRefreshToken() {
+		return UUID.randomUUID().toString();
 	}
 
 	private String getString(UserDetailsImpl userDetails, int expiryMilliseconds) {

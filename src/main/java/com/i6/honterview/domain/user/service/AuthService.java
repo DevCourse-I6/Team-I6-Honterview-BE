@@ -46,7 +46,7 @@ public class AuthService {
 
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+		String refreshToken = jwtTokenProvider.generateRefreshToken();
 
 		redisService.delete(token);
 		redisService.saveRefreshToken(refreshToken, memberId);
@@ -88,7 +88,7 @@ public class AuthService {
 
 			UserDetailsImpl userDetails = (UserDetailsImpl)authenticate.getPrincipal();
 			String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
-			String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+			String refreshToken = jwtTokenProvider.generateRefreshToken();
 			redisService.saveRefreshToken(refreshToken, userDetails.getId());
 
 			return new TokenResponse(accessToken, refreshToken);
