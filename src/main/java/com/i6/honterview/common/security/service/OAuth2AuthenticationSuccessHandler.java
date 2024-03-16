@@ -72,7 +72,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		CookieUtil.setCookie("refreshToken", refreshToken, jwtConfig.getRefreshExpirySeconds(), response);
 
 
-		response.sendRedirect("http://localhost:3000/auth");
+		response.sendRedirect("http://localhost:3000");
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }
