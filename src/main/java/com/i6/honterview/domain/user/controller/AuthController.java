@@ -46,7 +46,7 @@ public class AuthController {
 	@Operation(summary = "토큰 재발급", description = "refresh token을 이용해 access, refresh 토큰을 재발급합니다.")
 	@PostMapping("/reissue")
 	public ResponseEntity<ApiResponse<TokenResponse>> reissue(
-		@CookieValue(name = "refreshToken") String refreshToken) {
+		@CookieValue(name = "refreshToken", required = false) String refreshToken) {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
 		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
 		return ResponseEntity.ok(response);
@@ -56,7 +56,7 @@ public class AuthController {
 	@PostMapping("/logout")
 	public void logout(
 		@RequestHeader("Authorization") String authorizationToken,
-		@CookieValue(name = "refreshToken") String refreshToken,
+		@CookieValue(name = "refreshToken", required = false) String refreshToken,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		HttpServletResponse response
 	) throws IOException {
@@ -84,12 +84,10 @@ public class AuthController {
 	public void adminLogin(
 		@Valid @RequestBody LoginRequest request,
 		HttpServletResponse response
-	) throws IOException { // TODO: 추후 cookieUtil로 리팩토링
+	) throws IOException {
 		TokenResponse tokenResponse = authService.adminLogin(request);
-
 		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
-		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
-
+		CookieUtil.setCookie(REFRESH_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse); // TODO: tokenResponse 제거
 	}
 

@@ -16,7 +16,8 @@ public enum SecurityErrorCode {
 	FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "권한이 없습니다"),
 	ALREADY_LOGGED_OUT(HttpStatus.UNAUTHORIZED, "ALREADY_LOGGED_OUT", "이미 로그아웃된 사용자입니다. 재로그인 해주세요"),
 	LOGOUT_FORBIDDEN(HttpStatus.FORBIDDEN, "LOGOUT_FORBIDDEN", "로그아웃 에러가 발생했습니다. 권한이 없습니다."),
-	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_NOT_FOUND", "관리자를 찾을 수 없습니다.");
+	ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_NOT_FOUND", "관리자를 찾을 수 없습니다."),
+	REFRESH_NOT_EXIST(HttpStatus.BAD_REQUEST, "REFRESH_NOT_EXIST", "잘못된 요청입니다. 리프레시 토큰이 존재하지 않습니다.");
 
 	private final HttpStatus status;
 	private final String errorCode;

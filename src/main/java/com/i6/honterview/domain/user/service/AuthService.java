@@ -37,6 +37,7 @@ public class AuthService {
 	private final AdminRepository adminRepository;
 
 	public TokenResponse reissue(String token) {
+		checkIsRefreshNull(token);
 		Object memberIdObj = redisService.get(token);
 		if (memberIdObj == null) {
 			throw new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED);
@@ -54,6 +55,7 @@ public class AuthService {
 	}
 
 	public void logout(String refreshToken, String authorizationToken, Long id) {
+		checkIsRefreshNull(refreshToken);
 		if (redisService.hasKey(refreshToken)) {
 			Long userIdByRefresh = Long.valueOf(redisService.get(refreshToken).toString());
 			if (userIdByRefresh.equals(id)) {
@@ -94,6 +96,12 @@ public class AuthService {
 			return new TokenResponse(accessToken, refreshToken);
 		} catch (AuthenticationException e) {
 			throw new CustomException(ErrorCode.ID_PASSWORD_MATCH_FAIL);
+		}
+	}
+
+	private void checkIsRefreshNull(String refreshToken) {
+		if (refreshToken == null) {
+			throw new SecurityCustomException(SecurityErrorCode.REFRESH_NOT_EXIST);
 		}
 	}
 }
