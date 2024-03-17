@@ -19,7 +19,7 @@ public record InterviewCreateRequest(
 	@Schema(description = "질문 개수", example = "3")
 	@NotNull(message = "질문 개수는 필수 선택 항목입니다.")
 	@Min(value = 1, message = "값은 1 이상이어야 합니다.")
-	@Max(value = 3, message = "값은 3 이하이어야 합니다.")
+	@Max(value = 5, message = "값은 5 이하이어야 합니다.")
 	int questionCount,
 
 	@Schema(description = "타이머 시간(초)", example = "90")

@@ -3,6 +3,7 @@ package com.i6.honterview.domain.user.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.i6.honterview.domain.answer.entity.AnswerType;
 import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.entity.InterviewStatus;
 
@@ -22,7 +23,10 @@ public record InterviewMypageResponse(
 	LocalDateTime createdAt,
 
 	@Schema(description = "진행 상태", example = "COMPLETED")
-	InterviewStatus status
+	InterviewStatus status,
+
+	@Schema(description = "답변 타입(TEXT or RECORD)", example = "TEXT")
+	AnswerType answerType
 
 ) {
 	public static InterviewMypageResponse from(Interview interview) {
@@ -31,7 +35,8 @@ public record InterviewMypageResponse(
 			interview.findFirstQuestion().getContent(),
 			interview.findFirstQuestion().getCategoryNames(),
 			interview.getCreatedAt(),
-			interview.getStatus()
+			interview.getStatus(),
+			interview.getAnswerType()
 		);
 	}
 }

@@ -18,10 +18,6 @@ public record QuestionAnswerCreateRequest(
 	@NotBlank(message = "답변 내용은 필수 항목입니다.")
 	String answerContent,
 
-	@Schema(description = "영상 id(화상일 경우에만 존재)", example = "123 (nullable) ")
-	@Nullable
-	Long videoId,
-
 	@Schema(description = "진행시간(초 단위, 화상일 경우에만 존재)", example = "60 (초단위, nullable)")
 	@Nullable
 	Integer processingTime

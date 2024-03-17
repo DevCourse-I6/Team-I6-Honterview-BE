@@ -70,11 +70,12 @@ public class InterviewController {
 
 	@Operation(summary = "면접/답변 저장(면접 연습 중)")
 	@PostMapping("/{id}")
-	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> createQuestionAndAnswer(// TODO: 멤버 연동
+	public ResponseEntity<ApiResponse<QuestionAnswerCreateResponse>> createQuestionAndAnswer(
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
-		@RequestBody QuestionAnswerCreateRequest request
+		@RequestBody QuestionAnswerCreateRequest request,
+		@CurrentAccount Long memberId
 	) {
-		QuestionAnswerCreateResponse response = interviewService.createQuestionAndAnswer(id, request);
+		QuestionAnswerCreateResponse response = interviewService.createQuestionAndAnswer(id, memberId, request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

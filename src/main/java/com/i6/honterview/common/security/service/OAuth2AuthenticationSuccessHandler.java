@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.common.security.jwt.JwtTokenProvider;
+import com.i6.honterview.common.util.CookieUtil;
 import com.i6.honterview.common.util.HttpResponseUtil;
+import com.i6.honterview.config.JwtConfig;
 import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.entity.Provider;
 import com.i6.honterview.domain.user.entity.Role;
@@ -22,7 +24,6 @@ import com.i6.honterview.domain.user.repository.MemberRepository;
 import com.i6.honterview.domain.user.service.RedisService;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
 	private final RedisService redisService;
+	private final JwtConfig jwtConfig;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -63,25 +65,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
-		String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+		String refreshToken = jwtTokenProvider.generateRefreshToken();
 		redisService.saveRefreshToken(refreshToken, member.getId());
 
-		Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+		CookieUtil.setCookie("accessToken", accessToken, jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie("refreshToken", refreshToken, jwtConfig.getRefreshExpirySeconds(), response);
 
-		accessTokenCookie.setPath("/");
-		accessTokenCookie.setMaxAge(1800);
-		accessTokenCookie.setHttpOnly(true);
-		accessTokenCookie.setDomain("honterview.site");
-		response.addCookie(accessTokenCookie);
 
-		refreshTokenCookie.setPath("/");
-		refreshTokenCookie.setMaxAge(604800);
-		refreshTokenCookie.setHttpOnly(true);
-		refreshTokenCookie.setDomain("honterview.site");
-		response.addCookie(refreshTokenCookie);
-
-		response.sendRedirect("http://localhost:3000/auth");
+		response.sendRedirect("http://localhost:3000");
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }

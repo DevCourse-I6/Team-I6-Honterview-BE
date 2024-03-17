@@ -4,6 +4,7 @@ import static com.i6.honterview.domain.question.entity.QCategory.*;
 import static com.i6.honterview.domain.question.entity.QQuestion.*;
 import static com.i6.honterview.domain.question.entity.QQuestionBookmark.*;
 import static com.i6.honterview.domain.question.entity.QQuestionCategory.*;
+import static com.i6.honterview.domain.question.entity.QQuestionHeart.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,12 +110,13 @@ public class QuestionQueryDslRepositoryImpl implements QuestionQueryDslRepositor
 			.where(condition);
 	}
 
-	public Optional<Question> findQuestionByIdWithCategories(Long id) {
+	public Optional<Question> findQuestionByIdWithCategoriesAndHearts(Long id) {
 		Question questionWithCategories = queryFactory
 			.selectFrom(question)
 			.distinct()
 			.leftJoin(question.questionCategories, questionCategory).fetchJoin()
 			.leftJoin(questionCategory.category, category).fetchJoin()
+			.leftJoin(question.questionHearts, questionHeart).fetchJoin()
 			.where(question.id.eq(id))
 			.fetchFirst();
 

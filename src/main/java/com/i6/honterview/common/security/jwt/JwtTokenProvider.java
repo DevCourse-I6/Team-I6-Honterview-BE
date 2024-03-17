@@ -6,11 +6,11 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.i6.honterview.common.exception.SecurityCustomException;
 import com.i6.honterview.common.exception.SecurityErrorCode;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
+import com.i6.honterview.config.JwtConfig;
 import com.i6.honterview.domain.user.service.RedisService;
 
 import io.jsonwebtoken.Claims;
@@ -36,22 +37,14 @@ public class JwtTokenProvider {
 	private static final String AUTHENTICATION_CLAIM_NAME = "roles";
 	private static final String AUTHENTICATION_SCHEME = "Bearer ";
 	private final RedisService redisService;
-
-	@Value("${jwt.secret-key}")
-	private String secretKey;
-
-	@Value("${jwt.access-expiry-seconds}")
-	private int accessExpirySeconds;
-
-	@Value("${jwt.refresh-expiry-seconds}")
-	private int refreshExpirySeconds;
+	private final JwtConfig jwtConfig;
 
 	public String generateAccessToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, accessExpirySeconds);
+		return getString(userDetails, jwtConfig.getAccessExpirySeconds());
 	}
 
-	public String generateRefreshToken(UserDetailsImpl userDetails) {
-		return getString(userDetails, refreshExpirySeconds);
+	public String generateRefreshToken() {
+		return UUID.randomUUID().toString();
 	}
 
 	private String getString(UserDetailsImpl userDetails, int expiryMilliseconds) {
@@ -111,7 +104,7 @@ public class JwtTokenProvider {
 	}
 
 	private SecretKey getSignInKey() {
-		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfig.getSecretKey()));
 	}
 
 	public String getTokenBearer(String bearerTokenHeader) {

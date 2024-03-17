@@ -17,7 +17,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.common.dto.ApiResponse;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
+import com.i6.honterview.common.util.CookieUtil;
 import com.i6.honterview.common.util.HttpResponseUtil;
+import com.i6.honterview.config.JwtConfig;
 import com.i6.honterview.domain.user.dto.request.AdminSignUpRequest;
 import com.i6.honterview.domain.user.dto.request.LoginRequest;
 import com.i6.honterview.domain.user.dto.response.LoginUserResponse;
@@ -26,7 +28,6 @@ import com.i6.honterview.domain.user.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,14 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
+	private final JwtConfig jwtConfig;
+	private static final String ACCESS_COOKIE_NAME ="accessToken";
+	private static final String REFRESH_COOKIE_NAME ="refreshToken";
 
 	@Operation(summary = "토큰 재발급", description = "refresh token을 이용해 access, refresh 토큰을 재발급합니다.")
 	@PostMapping("/reissue")
 	public ResponseEntity<ApiResponse<TokenResponse>> reissue(
-		@CookieValue(name = "refreshToken") String refreshToken) {
+		@CookieValue(name = "refreshToken", required = false) String refreshToken) {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
 		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
 		return ResponseEntity.ok(response);
@@ -52,23 +56,15 @@ public class AuthController {
 	@PostMapping("/logout")
 	public void logout(
 		@RequestHeader("Authorization") String authorizationToken,
-		@CookieValue(name = "refreshToken") String refreshToken,
+		@CookieValue(name = "refreshToken", required = false) String refreshToken,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		HttpServletResponse response
 	) throws IOException {
 		authService.logout(refreshToken, authorizationToken, userDetails.getId());
-		Cookie accessTokenCookie = new Cookie("accessToken", null);
-		accessTokenCookie.setMaxAge(0);
-		accessTokenCookie.setPath("/");
-		accessTokenCookie.setDomain("honterview.site");
 
-		Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-		refreshTokenCookie.setMaxAge(0);
-		refreshTokenCookie.setPath("/");
-		refreshTokenCookie.setDomain("honterview.site");
+		CookieUtil.removeCookie(ACCESS_COOKIE_NAME, response);
+		CookieUtil.removeCookie(REFRESH_COOKIE_NAME, response);
 
-		response.addCookie(accessTokenCookie);
-		response.addCookie(refreshTokenCookie);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
 	}
 
@@ -88,23 +84,10 @@ public class AuthController {
 	public void adminLogin(
 		@Valid @RequestBody LoginRequest request,
 		HttpServletResponse response
-	) throws IOException { // TODO: 추후 cookieUtil로 리팩토링
+	) throws IOException {
 		TokenResponse tokenResponse = authService.adminLogin(request);
-		Cookie accessTokenCookie = new Cookie("accessToken", tokenResponse.accessToken());
-		Cookie refreshTokenCookie = new Cookie("refreshToken", tokenResponse.refreshToken());
-
-		accessTokenCookie.setPath("/");
-		accessTokenCookie.setMaxAge(1800);
-		accessTokenCookie.setHttpOnly(true);
-		accessTokenCookie.setDomain("honterview.site");
-		response.addCookie(accessTokenCookie);
-
-		refreshTokenCookie.setPath("/");
-		refreshTokenCookie.setMaxAge(604800);
-		refreshTokenCookie.setHttpOnly(true);
-		refreshTokenCookie.setDomain("honterview.site");
-		response.addCookie(refreshTokenCookie);
-
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie(REFRESH_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse); // TODO: tokenResponse 제거
 	}
 

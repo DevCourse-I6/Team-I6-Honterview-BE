@@ -14,4 +14,5 @@ public interface QuestionBookmarkRepository extends JpaRepository<QuestionBookma
 	Optional<QuestionBookmark> findByQuestionIdAndMemberId(@Param("questionId") Long questionId,
 		@Param("memberId") Long memberId);
 
+	boolean existsByQuestionIdAndMemberId(Long questionId, Long memberId);
 }

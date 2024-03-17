@@ -25,24 +25,8 @@ public class Video extends BaseEntity {
 	@Column(name = "file_name", nullable = false)
 	private String fileName;
 
-	@Column(name = "processing_time", nullable = false)
-	private int processingTime;
-
 	public Video(String fileName) {
 		this.fileName = fileName;
 	}
-
-	@Override
-	public String toString() {
-		return "Video{" +
-			"id=" + id +
-			", fileName='" + fileName + '\'' +
-			", processingTime=" + processingTime +
-			'}';
-	}
-
-	public Video changeProcessingTime(Integer processingTime) {
-		this.processingTime = processingTime;
-		return this;
-	}
+	
 }
