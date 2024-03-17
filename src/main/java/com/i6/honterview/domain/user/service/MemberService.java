@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.domain.user.dto.request.MemberUpdateRequest;
+import com.i6.honterview.domain.user.dto.response.MemberMypageResponse;
 import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.repository.MemberRepository;
 
@@ -27,5 +28,10 @@ public class MemberService {
 		Member member = findById(memberId);
 		member.changeNickname(request.nickname());
 		return member.getNickname();
+	}
+
+	public MemberMypageResponse getMemberById(Long id) {
+		Member member = findById(id);
+		return MemberMypageResponse.from(member);
 	}
 }

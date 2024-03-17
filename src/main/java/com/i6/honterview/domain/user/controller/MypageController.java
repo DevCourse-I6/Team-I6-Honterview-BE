@@ -16,6 +16,7 @@ import com.i6.honterview.domain.question.dto.response.QuestionWithCategoriesResp
 import com.i6.honterview.domain.question.service.QuestionService;
 import com.i6.honterview.domain.user.dto.request.MemberUpdateRequest;
 import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
+import com.i6.honterview.domain.user.dto.response.MemberMypageResponse;
 import com.i6.honterview.domain.user.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,8 +58,17 @@ public class MypageController {
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
-	@Operation(summary = "닉네임 수정")
-	@PatchMapping("/nickname")
+	@Operation(summary = "마이페이지 내 정보 조회")
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<MemberMypageResponse>> getMemberMypage(
+		@CurrentAccount Long id
+	) {
+		MemberMypageResponse response = memberService.getMemberById(id);
+		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@Operation(summary = "마이페이지 닉네임 수정")
+	@PatchMapping("/me")
 	public ResponseEntity<ApiResponse<String>> updateNickname(
 		@CurrentAccount Long memberId,
 		@Valid @RequestBody MemberUpdateRequest request) {

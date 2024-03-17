@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+@Schema(description = "마이페이지 닉네임 수정 요청")
 public record MemberUpdateRequest(
 
 	@Schema(description = "닉네임", example = "노력하는 감자")
