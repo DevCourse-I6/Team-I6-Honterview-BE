@@ -30,6 +30,7 @@ public class MemberService {
 		return member.getNickname();
 	}
 
+	@Transactional(readOnly = true)
 	public MemberMypageResponse getMemberById(Long id) {
 		Member member = findById(id);
 		return MemberMypageResponse.from(member);
