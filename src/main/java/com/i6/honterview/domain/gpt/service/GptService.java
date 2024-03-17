@@ -14,7 +14,6 @@ import com.i6.honterview.common.dto.ErrorResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
 import com.i6.honterview.common.exception.OpenAiException;
-import com.i6.honterview.config.GptConfig;
 import com.i6.honterview.domain.gpt.dto.request.GptApiRequest;
 import com.i6.honterview.domain.gpt.dto.request.GptNewQuestionCreateRequest;
 import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
@@ -33,12 +32,10 @@ import lombok.extern.slf4j.Slf4j;
 public class GptService {
 	@Value("${openai.model}")
 	private String model;
-
-	@Value("${openai.end-point}")
-	private String endPoint;
-	private final GptConfig gptConfig;
 	private final ObjectMapper objectMapper;
 	private final InterviewService interviewService;
+	private final GptFeignClient gptFeignClient;
+
 
 	// TODO: 호출 횟수 제한
 	public GptQuestionCreateResponse createTailGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
@@ -56,7 +53,7 @@ public class GptService {
 	private GptQuestionCreateResponse createGptQuestion(String prompt) {
 		GptApiRequest apiRequest = new GptApiRequest(model, List.of(new Message("user", prompt)));
 		try {
-			GptApiResponse response = invokeGptApi(apiRequest);
+			GptApiResponse response = gptFeignClient.createTailQuestion(apiRequest);
 			validateApiResponse(response);
 			return GptQuestionCreateResponse.from(response.id(), response.choices().get(0));
 		} catch (HttpClientErrorException e) {
@@ -80,12 +77,8 @@ public class GptService {
 	private String generateNewQuestionPrompt(String oldQuestion) {
 		return """
 			면접 질문 : %s,
-			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 생성
+			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 하나만 생성
 			""".formatted(oldQuestion);
-	}
-
-	private GptApiResponse invokeGptApi(GptApiRequest apiRequest) {
-		return gptConfig.restTemplate().postForObject(endPoint, apiRequest, GptApiResponse.class);
 	}
 
 	private void validateApiResponse(GptApiResponse response) {
