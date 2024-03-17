@@ -49,4 +49,5 @@ public class AnswerService {
 	public Page<Answer> findByQuestionIdWithMemberAndHearts(Long id, Pageable pageable) {
 		return answerRepository.findByQuestionIdWithMemberAndHearts(id, pageable);
 	}
+
 }
