@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +30,7 @@ import com.i6.honterview.domain.interview.repository.InterviewRepository;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
+import com.i6.honterview.domain.user.dto.request.InterviewMypagePageRequest;
 import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.service.MemberService;
@@ -156,8 +156,9 @@ public class InterviewService {
 		return new AnswersVisibilityUpdateResponse(interview.getId());
 	}
 
-	public PageResponse<InterviewMypageResponse> getInterviewsMypage(int page, int size, Long memberId) {
-		Pageable pageable = PageRequest.of(page - 1, size);
+	public PageResponse<InterviewMypageResponse> getInterviewsMypage(Long memberId,
+		InterviewMypagePageRequest pageRequest) {
+		Pageable pageable = pageRequest.getPageable();
 		Page<Interview> interviews = interviewRepository.findByMemberIdWithPage(pageable, memberId);
 		return PageResponse.of(interviews, InterviewMypageResponse::from);
 	}
