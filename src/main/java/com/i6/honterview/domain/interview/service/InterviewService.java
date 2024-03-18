@@ -56,9 +56,11 @@ public class InterviewService {
 		return interview.getId();
 	}
 
-	public void updateInterviewStatus(Long id) {
-		Interview interview = interviewRepository.findById(id)
+	public void updateInterviewStatus(Long interviewId, Long memberId) {
+		Interview interview = interviewRepository.findById(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		interview.validateInterviewee(memberId);
+
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
 			interview.changeStatus(InterviewStatus.COMPLETED);
 		}
@@ -67,10 +69,7 @@ public class InterviewService {
 	public void deleteInterview(Long id, Long memberId) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-
-		if (!interview.isSameInterviewee(memberId)) {
-			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
-		}
+		interview.validateInterviewee(memberId);
 
 		if (!interview.isDeletable()) {
 			throw new CustomException(ErrorCode.INTERVIEW_DELETE_FORBIDDEN);
@@ -82,10 +81,7 @@ public class InterviewService {
 		QuestionAnswerCreateRequest request) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-
-		if (!interview.isSameInterviewee(memberId)) {
-			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
-		}
+		interview.validateInterviewee(memberId);
 
 		validateAnswerCount(interview);
 
@@ -102,45 +98,20 @@ public class InterviewService {
 		return QuestionAnswerCreateResponse.of(question, answer);
 	}
 
-	private void validateAnswerCount(Interview interview) {
-		int answerCount = interview.getAnswers().size();
-		if (answerCount >= interview.getQuestionCount()) {
-			throw new CustomException(ErrorCode.TOO_MANY_ANSWERS);
-		}
-	}
-
-	public InterviewInfoResponse getInterviewInfo(Long id) {
-		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
+	public InterviewInfoResponse getInterviewInfo(Long interviewId, Long memberId) {
+		Interview interview = interviewRepository.findByIdWithInterviewQuestions(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		interview.validateInterviewee(memberId);
+
 		List<QuestionAndAnswerResponse> questionsAndAnswers = createQuestionAndAnswerResponses(interview);
 		return InterviewInfoResponse.of(interview, questionsAndAnswers);
 	}
 
-	private Answer createAnswer(String answerContent, Integer processingTime, Interview interview, Question question) {
-		AnswerCreateRequest answerCreateRequest = new AnswerCreateRequest(answerContent, processingTime);
-		return answerService.createAnswer(answerCreateRequest, question, interview);
-	}
-
-	private Question createQuestion(String questionContent, Question firstQuestion) {
-		TailQuestionSaveRequest tailQuestionSaveRequest = new TailQuestionSaveRequest(
-			questionContent, firstQuestion.getId(), firstQuestion.getCategoryIds());
-		return questionService.saveTailQuestion(tailQuestionSaveRequest);
-	}
-
-	private List<QuestionAndAnswerResponse> createQuestionAndAnswerResponses(Interview interview) {// TODO: N+1 문제 해결
-		return interview.getInterviewQuestions().stream()
-			.map(interviewQuestion -> {
-				Question question = interviewQuestion.getQuestion();
-				Answer answer = answerService.findByInterviewAndQuestion(interview, question).orElse(null);
-				return QuestionAndAnswerResponse.of(question, answer);
-			})
-			.toList();
-	}
-
 	public AnswersVisibilityUpdateResponse changeAnswersVisibility(Long interviewId,
-		List<AnswerVisibilityUpdateRequest> request) {
+		List<AnswerVisibilityUpdateRequest> request, Long memberId) {
 		Interview interview = interviewRepository.findById(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+		interview.validateInterviewee(memberId);
 
 		List<Answer> answers = answerService.findByInterviewId(interview.getId());
 		Map<Long, Answer> answerMap = answers.stream()
@@ -170,4 +141,38 @@ public class InterviewService {
 	public boolean existsByIdAndStatus(Long interviewId, InterviewStatus status) {
 		return interviewRepository.existsByIdAndStatus(interviewId, status);
 	}
+
+	public Interview findByVideoId(Long videoId) {
+		return interviewRepository.findByVideoId(videoId)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
+	}
+	
+	private Answer createAnswer(String answerContent, Integer processingTime, Interview interview, Question question) {
+		AnswerCreateRequest answerCreateRequest = new AnswerCreateRequest(answerContent, processingTime);
+		return answerService.createAnswer(answerCreateRequest, question, interview);
+	}
+
+	private Question createQuestion(String questionContent, Question firstQuestion) {
+		TailQuestionSaveRequest tailQuestionSaveRequest = new TailQuestionSaveRequest(
+			questionContent, firstQuestion.getId(), firstQuestion.getCategoryIds());
+		return questionService.saveTailQuestion(tailQuestionSaveRequest);
+	}
+
+	private List<QuestionAndAnswerResponse> createQuestionAndAnswerResponses(Interview interview) {// TODO: N+1 문제 해결
+		return interview.getInterviewQuestions().stream()
+			.map(interviewQuestion -> {
+				Question question = interviewQuestion.getQuestion();
+				Answer answer = answerService.findByInterviewAndQuestion(interview, question).orElse(null);
+				return QuestionAndAnswerResponse.of(question, answer);
+			})
+			.toList();
+	}
+
+	private void validateAnswerCount(Interview interview) {
+		int answerCount = interview.getAnswers().size();
+		if (answerCount >= interview.getQuestionCount()) {
+			throw new CustomException(ErrorCode.TOO_MANY_ANSWERS);
+		}
+	}
+
 }
