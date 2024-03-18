@@ -59,7 +59,7 @@ public class InterviewService {
 	public void updateInterviewStatus(Long interviewId, Long memberId) {
 		Interview interview = interviewRepository.findById(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		validateSameInterviewee(memberId, interview);
+		interview.validateInterviewee(memberId);
 
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
 			interview.changeStatus(InterviewStatus.COMPLETED);
@@ -69,7 +69,7 @@ public class InterviewService {
 	public void deleteInterview(Long id, Long memberId) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		validateSameInterviewee(memberId, interview);
+		interview.validateInterviewee(memberId);
 
 		if (!interview.isDeletable()) {
 			throw new CustomException(ErrorCode.INTERVIEW_DELETE_FORBIDDEN);
@@ -81,7 +81,7 @@ public class InterviewService {
 		QuestionAnswerCreateRequest request) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		validateSameInterviewee(memberId, interview);
+		interview.validateInterviewee(memberId);
 
 		validateAnswerCount(interview);
 
@@ -101,7 +101,7 @@ public class InterviewService {
 	public InterviewInfoResponse getInterviewInfo(Long interviewId, Long memberId) {
 		Interview interview = interviewRepository.findByIdWithInterviewQuestions(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		validateSameInterviewee(memberId, interview);
+		interview.validateInterviewee(memberId);
 
 		List<QuestionAndAnswerResponse> questionsAndAnswers = createQuestionAndAnswerResponses(interview);
 		return InterviewInfoResponse.of(interview, questionsAndAnswers);
@@ -111,7 +111,7 @@ public class InterviewService {
 		List<AnswerVisibilityUpdateRequest> request, Long memberId) {
 		Interview interview = interviewRepository.findById(interviewId)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
-		validateSameInterviewee(memberId, interview);
+		interview.validateInterviewee(memberId);
 
 		List<Answer> answers = answerService.findByInterviewId(interview.getId());
 		Map<Long, Answer> answerMap = answers.stream()
@@ -166,12 +166,6 @@ public class InterviewService {
 				return QuestionAndAnswerResponse.of(question, answer);
 			})
 			.toList();
-	}
-
-	private void validateSameInterviewee(Long memberId, Interview interview) {
-		if (!interview.isSameInterviewee(memberId)) {
-			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
-		}
 	}
 
 	private void validateAnswerCount(Interview interview) {

@@ -105,4 +105,10 @@ public class Interview extends BaseEntity {
 	public void addVideo(Video video) {
 		this.video = video;
 	}
+
+	public void validateInterviewee(Long memberId) {
+		if (!isSameInterviewee(memberId)) {
+			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
+		}
+	}
 }
