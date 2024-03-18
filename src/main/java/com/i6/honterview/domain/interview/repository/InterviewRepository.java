@@ -15,4 +15,6 @@ public interface InterviewRepository extends JpaRepository<Interview, Long>, Int
 	Optional<Interview> findByIdWithInterviewQuestions(@Param("interviewId") Long interviewId);
 
 	boolean existsByIdAndStatus(Long id, InterviewStatus status);
+
+	Optional<Interview> findByVideoId(Long videoId);
 }

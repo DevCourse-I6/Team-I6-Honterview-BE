@@ -54,8 +54,10 @@ public class InterviewController {
 	@Operation(summary = "면접 상태 수정(면접 완료)")
 	@PatchMapping("/{id}")
 	public ResponseEntity<Void> updateInterviewStatus(
-		@Parameter(description = "면접 id", example = "123") @PathVariable Long id) {
-		interviewService.updateInterviewStatus(id);
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
+		@CurrentAccount Long memberId
+	) {
+		interviewService.updateInterviewStatus(id, memberId);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -81,20 +83,22 @@ public class InterviewController {
 
 	@Operation(summary = "답변 공개여부 수정(면접 결과)")
 	@PatchMapping("/{id}/visibility")
-	public ResponseEntity<ApiResponse<AnswersVisibilityUpdateResponse>> changeAnswersVisibility(// TODO: 멤버 연동
+	public ResponseEntity<ApiResponse<AnswersVisibilityUpdateResponse>> changeAnswersVisibility(
 		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
-		@RequestBody List<AnswerVisibilityUpdateRequest> request
+		@RequestBody List<AnswerVisibilityUpdateRequest> request,
+		@CurrentAccount Long memberId
 	) {
-		AnswersVisibilityUpdateResponse response = interviewService.changeAnswersVisibility(id, request);
+		AnswersVisibilityUpdateResponse response = interviewService.changeAnswersVisibility(id, request, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
 	@Operation(summary = "면접 현황 조회")
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<InterviewInfoResponse>> getInterviewInfo(
-		@Parameter(description = "면접 id", example = "123") @PathVariable Long id
+		@Parameter(description = "면접 id", example = "123") @PathVariable Long id,
+		@CurrentAccount Long memberId
 	) {
-		InterviewInfoResponse response = interviewService.getInterviewInfo(id);
+		InterviewInfoResponse response = interviewService.getInterviewInfo(id, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 }

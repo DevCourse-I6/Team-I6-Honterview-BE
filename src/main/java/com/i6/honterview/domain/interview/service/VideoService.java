@@ -36,10 +36,7 @@ public class VideoService {
 
 	public UploadUrlResponse generateUploadUrl(Long interviewId, Long memberId) {
 		Interview interview = interviewService.findById(interviewId);
-
-		if (!interview.isSameInterviewee(memberId)) {
-			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
-		}
+		validateSameInterviewee(memberId, interview);
 
 		String fileName = FileNameUtil.generateFileName();
 		try {
@@ -53,8 +50,11 @@ public class VideoService {
 		}
 	}
 
-	public DownloadUrlResponse generateDownloadUrl(Long videoId) {
+	public DownloadUrlResponse generateDownloadUrl(Long videoId, Long memberId) {
 		Video video = findById(videoId);
+		Interview interview = interviewService.findByVideoId(video.getId());
+		validateSameInterviewee(memberId, interview);
+
 		try {
 			URL url = s3Template.createSignedGetURL(s3Bucket, video.getFileName(), Duration.ofMinutes(10));
 			return new DownloadUrlResponse(url.toString());
@@ -68,4 +68,11 @@ public class VideoService {
 		return videoRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.VIDEO_NOT_FOUND));
 	}
+
+	private void validateSameInterviewee(Long memberId, Interview interview) {
+		if (!interview.isSameInterviewee(memberId)) {
+			throw new CustomException(ErrorCode.INTERVIEWEE_NOT_SAME);
+		}
+	}
+
 }
