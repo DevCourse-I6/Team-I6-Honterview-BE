@@ -73,7 +73,9 @@ public class WebSecurityConfig {
 			antMatcher("/api/*/auth/admin/**"),
 
 			// question
-			antMatcher(GET, "/api/*/questions/**"),
+			antMatcher(GET, "/api/*/questions"),
+			antMatcher(GET, "/api/*/questions/by-category"),
+			antMatcher(GET, "/api/*/questions/*/random"),
 			antMatcher("/api/*/categories"),
 
 			// DOCS
@@ -164,8 +166,8 @@ public class WebSecurityConfig {
 	public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
 		configureCommonSecuritySettings(http);
 		http.authorizeHttpRequests(authorize -> authorize
-				.anyRequest()
-				.authenticated()
+				.requestMatchers(GET, "/api/v1/questions/**").permitAll()
+				.anyRequest().authenticated()
 			)
 			.addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), ExceptionTranslationFilter.class)
 			.exceptionHandling(exception -> {
