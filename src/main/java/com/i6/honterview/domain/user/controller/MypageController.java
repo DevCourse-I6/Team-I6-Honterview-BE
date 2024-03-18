@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.i6.honterview.common.dto.ApiResponse;
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.interview.service.InterviewService;
@@ -42,7 +43,8 @@ public class MypageController {
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
 		@CurrentAccount Long memberId
 	) {
-		PageResponse<InterviewMypageResponse> response = interviewService.getInterviewsMypage(page, size, memberId);
+		PageRequest pageRequest = new PageRequest(page, size);
+		PageResponse<InterviewMypageResponse> response = interviewService.getInterviewsMypage(memberId, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -53,8 +55,9 @@ public class MypageController {
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
 		@CurrentAccount Long memberId
 	) {
+		PageRequest pageRequest = new PageRequest(page, size);
 		PageResponse<QuestionWithCategoriesResponse> response =
-			questionService.getBookmarkedQuestionsMypage(page, size, memberId);
+			questionService.getBookmarkedQuestionsMypage(memberId, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

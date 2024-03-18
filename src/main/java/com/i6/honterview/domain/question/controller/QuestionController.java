@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.common.dto.ApiResponse;
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
+import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.response.QuestionBookmarkClickResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionHeartClickResponse;
@@ -51,8 +53,8 @@ public class QuestionController {// TODO: 회원 연동
 		@Parameter(description = "조회할 카테고리 이름 목록", example = "프론트엔드") @RequestParam(value = "categories", required = false) List<String> categoryNames,
 		@Parameter(description = "정렬 순서", example = "recent 최신순, hearts 좋아요순") @RequestParam(value = "order", defaultValue = "recent") String orderType
 	) {
-		PageResponse<QuestionWithCategoriesResponse> response =
-			questionService.getQuestions(page, size, query, categoryNames, orderType);
+		QuestionPageRequest request = new QuestionPageRequest(page, size, query, categoryNames, orderType);
+		PageResponse<QuestionWithCategoriesResponse> response = questionService.getQuestions(request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -72,7 +74,8 @@ public class QuestionController {// TODO: 회원 연동
 		@Parameter(description = "페이지 번호", example = "1") @RequestParam(value = "page", defaultValue = "1") int page,
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size
 	) {
-		QuestionDetailResponse response = questionService.getQuestionById(id, page, size);
+		PageRequest pageRequest = new PageRequest(page, size);
+		QuestionDetailResponse response = questionService.getQuestionById(id, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

@@ -21,6 +21,7 @@ import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.question.dto.request.CategoryCreateRequest;
 import com.i6.honterview.domain.question.dto.request.CategoryUpdateRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
+import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.domain.question.dto.response.CategoryResponse;
 import com.i6.honterview.domain.question.dto.response.QuestionResponse;
@@ -87,8 +88,8 @@ public class AdminController { // TODO : 관리자용 질문 CRUD
 		@Parameter(description = "조회할 카테고리 이름 목록", example = "프론트엔드") @RequestParam(value = "categories", required = false) List<String> categoryNames,
 		@Parameter(description = "정렬 순서", example = "recent 최신순, hearts 좋아요순") @RequestParam(value = "order", defaultValue = "recent") String orderType
 	) {
-		PageResponse<QuestionWithCategoriesResponse> response =
-			questionService.getQuestions(page, size, query, categoryNames, orderType);
+		QuestionPageRequest request = new QuestionPageRequest(page, size, query, categoryNames, orderType);
+		PageResponse<QuestionWithCategoriesResponse> response = questionService.getQuestions(request);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

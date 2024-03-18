@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
@@ -21,6 +21,7 @@ import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.service.AnswerService;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
+import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
@@ -44,22 +45,24 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	private final CategoryService categoryService;
 
 	@Transactional(readOnly = true)
-	public PageResponse<QuestionWithCategoriesResponse> getQuestions(int page, int size, String query,
-		List<String> categoryNames,
-		String orderType) {
-		Pageable pageable = PageRequest.of(page - 1, size);
+	public PageResponse<QuestionWithCategoriesResponse> getQuestions(QuestionPageRequest request) {
+		Pageable pageable = request.getPageable();
 		Page<Question> questions = questionRepository.
-			findQuestionsByKeywordAndCategoryNamesWithPage(pageable, query, categoryNames, orderType);
+			findQuestionsByKeywordAndCategoryNamesWithPage(
+				pageable,
+				request.getQuery(),
+				request.getCategoryNames(),
+				request.getOrderType());
 		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
+	public QuestionDetailResponse getQuestionById(Long questionId, PageRequest pageRequest) {
 		// 현재 로그인한 사용자 조회
 		UserDetailsImpl currentUserDetails = getCurrentUserDetails().orElse(null);
 
 		// id로 질문 조회
-		Question question = questionRepository.findQuestionByIdWithCategoriesAndHearts(id)
+		Question question = questionRepository.findQuestionByIdWithCategoriesAndHearts(questionId)
 			.orElseThrow(() -> new CustomException(ErrorCode.QUESTION_NOT_FOUND));
 
 		// 로그인한 사용자의 경우, 질문에 대한 좋아요 및 북마크 여부를 확인
@@ -67,16 +70,16 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		boolean isBookmarkedByCurrentMember = isQuestionBookmarkedByMember(question, currentUserDetails);
 
 		// 답변 목록 조회
-		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(id, page, size, currentUserDetails);
+		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(questionId, pageRequest, currentUserDetails);
 
 		return QuestionDetailResponse.of(question, answerResponse, isHeartedByCurrentMember,
 			isBookmarkedByCurrentMember);
 	}
 
-	private PageResponse<AnswerResponse> getAnswerResponse(Long id, int page, int size,
+	private PageResponse<AnswerResponse> getAnswerResponse(Long questionId, PageRequest pageRequest,
 		UserDetailsImpl currentUserDetails) {
-		Pageable pageable = PageRequest.of(page - 1, size);
-		Page<Answer> answers = answerService.findByQuestionIdWithMemberAndHearts(id, pageable);
+		Pageable pageable = pageRequest.getPageable();
+		Page<Answer> answers = answerService.findByQuestionIdWithMemberAndHearts(questionId, pageable);
 
 		// 조회된 답변을 DTO로 변환, 로그인한 사용자는 각 답변에 대한 좋아요 여부를 확인
 		return PageResponse.of(answers, answer -> AnswerResponse.from(answer, currentUserDetails));
@@ -145,9 +148,9 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 			.toList();
 	}
 
-	public PageResponse<QuestionWithCategoriesResponse> getBookmarkedQuestionsMypage(int page, int size,
-		Long memberId) {
-		Pageable pageable = PageRequest.of(page - 1, size);  // TODO : PageRequest 리팩토링
+	public PageResponse<QuestionWithCategoriesResponse> getBookmarkedQuestionsMypage(Long memberId,
+		PageRequest pageRequest) {
+		Pageable pageable = pageRequest.getPageable();
 		Page<Question> questions = questionRepository.findByMemberIdWithPage(pageable, memberId);
 		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
 	}
