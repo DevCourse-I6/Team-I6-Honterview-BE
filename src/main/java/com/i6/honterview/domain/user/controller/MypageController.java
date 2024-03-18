@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.i6.honterview.common.dto.ApiResponse;
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.interview.service.InterviewService;
 import com.i6.honterview.domain.question.dto.response.QuestionWithCategoriesResponse;
 import com.i6.honterview.domain.question.service.QuestionService;
-import com.i6.honterview.domain.user.dto.request.BookmarkMypagePageRequest;
-import com.i6.honterview.domain.user.dto.request.InterviewMypagePageRequest;
 import com.i6.honterview.domain.user.dto.request.MemberUpdateRequest;
 import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 import com.i6.honterview.domain.user.dto.response.MemberMypageResponse;
@@ -44,8 +43,8 @@ public class MypageController {
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
 		@CurrentAccount Long memberId
 	) {
-		InterviewMypagePageRequest request = new InterviewMypagePageRequest(page, size);
-		PageResponse<InterviewMypageResponse> response = interviewService.getInterviewsMypage(memberId, request);
+		PageRequest pageRequest = new PageRequest(page, size);
+		PageResponse<InterviewMypageResponse> response = interviewService.getInterviewsMypage(memberId, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 
@@ -56,9 +55,9 @@ public class MypageController {
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size,
 		@CurrentAccount Long memberId
 	) {
-		BookmarkMypagePageRequest request = new BookmarkMypagePageRequest(page, size);
+		PageRequest pageRequest = new PageRequest(page, size);
 		PageResponse<QuestionWithCategoriesResponse> response =
-			questionService.getBookmarkedQuestionsMypage(memberId, request);
+			questionService.getBookmarkedQuestionsMypage(memberId, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

@@ -2,12 +2,12 @@ package com.i6.honterview.domain.question.dto.request;
 
 import java.util.List;
 
-import com.i6.honterview.common.dto.PageRequestDto;
+import com.i6.honterview.common.dto.PageRequest;
 
 import lombok.Getter;
 
 @Getter
-public class QuestionPageRequest extends PageRequestDto {
+public class QuestionPageRequest extends PageRequest {
 	private String query;
 	private List<String> categoryNames;
 	private String orderType;

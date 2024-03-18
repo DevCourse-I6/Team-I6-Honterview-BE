@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.i6.honterview.common.dto.ApiResponse;
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
-import com.i6.honterview.domain.question.dto.request.AnswerPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.response.QuestionBookmarkClickResponse;
@@ -74,8 +74,8 @@ public class QuestionController {// TODO: 회원 연동
 		@Parameter(description = "페이지 번호", example = "1") @RequestParam(value = "page", defaultValue = "1") int page,
 		@Parameter(description = "페이지 크기", example = "5") @RequestParam(value = "size", defaultValue = "5") int size
 	) {
-		AnswerPageRequest request = new AnswerPageRequest(page, size);
-		QuestionDetailResponse response = questionService.getQuestionById(id, request);
+		PageRequest pageRequest = new PageRequest(page, size);
+		QuestionDetailResponse response = questionService.getQuestionById(id, pageRequest);
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.i6.honterview.common.dto.PageRequest;
 import com.i6.honterview.common.dto.PageResponse;
 import com.i6.honterview.common.exception.CustomException;
 import com.i6.honterview.common.exception.ErrorCode;
@@ -19,7 +20,6 @@ import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.service.AnswerService;
-import com.i6.honterview.domain.question.dto.request.AnswerPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
@@ -31,7 +31,6 @@ import com.i6.honterview.domain.question.entity.Category;
 import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.repository.QuestionBookmarkRepository;
 import com.i6.honterview.domain.question.repository.QuestionRepository;
-import com.i6.honterview.domain.user.dto.request.BookmarkMypagePageRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,7 +57,7 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionDetailResponse getQuestionById(Long questionId, AnswerPageRequest request) {
+	public QuestionDetailResponse getQuestionById(Long questionId, PageRequest pageRequest) {
 		// 현재 로그인한 사용자 조회
 		UserDetailsImpl currentUserDetails = getCurrentUserDetails().orElse(null);
 
@@ -71,15 +70,15 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		boolean isBookmarkedByCurrentMember = isQuestionBookmarkedByMember(question, currentUserDetails);
 
 		// 답변 목록 조회
-		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(questionId, request, currentUserDetails);
+		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(questionId, pageRequest, currentUserDetails);
 
 		return QuestionDetailResponse.of(question, answerResponse, isHeartedByCurrentMember,
 			isBookmarkedByCurrentMember);
 	}
 
-	private PageResponse<AnswerResponse> getAnswerResponse(Long questionId, AnswerPageRequest request,
+	private PageResponse<AnswerResponse> getAnswerResponse(Long questionId, PageRequest pageRequest,
 		UserDetailsImpl currentUserDetails) {
-		Pageable pageable = request.getPageable();
+		Pageable pageable = pageRequest.getPageable();
 		Page<Answer> answers = answerService.findByQuestionIdWithMemberAndHearts(questionId, pageable);
 
 		// 조회된 답변을 DTO로 변환, 로그인한 사용자는 각 답변에 대한 좋아요 여부를 확인
@@ -150,8 +149,8 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	}
 
 	public PageResponse<QuestionWithCategoriesResponse> getBookmarkedQuestionsMypage(Long memberId,
-		BookmarkMypagePageRequest request) {
-		Pageable pageable = request.getPageable();
+		PageRequest pageRequest) {
+		Pageable pageable = pageRequest.getPageable();
 		Page<Question> questions = questionRepository.findByMemberIdWithPage(pageable, memberId);
 		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
 	}
