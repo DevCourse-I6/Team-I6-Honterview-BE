@@ -20,7 +20,9 @@ import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.domain.answer.dto.response.AnswerResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.service.AnswerService;
+import com.i6.honterview.domain.question.dto.request.AnswerPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionCreateRequest;
+import com.i6.honterview.domain.question.dto.request.QuestionPageRequest;
 import com.i6.honterview.domain.question.dto.request.QuestionUpdateRequest;
 import com.i6.honterview.domain.question.dto.request.TailQuestionSaveRequest;
 import com.i6.honterview.domain.question.dto.response.QuestionDetailResponse;
@@ -44,17 +46,19 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 	private final CategoryService categoryService;
 
 	@Transactional(readOnly = true)
-	public PageResponse<QuestionWithCategoriesResponse> getQuestions(int page, int size, String query,
-		List<String> categoryNames,
-		String orderType) {
-		Pageable pageable = PageRequest.of(page - 1, size);
+	public PageResponse<QuestionWithCategoriesResponse> getQuestions(QuestionPageRequest request) {
+		Pageable pageable = request.getPageable();
 		Page<Question> questions = questionRepository.
-			findQuestionsByKeywordAndCategoryNamesWithPage(pageable, query, categoryNames, orderType);
+			findQuestionsByKeywordAndCategoryNamesWithPage(
+				pageable,
+				request.getQuery(),
+				request.getCategoryNames(),
+				request.getOrderType());
 		return PageResponse.of(questions, QuestionWithCategoriesResponse::from);
 	}
 
 	@Transactional(readOnly = true)
-	public QuestionDetailResponse getQuestionById(Long id, int page, int size) {
+	public QuestionDetailResponse getQuestionById(Long id, AnswerPageRequest request) {
 		// 현재 로그인한 사용자 조회
 		UserDetailsImpl currentUserDetails = getCurrentUserDetails().orElse(null);
 
@@ -67,15 +71,15 @@ public class QuestionService {// TODO: 멤버&관리자 연동
 		boolean isBookmarkedByCurrentMember = isQuestionBookmarkedByMember(question, currentUserDetails);
 
 		// 답변 목록 조회
-		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(id, page, size, currentUserDetails);
+		PageResponse<AnswerResponse> answerResponse = getAnswerResponse(id, request, currentUserDetails);
 
 		return QuestionDetailResponse.of(question, answerResponse, isHeartedByCurrentMember,
 			isBookmarkedByCurrentMember);
 	}
 
-	private PageResponse<AnswerResponse> getAnswerResponse(Long id, int page, int size,
+	private PageResponse<AnswerResponse> getAnswerResponse(Long id, AnswerPageRequest request,
 		UserDetailsImpl currentUserDetails) {
-		Pageable pageable = PageRequest.of(page - 1, size);
+		Pageable pageable = request.getPageable();
 		Page<Answer> answers = answerService.findByQuestionIdWithMemberAndHearts(id, pageable);
 
 		// 조회된 답변을 DTO로 변환, 로그인한 사용자는 각 답변에 대한 좋아요 여부를 확인
