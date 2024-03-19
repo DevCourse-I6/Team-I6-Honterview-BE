@@ -74,6 +74,7 @@ public class InterviewService {
 
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
 			interview.changeStatus(InterviewStatus.COMPLETED);
+			redisCountTemplate.delete(interviewId);
 		}
 	}
 
