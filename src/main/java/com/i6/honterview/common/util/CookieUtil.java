@@ -16,6 +16,7 @@ public class CookieUtil {
 			.domain(WEB_URL)
 			.path("/")
 			.maxAge(maxAge)
+			.sameSite("None")
 			.secure(true)
 			.build();
 		response.addHeader("Set-Cookie", cookie.toString());
@@ -26,6 +27,7 @@ public class CookieUtil {
 			.maxAge(0)
 			.path("/")
 			.secure(true)
+			.sameSite("None")
 			.domain(WEB_URL)
 			.build();
 		response.addHeader("Set-Cookie", cookie.toString());
