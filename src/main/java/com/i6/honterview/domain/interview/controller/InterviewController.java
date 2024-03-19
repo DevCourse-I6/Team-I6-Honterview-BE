@@ -18,6 +18,9 @@ import com.i6.honterview.common.dto.ApiResponse;
 import com.i6.honterview.common.security.resolver.CurrentAccount;
 import com.i6.honterview.domain.answer.dto.request.AnswerVisibilityUpdateRequest;
 import com.i6.honterview.domain.answer.dto.response.AnswersVisibilityUpdateResponse;
+import com.i6.honterview.domain.gpt.dto.request.GptNewQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.response.GptQuestionCreateResponse;
 import com.i6.honterview.domain.interview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.domain.interview.dto.request.QuestionAnswerCreateRequest;
 import com.i6.honterview.domain.interview.dto.response.InterviewInfoResponse;
@@ -100,5 +103,33 @@ public class InterviewController {
 	) {
 		InterviewInfoResponse response = interviewService.getInterviewInfo(id, memberId);
 		return ResponseEntity.ok(ApiResponse.ok(response));
+	}
+
+	@Operation(summary = "GPT 꼬리질문 생성(다음 질문 넘어갈 때 호출)")
+	@PostMapping("/gpt/{interviewId}")
+	public ResponseEntity<ApiResponse<GptQuestionCreateResponse>> createTailGptQuestion(
+		@PathVariable Long interviewId,
+		@Valid @RequestBody GptQuestionCreateRequest request
+	) {
+		GptQuestionCreateResponse response = interviewService.generateTailQuestion(interviewId, request);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+			.path("/{id}")
+			.buildAndExpand(response.id())
+			.toUri();
+		return ResponseEntity.created(location).body(ApiResponse.created(response));
+	}
+
+	@Operation(summary = "GPT 꼬리질문 재생성")
+	@PostMapping("/gpt/{interviewId}/new")
+	public ResponseEntity<ApiResponse<GptQuestionCreateResponse>> createNewGptQuestion(
+		@PathVariable Long interviewId,
+		@Valid @RequestBody GptNewQuestionCreateRequest request
+	) {
+		GptQuestionCreateResponse response = interviewService.regenerateTailQuestion(interviewId, request);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
+			.path("/{id}")
+			.buildAndExpand(response.id())
+			.toUri();
+		return ResponseEntity.created(location).body(ApiResponse.created(response));
 	}
 }

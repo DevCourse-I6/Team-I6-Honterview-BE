@@ -39,6 +39,7 @@ public enum ErrorCode {
 	FIRST_QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "FIRST_QUESTION_NOT_FOUND", "첫번째 질문이 존재하지 않습니다."),
 	TOO_MANY_ANSWERS(HttpStatus.BAD_REQUEST, "TOO_MANY_ANSWERS", "면접 연습 질문 갯수를 초과하였습니다."),
 	INTERVIEW_NOT_PROCESSING(HttpStatus.FORBIDDEN, "INTERVIEW_NOT_PROCESSING", "진행중인 면접이 아닙니다."),
+	CALL_LIMIT_EXCEEDED(HttpStatus.FORBIDDEN, "CALL_LIMIT_EXCEEDED", "호출 횟수를 초과했습니다. 면접이 종료됩니다."),
 
 	// file
 	GENERATE_UPLOAD_URL_FAILED(HttpStatus.BAD_REQUEST, "GENERATE_UPLOAD_URL_FAILED", "파일 업로드 URL 생성에 실패하였습니다."),
@@ -47,6 +48,7 @@ public enum ErrorCode {
 
 	// common
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "INVALID_INPUT_VALUE", "입력값을 확인해 주세요."),
+	SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", "잠시 후 다시 시도해주세요."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "서버 에러");
 
 	private final HttpStatus status;

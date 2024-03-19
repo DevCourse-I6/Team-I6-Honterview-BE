@@ -31,37 +31,37 @@ public class AuthService {
 
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisService redisService;
+	private final UserRedisManager userRedisManager;
 	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
 	private final AdminRepository adminRepository;
 
-	public TokenResponse reissue(String token) {
-		checkIsRefreshNull(token);
-		Object memberIdObj = redisService.get(token);
+	public TokenResponse reissue(String refreshToken) {
+		checkIsRefreshNull(refreshToken);
+		Object memberIdObj = userRedisManager.get(refreshToken);
 		if (memberIdObj == null) {
 			throw new SecurityCustomException(SecurityErrorCode.REFRESH_TOKEN_EXPIRED);
 		}
-		Long memberId = Long.parseLong(redisService.get(token).toString());
+		Long memberId = Long.parseLong(userRedisManager.get(refreshToken).toString());
 		Member member = memberService.findById(memberId);
 
 		UserDetailsImpl userDetails = UserDetailsImpl.from(member);
-		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
-		String refreshToken = jwtTokenProvider.generateRefreshToken();
+		String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
+		String newRefreshToken = jwtTokenProvider.generateRefreshToken();
 
-		redisService.delete(token);
-		redisService.saveRefreshToken(refreshToken, memberId);
-		return new TokenResponse(accessToken, refreshToken);
+		userRedisManager.delete(newRefreshToken);
+		userRedisManager.saveRefreshToken(newRefreshToken, memberId);
+		return new TokenResponse(newAccessToken, newRefreshToken);
 	}
 
 	public void logout(String refreshToken, String authorizationToken, Long id) {
 		checkIsRefreshNull(refreshToken);
-		if (redisService.hasKey(refreshToken)) {
-			Long userIdByRefresh = Long.valueOf(redisService.get(refreshToken).toString());
+		if (userRedisManager.existsRefresh(refreshToken)) {
+			Long userIdByRefresh = Long.valueOf(userRedisManager.get(refreshToken).toString());
 			if (userIdByRefresh.equals(id)) {
 				String accessToken = jwtTokenProvider.getTokenBearer(authorizationToken);
-				redisService.delete(refreshToken);
-				redisService.saveBlackList(accessToken, "accessToken");
+				userRedisManager.delete(refreshToken);
+				userRedisManager.saveBlackList(accessToken, "accessToken");
 			} else {
 				throw new SecurityCustomException(SecurityErrorCode.LOGOUT_FORBIDDEN);
 			}
@@ -91,7 +91,7 @@ public class AuthService {
 			UserDetailsImpl userDetails = (UserDetailsImpl)authenticate.getPrincipal();
 			String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 			String refreshToken = jwtTokenProvider.generateRefreshToken();
-			redisService.saveRefreshToken(refreshToken, userDetails.getId());
+			userRedisManager.saveRefreshToken(refreshToken, userDetails.getId());
 
 			return new TokenResponse(accessToken, refreshToken);
 		} catch (AuthenticationException e) {

@@ -14,7 +14,7 @@ public interface InterviewRepository extends JpaRepository<Interview, Long>, Int
 	@Query("SELECT i FROM Interview i LEFT JOIN FETCH i.interviewQuestions WHERE i.id = :interviewId")
 	Optional<Interview> findByIdWithInterviewQuestions(@Param("interviewId") Long interviewId);
 
-	boolean existsByIdAndStatus(Long id, InterviewStatus status);
+	Optional<Interview> findByIdAndStatus(Long id, InterviewStatus status);
 
 	Optional<Interview> findByVideoId(Long videoId);
 }

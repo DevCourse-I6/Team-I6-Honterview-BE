@@ -35,7 +35,7 @@ public class VideoService {
 	private String s3Bucket;
 
 	public UploadUrlResponse generateUploadUrl(Long interviewId, Long memberId) {
-		Interview interview = interviewService.findById(interviewId);
+		Interview interview = interviewService.getById(interviewId);
 		interview.validateInterviewee(memberId);
 
 		String fileName = FileNameUtil.generateFileName();

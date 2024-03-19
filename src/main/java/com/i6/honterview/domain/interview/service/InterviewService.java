@@ -20,6 +20,11 @@ import com.i6.honterview.domain.answer.dto.request.AnswerVisibilityUpdateRequest
 import com.i6.honterview.domain.answer.dto.response.AnswersVisibilityUpdateResponse;
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.answer.service.AnswerService;
+import com.i6.honterview.domain.gpt.dto.request.GptNewQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
+import com.i6.honterview.domain.gpt.dto.response.GptApiResponse;
+import com.i6.honterview.domain.gpt.dto.response.GptQuestionCreateResponse;
+import com.i6.honterview.domain.gpt.service.GptService;
 import com.i6.honterview.domain.interview.dto.request.InterviewCreateRequest;
 import com.i6.honterview.domain.interview.dto.request.QuestionAnswerCreateRequest;
 import com.i6.honterview.domain.interview.dto.response.InterviewInfoResponse;
@@ -33,10 +38,13 @@ import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
 import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 import com.i6.honterview.domain.user.entity.Member;
+import com.i6.honterview.common.util.RedisOperator;
 import com.i6.honterview.domain.user.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -46,6 +54,9 @@ public class InterviewService {
 	private final MemberService memberService;
 	private final QuestionService questionService;
 	private final AnswerService answerService;
+	private final GptService gptService;
+	private final RedisOperator redisOperator;
+
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
 		Member member = memberService.findById(memberId);
@@ -63,6 +74,7 @@ public class InterviewService {
 
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
 			interview.changeStatus(InterviewStatus.COMPLETED);
+			redisOperator.deleteGptCount(interviewId);
 		}
 	}
 
@@ -133,13 +145,30 @@ public class InterviewService {
 		return PageResponse.of(interviews, InterviewMypageResponse::from);
 	}
 
-	public Interview findById(Long id) {
+	public GptQuestionCreateResponse generateTailQuestion(Long id, GptQuestionCreateRequest request) {
+		Interview interview = getProcessingInterview(id);
+		checkAndIncrementCallCount(id, (long)interview.getQuestionCount());
+		String prompt = gptService.generateTailQuestionPrompt(request);
+		GptApiResponse response = gptService.createGptQuestion(prompt);
+		return GptQuestionCreateResponse.from(response.id(), response.choices().get(0));
+	}
+
+	public GptQuestionCreateResponse regenerateTailQuestion(Long id, GptNewQuestionCreateRequest request) {
+		Interview interview = getProcessingInterview(id);
+		checkAndIncrementCallCount(id, (long)interview.getQuestionCount());
+		String prompt = gptService.generateNewQuestionPrompt(request.prevQuestion());
+		GptApiResponse response = gptService.createGptQuestion(prompt);
+		return GptQuestionCreateResponse.from(response.id(), response.choices().get(0));
+	}
+
+	public Interview getById(Long id) {
 		return interviewRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 	}
 
-	public boolean existsByIdAndStatus(Long interviewId, InterviewStatus status) {
-		return interviewRepository.existsByIdAndStatus(interviewId, status);
+	public Interview getProcessingInterview(Long id) {
+		return interviewRepository.findByIdAndStatus(id, InterviewStatus.IN_PROGRESS)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_PROCESSING));
 	}
 
 	public Interview findByVideoId(Long videoId) {
@@ -175,4 +204,11 @@ public class InterviewService {
 		}
 	}
 
+	private void checkAndIncrementCallCount(Long interviewId, Long questionCount) {// TODO: redis에 limit이 없을 경우의 예외 처리
+		Long limit = questionCount * 2;
+		Long count = redisOperator.increaseCount(interviewId);
+		if (count > limit) {
+			throw new CustomException(ErrorCode.CALL_LIMIT_EXCEEDED);
+		}
+	}
 }

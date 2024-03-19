@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,15 @@ public class RedisConfig {
 		template.setConnectionFactory(redisConnectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		return template;
+	}
+
+	@Bean
+	public RedisTemplate<Long, Long> redisCountTemplate(RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<Long, Long> template = new RedisTemplate<>();
+		template.setConnectionFactory(redisConnectionFactory);
+		template.setKeySerializer(new GenericToStringSerializer<>(Long.class));
+		template.setValueSerializer(new GenericToStringSerializer<>(Long.class));
 		return template;
 	}
 }

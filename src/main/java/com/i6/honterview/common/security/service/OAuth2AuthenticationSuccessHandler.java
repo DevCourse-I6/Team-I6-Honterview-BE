@@ -21,7 +21,7 @@ import com.i6.honterview.domain.user.entity.Member;
 import com.i6.honterview.domain.user.entity.Provider;
 import com.i6.honterview.domain.user.entity.Role;
 import com.i6.honterview.domain.user.repository.MemberRepository;
-import com.i6.honterview.domain.user.service.RedisService;
+import com.i6.honterview.domain.user.service.UserRedisManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private static final String CHECKING_EXIST_KEY = "exist";
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
-	private final RedisService redisService;
+	private final UserRedisManager userRedisManager;
 	private final JwtConfig jwtConfig;
 
 	@Override
@@ -66,13 +66,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String refreshToken = jwtTokenProvider.generateRefreshToken();
-		redisService.saveRefreshToken(refreshToken, member.getId());
+		userRedisManager.saveRefreshToken(refreshToken, member.getId());
 
 		CookieUtil.setCookie("accessToken", accessToken, jwtConfig.getAccessExpirySeconds(), response);
 		CookieUtil.setCookie("refreshToken", refreshToken, jwtConfig.getRefreshExpirySeconds(), response);
 
 
-		response.sendRedirect("http://localhost:3000");
+		response.sendRedirect("https://honterview.site");
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, body);
 	}
 }
