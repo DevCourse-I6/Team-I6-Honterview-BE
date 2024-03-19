@@ -133,7 +133,7 @@ public class InterviewService {
 		return PageResponse.of(interviews, InterviewMypageResponse::from);
 	}
 
-	public Interview findById(Long id) {
+	public Interview getById(Long id) {
 		return interviewRepository.findById(id)
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 	}
