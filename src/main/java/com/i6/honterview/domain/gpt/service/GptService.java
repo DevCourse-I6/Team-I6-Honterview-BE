@@ -3,6 +3,7 @@ package com.i6.honterview.domain.gpt.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,7 +21,7 @@ import com.i6.honterview.domain.gpt.dto.request.GptQuestionCreateRequest;
 import com.i6.honterview.domain.gpt.dto.request.Message;
 import com.i6.honterview.domain.gpt.dto.response.GptApiResponse;
 import com.i6.honterview.domain.gpt.dto.response.GptQuestionCreateResponse;
-import com.i6.honterview.domain.interview.entity.InterviewStatus;
+import com.i6.honterview.domain.interview.entity.Interview;
 import com.i6.honterview.domain.interview.service.InterviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,17 +36,19 @@ public class GptService {
 	private final ObjectMapper objectMapper;
 	private final InterviewService interviewService;
 	private final GptFeignClient gptFeignClient;
+	private final RedisTemplate<Long, Long> redisCountTemplate;
 
 
-	// TODO: 호출 횟수 제한
 	public GptQuestionCreateResponse createTailGptQuestion(Long interviewId, GptQuestionCreateRequest request) {
-		validateInterviewStatus(interviewId);
+		Interview interview = interviewService.getProcessingInterview(interviewId);
+		checkAndIncrementCallCount(interviewId, (long)interview.getQuestionCount());
 		String prompt = generateTailQuestionPrompt(request);
 		return createGptQuestion(prompt);
 	}
 
 	public GptQuestionCreateResponse createNewGptQuestion(Long interviewId, GptNewQuestionCreateRequest request) {
-		validateInterviewStatus(interviewId);
+		Interview interview = interviewService.getProcessingInterview(interviewId);
+		checkAndIncrementCallCount(interviewId, (long)interview.getQuestionCount());
 		String prompt = generateNewQuestionPrompt(request.prevQuestion());
 		return createGptQuestion(prompt);
 	}
@@ -66,6 +69,14 @@ public class GptService {
 		}
 	}
 
+	private void checkAndIncrementCallCount(Long interviewId, Long questionCount) {// TODO: redis에 limit이 없을 경우의 예외 처리
+		Long limit = questionCount * 2;
+		Long count = redisCountTemplate.opsForValue().increment(interviewId, 1);
+		if (count > limit) {
+			throw new CustomException(ErrorCode.CALL_LIMIT_EXCEEDED);
+		}
+	}
+
 	private String generateTailQuestionPrompt(GptQuestionCreateRequest request) {
 		return """
 			면접 질문 : %s
@@ -77,7 +88,7 @@ public class GptService {
 	private String generateNewQuestionPrompt(String oldQuestion) {
 		return """
 			면접 질문 : %s,
-			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 하나만 생성
+			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 하나만 생성. 질문만 출력
 			""".formatted(oldQuestion);
 	}
 
@@ -86,13 +97,6 @@ public class GptService {
 		if (!finish_reason.equals("stop")) {
 			log.warn("Creating question failed. finish_reason : {}", finish_reason);
 			throw new CustomException(ErrorCode.GPT_QUESTION_CREATE_FAIL);
-		}
-	}
-
-	private void validateInterviewStatus(Long interviewId) {
-		boolean isInterviewing = interviewService.existsByIdAndStatus(interviewId, InterviewStatus.IN_PROGRESS);
-		if (!isInterviewing) {
-			throw new CustomException(ErrorCode.INTERVIEW_NOT_PROCESSING);
 		}
 	}
 

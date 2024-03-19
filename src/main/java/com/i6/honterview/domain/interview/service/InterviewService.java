@@ -138,8 +138,9 @@ public class InterviewService {
 			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_FOUND));
 	}
 
-	public boolean existsByIdAndStatus(Long interviewId, InterviewStatus status) {
-		return interviewRepository.existsByIdAndStatus(interviewId, status);
+	public Interview getProcessingInterview(Long id) {
+		return interviewRepository.findByIdAndStatus(id, InterviewStatus.IN_PROGRESS)
+			.orElseThrow(() -> new CustomException(ErrorCode.INTERVIEW_NOT_PROCESSING));
 	}
 
 	public Interview findByVideoId(Long videoId) {
