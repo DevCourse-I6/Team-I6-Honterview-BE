@@ -17,11 +17,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.i6.honterview.common.exception.SecurityCustomException;
-import com.i6.honterview.common.exception.SecurityErrorCode;
 import com.i6.honterview.common.security.auth.UserDetailsImpl;
 import com.i6.honterview.config.JwtConfig;
-import com.i6.honterview.domain.user.service.RedisService;
+import com.i6.honterview.domain.user.service.UserRedisManager;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -36,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 	private static final String AUTHENTICATION_CLAIM_NAME = "roles";
 	private static final String AUTHENTICATION_SCHEME = "Bearer ";
-	private final RedisService redisService;
+	private final UserRedisManager userRedisManager;
 	private final JwtConfig jwtConfig;
 
 	public String generateAccessToken(UserDetailsImpl userDetails) {
@@ -98,9 +96,7 @@ public class JwtTokenProvider {
 			.verifyWith(getSignInKey())
 			.build()
 			.parse(token);
-		if (redisService.hasKeyBlackList(token)) {
-			throw new SecurityCustomException(SecurityErrorCode.ALREADY_LOGGED_OUT);
-		}
+		userRedisManager.validateBlackList(token);
 	}
 
 	private SecretKey getSignInKey() {

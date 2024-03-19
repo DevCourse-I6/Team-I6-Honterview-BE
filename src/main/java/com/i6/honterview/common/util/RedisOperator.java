@@ -1,4 +1,4 @@
-package com.i6.honterview.domain.user.repository;
+package com.i6.honterview.common.util;
 
 import java.time.Duration;
 import java.util.function.Supplier;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisRepository {
+public class RedisOperator {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final RedisTemplate<String, Object> redisBlackListTemplate;
