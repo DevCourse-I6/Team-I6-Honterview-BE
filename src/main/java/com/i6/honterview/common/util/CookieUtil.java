@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
-	private static final String WEB_URL = "*.honterview.site";
+	private static final String WEB_URL = "honterview.site";
 
 	private CookieUtil() {
 	}
