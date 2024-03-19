@@ -1,30 +1,33 @@
 package com.i6.honterview.common.util;
 
-import jakarta.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 
-	private static final String WEB_URL = "honterview.site";
+	private static final String WEB_URL = ".honterview.site";
 
 	private CookieUtil() {
 	}
 
 	public static void setCookie(String name, String value, int maxAge, HttpServletResponse response) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setPath("/");
-		cookie.setMaxAge(maxAge);
-		cookie.setSecure(true);
-		cookie.setDomain(WEB_URL);
-		response.addCookie(cookie);
+		ResponseCookie cookie = ResponseCookie.from(name, value)
+			.domain(WEB_URL)
+			.path("/")
+			.maxAge(maxAge)
+			.secure(true)
+			.build();
+		response.addHeader("Set-Cookie", cookie.toString());
 	}
 
 	public static void removeCookie(String name, HttpServletResponse response) {
-		Cookie cookie = new Cookie(name, null);
-		cookie.setMaxAge(0);
-		cookie.setPath("/");
-		cookie.setSecure(true);
-		cookie.setDomain(WEB_URL);
-		response.addCookie(cookie);
+		ResponseCookie cookie = ResponseCookie.from(name, null)
+			.maxAge(0)
+			.path("/")
+			.secure(true)
+			.domain(WEB_URL)
+			.build();
+		response.addHeader("Set-Cookie", cookie.toString());
 	}
 }
