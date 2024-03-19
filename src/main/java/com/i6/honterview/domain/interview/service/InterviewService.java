@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +38,7 @@ import com.i6.honterview.domain.question.entity.Question;
 import com.i6.honterview.domain.question.service.QuestionService;
 import com.i6.honterview.domain.user.dto.response.InterviewMypageResponse;
 import com.i6.honterview.domain.user.entity.Member;
+import com.i6.honterview.domain.user.repository.RedisRepository;
 import com.i6.honterview.domain.user.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class InterviewService {
 	private final QuestionService questionService;
 	private final AnswerService answerService;
 	private final GptService gptService;
-	private final RedisTemplate<Long, Long> redisCountTemplate;
+	private final RedisRepository redisRepository;
 
 
 	public Long createInterview(InterviewCreateRequest request, Long memberId) {
@@ -74,7 +74,7 @@ public class InterviewService {
 
 		if (interview.getStatus().equals(InterviewStatus.IN_PROGRESS)) {
 			interview.changeStatus(InterviewStatus.COMPLETED);
-			redisCountTemplate.delete(interviewId);
+			redisRepository.deleteGptCount(interviewId);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class InterviewService {
 
 	private void checkAndIncrementCallCount(Long interviewId, Long questionCount) {// TODO: redis에 limit이 없을 경우의 예외 처리
 		Long limit = questionCount * 2;
-		Long count = redisCountTemplate.opsForValue().increment(interviewId, 1);
+		Long count = redisRepository.increaseCount(interviewId);
 		if (count > limit) {
 			throw new CustomException(ErrorCode.CALL_LIMIT_EXCEEDED);
 		}
