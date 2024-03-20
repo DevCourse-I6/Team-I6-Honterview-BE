@@ -35,6 +35,7 @@
 
 ### 개발 환경
 
+#### BE
 <p>
 <img src="https://img.shields.io/badge/JAVA 17-007396?style=for-the-badge&logo=java&logoColor=white">
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
@@ -61,6 +62,21 @@
 <img src="https://img.shields.io/badge/Chat Gpt-75AC9D?style=for-the-badge&logo=openai&logoColor=white">
 </p>
 
+### 배포 환경
+#### BE
+<p>
+<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=AmazonEc2&logoColor=white">
+<img src="https://img.shields.io/badge/ACM-0085CA?style=for-the-badge&logo=ACM&logoColor=white">
+<img src="https://img.shields.io/badge/RDS-527FFF?style=for-the-badge&logo=AmazonRds&logoColor=white">
+<img src="https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=AmazonS3&logoColor=white">
+<img src="https://img.shields.io/badge/Route53-8C4FFF?style=for-the-badge&logo=AmazonRoute53&logoColor=white">
+</p>
+
+#### FE
+<p>
+<img src="https://img.shields.io/badge/Amplify-FF9900?style=for-the-badge&logo=AWSAmplify&logoColor=white">
+</p>
+
 ### 협업 도구
 
 <p>
@@ -71,3 +87,6 @@
 </p>
 
 <br/>
+
+### 📈 ERD
+<img src="https://github.com/DevCourse-I6/Team-I6-Honterview-BE/assets/77001047/3c9de195-ae34-4b89-a50c-fb46d183a92d" width="800">
