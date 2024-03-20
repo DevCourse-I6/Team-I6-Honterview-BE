@@ -28,8 +28,6 @@ import com.i6.honterview.domain.user.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,44 +45,26 @@ public class AuthController {
 
 	@Operation(summary = "토큰 재발급", description = "refresh token을 이용해 access, refresh 토큰을 재발급합니다.")
 	@PostMapping("/reissue")
-	public ResponseEntity<ApiResponse<TokenResponse>> reissue(
-		HttpServletRequest request,
-		@CookieValue(name = "refreshToken", required = false) String refreshToken) {
-
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				System.out.println("Cookie Name: " + cookie.getName() + ", Value: " + cookie.getValue());
-			}
-		} else {
-			System.out.println("No cookies found in the reissue request.");
-		}
-
+	public void reissue(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken,
+		HttpServletResponse response) throws IOException {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
-		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
-		return ResponseEntity.ok(response);
+
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, reissuedToken.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie(REFRESH_COOKIE_NAME, reissuedToken.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
+
+		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
 	}
 
 	@Operation(summary = "로그아웃")
 	@PostMapping("/logout")
 	public void logout(
-		HttpServletRequest request,
 		@RequestHeader("Authorization") String authorizationToken,
 		@CookieValue(name = "refreshToken", required = false) String refreshToken,
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		HttpServletResponse response
 	) throws IOException {
 		authService.logout(refreshToken, authorizationToken, userDetails.getId());
-
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				System.out.println("Cookie Name: " + cookie.getName() + ", Value: " + cookie.getValue());
-			}
-		} else {
-			System.out.println("No cookies found in the logout request.");
-		}
-
 
 		CookieUtil.removeCookie(ACCESS_COOKIE_NAME, response);
 		CookieUtil.removeCookie(REFRESH_COOKIE_NAME, response);
