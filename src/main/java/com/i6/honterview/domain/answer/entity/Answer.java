@@ -45,7 +45,7 @@ public class Answer extends BaseEntity {
 	private String content;
 
 	@Enumerated(EnumType.STRING)
-	private Visibility visibility = Visibility.PUBLIC;
+	private Visibility visibility = Visibility.PRIVATE;
 
 	@Column(name = "processing_time")
 	private Integer processingTime;
