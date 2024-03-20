@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.i6.honterview.domain.answer.entity.Answer;
 import com.i6.honterview.domain.interview.entity.Interview;
+import com.i6.honterview.domain.interview.entity.Visibility;
 import com.i6.honterview.domain.question.entity.Question;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -31,7 +32,8 @@ public class AnswerQueryDslRepositoryImpl implements AnswerQueryDslRepository {
 			.selectFrom(answer)
 			.leftJoin(answer.member, member).fetchJoin()
 			.leftJoin(answer.answerHearts, answerHeart).fetchJoin()
-			.where(answer.question.id.eq(questionId))
+			.where(answer.question.id.eq(questionId)
+				.and(answer.visibility.eq(Visibility.PUBLIC)))
 			.orderBy(answer.id.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -40,7 +42,8 @@ public class AnswerQueryDslRepositoryImpl implements AnswerQueryDslRepository {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(answer.count())
 			.from(answer)
-			.where(answer.question.id.eq(questionId));
+			.where(answer.question.id.eq(questionId)
+				.and(answer.visibility.eq(Visibility.PUBLIC)));
 		return PageableExecutionUtils.getPage(answers, pageable, countQuery::fetchOne);
 	}
 
