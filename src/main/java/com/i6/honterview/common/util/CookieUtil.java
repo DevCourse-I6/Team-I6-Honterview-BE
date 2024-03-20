@@ -23,7 +23,7 @@ public class CookieUtil {
 	}
 
 	public static void removeCookie(String name, HttpServletResponse response) {
-		ResponseCookie cookie = ResponseCookie.from(name, null)
+		ResponseCookie cookie = ResponseCookie.from(name, "")
 			.maxAge(0)
 			.path("/")
 			.secure(true)
