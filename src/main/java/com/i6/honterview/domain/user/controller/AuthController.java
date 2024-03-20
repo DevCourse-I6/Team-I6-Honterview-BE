@@ -40,20 +40,16 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final JwtConfig jwtConfig;
-	private static final String ACCESS_COOKIE_NAME ="accessToken";
-	private static final String REFRESH_COOKIE_NAME ="refreshToken";
+	private static final String ACCESS_COOKIE_NAME = "accessToken";
+	private static final String REFRESH_COOKIE_NAME = "refreshToken";
 
 	@Operation(summary = "토큰 재발급", description = "refresh token을 이용해 access, refresh 토큰을 재발급합니다.")
 	@PostMapping("/reissue")
-	public void reissue(
-		@CookieValue(name = "refreshToken", required = false) String refreshToken,
-		HttpServletResponse response) throws IOException {
+	public ResponseEntity<ApiResponse<TokenResponse>> reissue(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken) {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
-
-		CookieUtil.setCookie(ACCESS_COOKIE_NAME, reissuedToken.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
-		CookieUtil.setCookie(REFRESH_COOKIE_NAME, reissuedToken.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
-
-		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 되었습니다.");
+		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
+		return ResponseEntity.ok(response);
 	}
 
 	@Operation(summary = "로그아웃")
@@ -90,8 +86,10 @@ public class AuthController {
 		HttpServletResponse response
 	) throws IOException {
 		TokenResponse tokenResponse = authService.adminLogin(request);
-		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
-		CookieUtil.setCookie(REFRESH_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, tokenResponse.accessToken(), jwtConfig.getAccessExpirySeconds(),
+			response);
+		CookieUtil.setCookie(REFRESH_COOKIE_NAME, tokenResponse.refreshToken(), jwtConfig.getRefreshExpirySeconds(),
+			response);
 		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, tokenResponse); // TODO: tokenResponse 제거
 	}
 
