@@ -49,7 +49,7 @@ public class AuthService {
 		String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
 		String newRefreshToken = jwtTokenProvider.generateRefreshToken();
 
-		userRedisManager.delete(newRefreshToken);
+		userRedisManager.delete(refreshToken);
 		userRedisManager.saveRefreshToken(newRefreshToken, memberId);
 		return new TokenResponse(newAccessToken, newRefreshToken);
 	}
