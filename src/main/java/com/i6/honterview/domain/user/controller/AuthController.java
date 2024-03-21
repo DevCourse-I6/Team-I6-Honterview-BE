@@ -45,11 +45,15 @@ public class AuthController {
 
 	@Operation(summary = "토큰 재발급", description = "refresh token을 이용해 access, refresh 토큰을 재발급합니다.")
 	@PostMapping("/reissue")
-	public ResponseEntity<ApiResponse<TokenResponse>> reissue(
-		@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+	public void reissue(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken,
+		HttpServletResponse response) throws IOException {
 		TokenResponse reissuedToken = authService.reissue(refreshToken);
-		ApiResponse<TokenResponse> response = ApiResponse.ok(reissuedToken);
-		return ResponseEntity.ok(response);
+
+		CookieUtil.setCookie(ACCESS_COOKIE_NAME, reissuedToken.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookie(REFRESH_COOKIE_NAME, reissuedToken.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
+
+		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "토큰 재발급이 완료되었습니다.");
 	}
 
 	@Operation(summary = "로그아웃")

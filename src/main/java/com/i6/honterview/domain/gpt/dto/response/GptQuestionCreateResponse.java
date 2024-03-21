@@ -9,6 +9,7 @@ public record GptQuestionCreateResponse(
 	@Schema(description = "생성된 꼬리질문 내용", example = "JVM은 왜 자바 바이트코드를 직접 실행시키지 않고 중간 언어로 번역해서 실행하는 것일까요?")
 	String tailQuestionContent) {
 	public static GptQuestionCreateResponse from(String id, Choice choice) {
-		return new GptQuestionCreateResponse(id, choice.message().content());
+		String content = choice.message().content().replace("\"", "");
+		return new GptQuestionCreateResponse(id, content);
 	}
 }
