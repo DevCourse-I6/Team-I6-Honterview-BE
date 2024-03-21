@@ -60,8 +60,8 @@ public class GptServiceImpl implements GptService {
 	@Override
 	public String generateNewQuestionPrompt(String oldQuestion) {
 		return """
-			면접 질문 : %s,
-			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 하나만 생성. 질문만 출력
+			"%s"
+			위 면접 질문과 유사한 직무의 다른 주제 면접 질문 하나만 생성. no yap. no double quotes
 			""".formatted(oldQuestion);
 	}
 
