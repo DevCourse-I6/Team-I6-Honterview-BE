@@ -32,4 +32,15 @@ public class CookieUtil {
 			.build();
 		response.addHeader("Set-Cookie", cookie.toString());
 	}
+
+	public static void setCookieLocal(String name, String value, int maxAge, HttpServletResponse response) {
+		ResponseCookie cookie = ResponseCookie.from(name, value)
+			.domain("localhost:3000")
+			.path("/")
+			.maxAge(maxAge)
+			.sameSite("None")
+			.secure(true)
+			.build();
+		response.addHeader("Set-Cookie", cookie.toString());
+	}
 }
