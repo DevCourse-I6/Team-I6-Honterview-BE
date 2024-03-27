@@ -110,4 +110,17 @@ public class AuthController {
 		}
 		return ResponseEntity.ok(ApiResponse.ok(response));
 	}
+
+	@Operation(summary = "토큰 재발급(로컬용)", description = "재발급된 토큰이 localhost:3000으로 세팅됩니다.")
+	@PostMapping("/reissue/local")
+	public void reissueLocal(
+		@CookieValue(name = "refreshToken", required = false) String refreshToken,
+		HttpServletResponse response) throws IOException {
+		TokenResponse reissuedToken = authService.reissue(refreshToken);
+
+		CookieUtil.setCookieLocal(ACCESS_COOKIE_NAME, reissuedToken.accessToken(), jwtConfig.getAccessExpirySeconds(), response);
+		CookieUtil.setCookieLocal(REFRESH_COOKIE_NAME, reissuedToken.refreshToken(), jwtConfig.getRefreshExpirySeconds(), response);
+
+		HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "토큰 재발급이 완료되었습니다.");
+	}
 }
