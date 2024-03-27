@@ -68,6 +68,7 @@ public class WebSecurityConfig {
 		List<RequestMatcher> requestMatchers = List.of(
 			// Member
 			antMatcher("/api/*/auth/reissue"),
+			antMatcher("/api/*/auth/reissue/local"),
 
 			// Admin
 			antMatcher("/api/*/auth/admin/**"),
