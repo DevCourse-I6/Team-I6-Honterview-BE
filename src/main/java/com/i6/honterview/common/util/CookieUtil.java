@@ -35,7 +35,7 @@ public class CookieUtil {
 
 	public static void setCookieLocal(String name, String value, int maxAge, HttpServletResponse response) {
 		ResponseCookie cookie = ResponseCookie.from(name, value)
-			.domain("localhost:3000")
+			.domain("localhost")
 			.path("/")
 			.maxAge(maxAge)
 			.sameSite("None")
